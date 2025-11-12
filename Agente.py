@@ -1,13 +1,12 @@
-#class abstrata
-#implements interface aa
+from abc import ABC, abstractmethod
 
-class Agente:
+class Agente(ABC): #implements interface aa
     #criar um agente novo
     def criar(self, nomeFicheiro):  # nomeFicheiro do tipo string
         #devolve objeto agente
         pass
 
-    # @abstractmethod
+    @abstractmethod
     def observacao(self, obs):  # obs da class Observation
         pass
 
@@ -16,7 +15,7 @@ class Agente:
         #devolve objeto do tipo accao
         pass
 
-    # @abstractmethod
+    @abstractmethod
     def avaliacao(self, recompensa):  # recompensa e um double
         pass
 
