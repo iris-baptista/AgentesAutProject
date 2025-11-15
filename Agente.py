@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 
-class Agente(ABC): #implements interface aa
+class Agente(ABC):
+    posicao= (0, 0) #posicao vai ser alterada, isto e so para instanciar
+
     #criar um agente novo
+    #deve ser abstractmethod???
     def criar(self, nomeFicheiro):  # nomeFicheiro do tipo string
         #devolve objeto agente
         pass

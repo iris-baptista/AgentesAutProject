@@ -1,11 +1,14 @@
-#implementa interface ambiente
-
 class Foraging:
+    mapa= []
+    cestos= [] #pontos de entrega
+    recursos = []
     obstaculos= []
-    recursos= []
-    pontoEntrega = (0, 0)  # posicao vai ser alterada, isto e so para instanciar
 
-    def __init__(self):
+    def __init__(self, sizeMapa, posRecursos=None, posCestos=None, posObstaculos= None):  # queremos indicar as posicoes?
+        # criar mapa
+        # adicionar recursos
+        # adicionar cestos
+        # adicionar obstaculos
         pass
 
     #observacao para mandar ao agente dado?
