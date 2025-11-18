@@ -30,10 +30,7 @@ class MotorSimulator:
         for i in range(0, s):
             row = ""
             for j in range(0, s):
-                #verificar se agente esta na posicao atual primeiro!
-                #else:
                 obj= self.mundo.getObject(i, j)
-
                 match obj:
                     case isinstance(LightHouse):
                         row+= "F"
@@ -44,14 +41,17 @@ class MotorSimulator:
                     case isinstance(Cesto):
                         row+= "U"
                     case isinstance(EspacoVazio):
-                        row += "•"
+                        found= False
+                        for a in self.agentes: #verificar se agente esta na posicao atual
+                            if (a.x == i and a.y == j and found == False):
+                                row += "A"
+                                found= True
+
+                        if(found == False):
+                            row += "•"
 
             print(row)
 
     #comecar a simulacao (?)
     def execute(self):
         pass
-
-if __name__ == '__main__':
-    for i in range(0, 10):
-        print(i)
