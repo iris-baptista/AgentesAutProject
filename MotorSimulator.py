@@ -1,3 +1,6 @@
+from Farol import LightHouse
+
+
 class MotorSimulator:
     mundo= None #instancia inicial
     modoExecucao= '' #a= aprendizagem, t= teste
@@ -21,6 +24,34 @@ class MotorSimulator:
     def listaAgentes(self):
         return self.agentes
 
+    def displayMundo(self):
+        s= self.mundo.sizeMap
+
+        for i in range(0, s):
+            row = ""
+            for j in range(0, s):
+                #verificar se agente esta na posicao atual primeiro!
+                #else:
+                obj= self.mundo.getObject(i, j)
+
+                match obj:
+                    case isinstance(LightHouse):
+                        row+= "F"
+                    case isinstance(Obstaculo):
+                        row+= "0"
+                    case isinstance(Recurso):
+                        row+= "*"
+                    case isinstance(Cesto):
+                        row+= "U"
+                    case isinstance(EspacoVazio):
+                        row += "•"
+
+            print(row)
+
     #comecar a simulacao (?)
     def execute(self):
         pass
+
+if __name__ == '__main__':
+    for i in range(0, 10):
+        print(i)
