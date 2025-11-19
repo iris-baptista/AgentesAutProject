@@ -1,16 +1,17 @@
-from Farol import LightHouse
+from Farol import LightHouse, Farol
 
 import os
+
+from Foraging import Foraging
+
 
 class MotorSimulator:
     mundo= None #instancia inicial
     modoExecucao= '' #a= aprendizagem, t= teste
     agentes= []
 
-    def __init__(self, mapa, modo, a):
-        self.mundo= mapa
-        self.modoExecucao= modo
-        self.agentes= a
+    def __init__(self, worldSize):
+        self.worldSize= worldSize
 
     #cria um simulador novo
     def criar(self, nomeFicheiro):  # nomeFicheiro do tipo string
@@ -34,28 +35,33 @@ class MotorSimulator:
                 obj= self.mundo.getObject(i, j)
                 match obj:
                     case isinstance(LightHouse):
-                        row+= "F"
+                        row+= "F "
                     case isinstance(Obstaculo):
-                        row+= "0"
+                        row+= "0 "
                     case isinstance(Recurso):
-                        row+= "*"
+                        row+= "* "
                     case isinstance(Cesto):
-                        row+= "U"
+                        row+= "U "
                     case isinstance(EspacoVazio):
                         found= False
                         for a in self.agentes: #verificar se agente esta na posicao atual
                             if (a.x == i and a.y == j and found == False):
-                                row += "A"
+                                row += "A "
                                 found= True
 
                         if(found == False):
-                            row += "•"
+                            row += "• "
 
             print(row)
 
-    #comecar a simulacao (?)
-    def execute(self):
-        pass
+    def genetic(self):
+        pass  # aprendizagem com algoritmo genetico
+
+    def qlearning(self):
+        pass  # aprendizagem com algoritmo qlearning
+
+    def testing(self):
+        pass  # modo de teste
 
     def mainMenu(self):
         while True:
@@ -68,6 +74,8 @@ class MotorSimulator:
             choice = input("Selecione a opção: ")
 
             if choice == "1":
+                self.mundo = Farol(self.worldSize)
+                #self.displayMundo()
                 print("\n==== Modo de Execução ====")
                 print("  1. Modo de Aprendizagem (Learning Mode)")
                 print("  2. Modo de Teste (Testing Mode)")
@@ -76,35 +84,40 @@ class MotorSimulator:
                 choice1 = input("Selecione a opção: ")
 
                 if choice1 == "1":
+                    self.modoExecucao = 'a'
                     print("\n==== Política do Agente ====")
-                    print("  1. Algoritmo Q-Learning")
-                    print("  2. Algoritmo Genético")
+                    print("  1. Algoritmo Genético")
+                    print("  2. Algoritmo Q-Learning")
                     print("  0. Sair")
 
                     choice2 = input("Selecione a opção: ")
 
                     if choice2 == "1":
-                        print("a aprender com algoritmo q-learning!")
-                        # learning com algoritmo q-learning
-                    elif choice2 == "2":
                         print("a aprender com algoritmo genetico!")
                         # learning com algoritmo genetico
+                        # self.genetico()
+                    elif choice2 == "2":
+                        print("a aprender com algoritmo q-learning!")
+                        # learning com algoritmo q-learning
+                        # self.qlearning()
                     elif choice2 == "0":
                         break
                     else:
                         print("Opção inválida, por favor tente novamente")
-
                 elif choice1 == "2":
+                    self.modoExecucao = 't'
                     print("a executar em modo de teste!")
-                    #correr em modo teste
-
+                    # correr em modo teste
+                    # self.testing()
+                    # imprimir mundo para ser visualizado
+                    # self.displayMundo()
                 elif choice1 == "0":
                     break
-
                 else:
                     print("Opção inválida, por favor tente novamente")
-
             elif choice == "2":
+                self.mundo = Foraging(self.worldSize)
+                #self.displayMundo()
                 print("\n==== Modo de Execução ====")
                 print("  1. Modo de Aprendizagem (Learning Mode)")
                 print("  2. Modo de Teste (Testing Mode)")
@@ -113,28 +126,32 @@ class MotorSimulator:
                 choice3 = input("Selecione a opção: ")
 
                 if choice3 == "1":
+                    self.modoExecucao = 'a'
                     print("\n==== Política do Agente ====")
-                    print("  1. Algoritmo Q-Learning")
-                    print("  2. Algoritmo Genético")
+                    print("  1. Algoritmo Genético")
+                    print("  2. Algoritmo Q-Learning")
                     print("  0. Sair")
 
                     choice4 = input("Selecione a opção: ")
 
                     if choice4 == "1":
-                        print("a aprender com algoritmo q-learning!")
-                        # learning com algoritmo q-learning
-                    elif choice4 == "2":
                         print("a aprender com algoritmo genetico!")
                         # learning com algoritmo genetico
+                        # self.genetico()
+                    elif choice4 == "2":
+                        print("a aprender com algoritmo q-learning!")
+                        # learning com algoritmo q-learning
+                        # self.qlearning()
                     elif choice4 == "0":
                         break
                     else:
                         print("Opção inválida, por favor tente novamente")
-
                 elif choice3 == "2":
+                    self.modoExecucao = 't'
                     # correr em modo teste
-                    pass
-
+                    # self.testing()
+                    # imprimir mundo para ser visualizado
+                    # self.displayMundo()
                 elif choice3 == "0":
                     break
                 else:
@@ -145,5 +162,8 @@ class MotorSimulator:
             else:
                 print("Opção inválida, por favor tente novamente")
 
+
+
 if __name__ == "__main__":
-    MotorSimulator.mainMenu()
+    sim = MotorSimulator(10)
+    sim.mainMenu()
