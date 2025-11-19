@@ -57,7 +57,7 @@ class MotorSimulator:
     def execute(self):
         pass
 
-    def mainMenu():
+    def mainMenu(self):
         while True:
             print("\n======= Projeto de Agentes Autónomos =======")
             print("Feito por Constança Ferreira e Íris Baptista")

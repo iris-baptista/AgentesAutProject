@@ -1,12 +1,9 @@
 from abc import ABC, abstractmethod
 
 class Agente(ABC):
-    posicao= (0, 0) #posicao vai ser alterada, isto e so para instanciar
-
     #criar um agente novo
-    #deve ser abstractmethod???
-    def criar(self, nomeFicheiro):  # nomeFicheiro do tipo string
-        #devolve objeto agente
+    @abstractmethod
+    def criar(self, posInitial):  #nao se tem de usar ficheiro, mais tarde se quiseremos podemos ir ver
         pass
 
     @abstractmethod
@@ -26,6 +23,6 @@ class Agente(ABC):
     def instala(self, sensor):  # sensor da class Sensor
         pass
 
-    #comunica com o agente dado? ou processa a msg recebida?
-    def comunica(self, msg, deAgente):  # msg do tipo string, deAgente do tipo Agente
+    #comunica com o agente dado
+    def comunica(self, msg, recetor):  # msg do tipo string, recetior do tipo Agente
         pass

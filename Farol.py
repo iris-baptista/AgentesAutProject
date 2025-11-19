@@ -1,3 +1,5 @@
+import random
+
 class LightHouse:
     def __init__(self, name, x, y):
         self.name= name
@@ -17,18 +19,25 @@ class EspacoVazio:
 class Farol: #foraging
     # tem atributes sizeMap, obstaculos, e farol
 
-    def __init__(self, sizeMundo, posFarol= None, posObstaculos= None): #queremos indicar as posicoes do farol ou do mapa?
+    def __init__(self, sizeMundo, dificuldade= 0.3, posFarol= None, posObstaculos= None): #queremos indicar as posicoes do farol ou do mapa?
         self.sizeMap= sizeMundo
 
         #adicionar farol
         if(posFarol == None): #se nao for dado, posicao aleatoria escolhida
-            posFarol= (0, 0) #def later
+            x= random.randint(0, sizeMundo-1)
+            y= random.randint(0, sizeMundo-1)
+            posFarol= (x, y)
 
         self.farol= LightHouse("F", posFarol[0], posFarol[1])
 
         #adicionar obstaculos
         if(posObstaculos == None): #se nao for dado, posicao aleatoria escolhida
-            posObstaculos= [] #def later
+            numToGenerate= (sizeMundo * sizeMundo) * dificuldade #fazer baseado numa percentagem
+            posObstaculos= []
+            for i in range(0, numToGenerate):
+                x= random.randint(0, sizeMundo-1)
+                y= random.randint(0, sizeMundo-1)
+                posObstaculos.append((x, y))
 
         self.obstaculos= []
         for o in posObstaculos:
