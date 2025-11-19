@@ -1,3 +1,5 @@
+import random
+
 class Obstaculo:
     def __init__(self, x, y):
         self.x= x
@@ -23,12 +25,17 @@ class EspacoVazio:
 class Foraging: #ambiente
     #tem atributes sizeMap, obstaculos, cestos, e recursos
 
-    def __init__(self, sizeMundo, posObstaculos= None, posCestos= None, posRecursos= None): #queremos indicar as posicoes do farol ou do mapa?
+    def __init__(self, sizeMundo, dificuldade= 0.3, posObstaculos= None, posCestos= None, posRecursos= None): #queremos indicar as posicoes do farol ou do mapa?
         self.sizeMap= sizeMundo
 
         # adicionar obstaculos
         if (posObstaculos == None):  # se nao for dado, posicao aleatoria escolhida
-            posObstaculos = []  # def later
+            numToGenerate = (sizeMundo * sizeMundo) * dificuldade  # fazer baseado numa percentagem
+            posObstaculos = []
+            for i in range(0, numToGenerate):
+                x = random.randint(0, sizeMundo - 1)
+                y = random.randint(0, sizeMundo - 1)
+                posObstaculos.append((x, y))
 
         self.obstaculos = []
         for o in posObstaculos:
@@ -36,7 +43,12 @@ class Foraging: #ambiente
 
         #adicionar cestos
         if(posCestos == None): #se nao for dado, posicao aleatoria escolhida
-            posCestos = []  # def later
+            numToGenerate = (sizeMundo * sizeMundo) * 0.1  # fazer baseado numa percentagem
+            posCestos = []
+            for i in range(0, numToGenerate):
+                x = random.randint(0, sizeMundo - 1)
+                y = random.randint(0, sizeMundo - 1)
+                posCestos.append((x, y))
 
         self.cestos = []
         index= 1
@@ -46,7 +58,12 @@ class Foraging: #ambiente
 
         #adicionar recursos
         if(posRecursos == None): #se nao for dado, posicao aleatoria escolhida
-            posRecursos = []  # def later
+            numToGenerate = (sizeMundo * sizeMundo) * 0.2  # fazer baseado numa percentagem
+            posRecursos = []
+            for i in range(0, numToGenerate):
+                x = random.randint(0, sizeMundo - 1)
+                y = random.randint(0, sizeMundo - 1)
+                posRecursos.append((x, y))
 
         self.recursos = []
         index = 1
