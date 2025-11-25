@@ -13,14 +13,14 @@ class MotorSimulator:
     def __init__(self, worldSize):
         self.worldSize= worldSize
 
-    #cria um simulador novo
-    def criar(self, nomeFicheiro):  # nomeFicheiro do tipo string
-        #falta leitura de ficheiro para ter estes valores
-        mundo= None
-        modoExecucao= ''
-        agentes= []
-
-        return MotorSimulator(mundo, modoExecucao, agentes)
+    # #cria um simulador novo
+    # def criar(self, nomeFicheiro):  # nomeFicheiro do tipo string
+    #     #falta leitura de ficheiro para ter estes valores
+    #     mundo= None
+    #     modoExecucao= ''
+    #     agentes= []
+    #
+    #     return MotorSimulator(mundo, modoExecucao, agentes)
 
     #devolve lista de agentes
     def listaAgentes(self):
