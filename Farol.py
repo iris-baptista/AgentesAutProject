@@ -32,7 +32,7 @@ class Farol: #foraging
 
         #adicionar obstaculos
         if(posObstaculos == None): #se nao for dado, posicao aleatoria escolhida
-            numToGenerate= (sizeMundo * sizeMundo) * dificuldade #fazer baseado numa percentagem
+            numToGenerate= (int) ((sizeMundo * sizeMundo) * dificuldade) #fazer baseado numa percentagem
             posObstaculos= []
             for i in range(0, numToGenerate):
                 x= random.randint(0, sizeMundo-1)

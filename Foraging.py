@@ -30,7 +30,7 @@ class Foraging: #ambiente
 
         # adicionar obstaculos
         if (posObstaculos == None):  # se nao for dado, posicao aleatoria escolhida
-            numToGenerate = (sizeMundo * sizeMundo) * dificuldade  # fazer baseado numa percentagem
+            numToGenerate = (int) (sizeMundo * sizeMundo) * dificuldade  # fazer baseado numa percentagem
             posObstaculos = []
             for i in range(0, numToGenerate):
                 x = random.randint(0, sizeMundo - 1)
@@ -43,7 +43,7 @@ class Foraging: #ambiente
 
         #adicionar cestos
         if(posCestos == None): #se nao for dado, posicao aleatoria escolhida
-            numToGenerate = (sizeMundo * sizeMundo) * 0.1  # fazer baseado numa percentagem
+            numToGenerate = (int) (sizeMundo * sizeMundo) * 0.1  # fazer baseado numa percentagem
             posCestos = []
             for i in range(0, numToGenerate):
                 x = random.randint(0, sizeMundo - 1)
@@ -58,7 +58,7 @@ class Foraging: #ambiente
 
         #adicionar recursos
         if(posRecursos == None): #se nao for dado, posicao aleatoria escolhida
-            numToGenerate = (sizeMundo * sizeMundo) * 0.2  # fazer baseado numa percentagem
+            numToGenerate = (int) (sizeMundo * sizeMundo) * 0.2  # fazer baseado numa percentagem
             posRecursos = []
             for i in range(0, numToGenerate):
                 x = random.randint(0, sizeMundo - 1)
