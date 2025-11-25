@@ -30,6 +30,8 @@ class MotorSimulator:
             row = ""
             for j in range(0, s):
                 obj= self.mundo.getObject(i, j)
+                # print(obj.__class__)
+                # print(i, j)
                 match obj:
                     case LightHouse():
                         row+= "F  "
@@ -39,16 +41,14 @@ class MotorSimulator:
                         row+= "*  "
                     case Cesto():
                         row+= "U  "
-                    case EspacoVazio(): #Caso um espaco vazio
-                        found= False
-                        for a in self.agentes: #verificar se agente esta na posicao atual
-                            if (a.x == i and a.y == j and found == False):
-                                row+= "A  "
-                                found= True
-
-                        if(found == False):
-                            row+= "•  "
-
+                    case _:
+                        found = False
+                        for a in self.agentes:  # verificar se agente esta na posicao atual
+                           if (a.x == i and a.y == j and found == False):
+                              row += "A  "
+                              found = True
+                        if (found == False):
+                            row += "•  "
             print(row)
 
     def genetic(self):
@@ -56,6 +56,7 @@ class MotorSimulator:
 
     def qlearning(self):
         pass  # aprendizagem com algoritmo qlearning
+        # tirar do simulador e por no agente
 
     def testing(self):
         pass  # modo de teste
