@@ -1,9 +1,5 @@
-from Farol import LightHouse, Farol
-
-import os
-
-from Foraging import Foraging
-
+from Farol import LightHouse, Farol, Obstaculo, EspacoVazio
+from Foraging import Foraging, Recurso, Cesto, EspacoVazio
 
 class MotorSimulator:
     mundo= None #instancia inicial
@@ -33,25 +29,25 @@ class MotorSimulator:
             row = ""
             for j in range(0, s):
                 obj= self.mundo.getObject(i, j)
+                # print(obj.__class__)
+                # print(i, j)
                 match obj:
-                    case isinstance(LightHouse):
-                        row+= "F "
-                    case isinstance(Obstaculo):
-                        row+= "0 "
-                    case isinstance(Recurso):
-                        row+= "* "
-                    case isinstance(Cesto):
-                        row+= "U "
-                    case isinstance(EspacoVazio):
-                        found= False
-                        for a in self.agentes: #verificar se agente esta na posicao atual
-                            if (a.x == i and a.y == j and found == False):
-                                row += "A "
-                                found= True
-
-                        if(found == False):
-                            row += "• "
-
+                    case LightHouse():
+                        row+= "F  "
+                    case Obstaculo():
+                        row+= "0  "
+                    case Recurso():
+                        row+= "*  "
+                    case Cesto():
+                        row+= "U  "
+                    case _:
+                        found = False
+                        for a in self.agentes:  # verificar se agente esta na posicao atual
+                           if (a.x == i and a.y == j and found == False):
+                              row += "A  "
+                              found = True
+                        if (found == False):
+                            row += "•  "
             print(row)
 
     def genetic(self):
@@ -59,6 +55,7 @@ class MotorSimulator:
 
     def qlearning(self):
         pass  # aprendizagem com algoritmo qlearning
+        # tirar do simulador e por no agente
 
     def testing(self):
         pass  # modo de teste
@@ -75,7 +72,7 @@ class MotorSimulator:
 
             if choice == "1":
                 self.mundo = Farol(self.worldSize)
-                #self.displayMundo()
+                self.displayMundo()
                 print("\n==== Modo de Execução ====")
                 print("  1. Modo de Aprendizagem (Learning Mode)")
                 print("  2. Modo de Teste (Testing Mode)")
