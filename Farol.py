@@ -1,20 +1,5 @@
 import random
-
-class LightHouse:
-    def __init__(self, name, x, y):
-        self.name= name
-        self.x= x
-        self.y= y
-
-class Obstaculo:
-    def __init__(self, x, y):
-        self.x= x
-        self.y= y
-
-class EspacoVazio:
-    def __init__(self, x, y):
-        self.x= x
-        self.y= y
+from Ambiente import Obstaculo, EspacoVazio, LightHouse
 
 class Farol: #foraging
     # tem atributes sizeMap, obstaculos, e farol
@@ -46,12 +31,12 @@ class Farol: #foraging
     #devolve objeto na posicao dada
     def getObject(self, x, y):
         if x == self.farol.x and y == self.farol.y:
-            print("Encontrou o farol!")
+            #print("Encontrou o farol!")
             return self.farol
 
         for o in self.obstaculos:
             if x == o.x and y == o.y:
-                print("Foi contra um obstaculo...")
+                #print("Foi contra um obstaculo...")
                 return o
 
         return EspacoVazio(x, y) #se nao encontrou um obstaculo ou um farol segue (ignora q pode ser outro agente...)
