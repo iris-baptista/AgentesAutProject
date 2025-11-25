@@ -1,9 +1,6 @@
-from Farol import LightHouse, Farol
-
-import os
-
+from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
+from Farol import Farol
 from Foraging import Foraging
-
 
 class MotorSimulator:
     mundo= None #instancia inicial
@@ -34,23 +31,23 @@ class MotorSimulator:
             for j in range(0, s):
                 obj= self.mundo.getObject(i, j)
                 match obj:
-                    case isinstance(LightHouse):
-                        row+= "F "
-                    case isinstance(Obstaculo):
-                        row+= "0 "
-                    case isinstance(Recurso):
-                        row+= "* "
-                    case isinstance(Cesto):
-                        row+= "U "
-                    case isinstance(EspacoVazio):
+                    case LightHouse():
+                        row+= "F  "
+                    case Obstaculo():
+                        row+= "0  "
+                    case Recurso():
+                        row+= "*  "
+                    case Cesto():
+                        row+= "U  "
+                    case EspacoVazio(): #Caso um espaco vazio
                         found= False
                         for a in self.agentes: #verificar se agente esta na posicao atual
                             if (a.x == i and a.y == j and found == False):
-                                row += "A "
+                                row+= "A  "
                                 found= True
 
                         if(found == False):
-                            row += "• "
+                            row+= "•  "
 
             print(row)
 
@@ -75,7 +72,7 @@ class MotorSimulator:
 
             if choice == "1":
                 self.mundo = Farol(self.worldSize)
-                #self.displayMundo()
+                self.displayMundo()
                 print("\n==== Modo de Execução ====")
                 print("  1. Modo de Aprendizagem (Learning Mode)")
                 print("  2. Modo de Teste (Testing Mode)")
