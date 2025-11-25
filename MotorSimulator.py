@@ -61,6 +61,21 @@ class MotorSimulator:
     def testing(self):
         pass  # modo de teste
 
+    def farolBurro(self):
+        a= self.agentes[0]
+        while(a.found == False):
+            newPos= a.acaoBurro()
+            obj= self.mundo.getObject(newPos[0], newPos[1])
+
+            match obj:
+                case LightHouse():
+                    a.found= True
+                    print("Encontrou o farol!")
+                case EspacoVazio():
+                    a.atualizarPosicao(newPos)
+                case _: #se for outro agente ou um obstaculo
+                    print("Obstaculo encontrado!")
+
     def mainMenu(self):
         while True:
             print("\n======= Projeto de Agentes Autónomos =======")
@@ -92,6 +107,7 @@ class MotorSimulator:
 
                     if choice2 == "1":
                         print("a aprender com algoritmo genetico!")
+                        self.farolBurro()
                         # learning com algoritmo genetico
                         # self.genetico()
                     elif choice2 == "2":
