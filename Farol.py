@@ -1,20 +1,5 @@
 import random
-
-class LightHouse:
-    def __init__(self, name, x, y):
-        self.name= name
-        self.x= x
-        self.y= y
-
-class Obstaculo:
-    def __init__(self, x, y):
-        self.x= x
-        self.y= y
-
-class EspacoVazio:
-    def __init__(self, x, y):
-        self.x= x
-        self.y= y
+from Ambiente import Obstaculo, EspacoVazio, LightHouse
 
 class Farol: #foraging
     # tem atributes sizeMap, obstaculos, e farol

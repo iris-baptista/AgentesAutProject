@@ -1,5 +1,6 @@
-from Farol import LightHouse, Farol, Obstaculo, EspacoVazio
-from Foraging import Foraging, Recurso, Cesto, EspacoVazio
+from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
+from Farol import Farol
+from Foraging import Foraging
 
 class MotorSimulator:
     mundo= None #instancia inicial
