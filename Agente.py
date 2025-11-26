@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import random
 
 class Agente(ABC):
     #criar um agente novo
