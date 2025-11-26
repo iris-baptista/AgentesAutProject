@@ -1,6 +1,6 @@
 import Agente
 
-class Coordenator(Agente):
+class Coordenator(): #remove Agente para testes
     farol= (0, 0)
 
     # construtor

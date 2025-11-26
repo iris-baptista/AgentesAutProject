@@ -1,11 +1,12 @@
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
 from Farol import Farol
 from Foraging import Foraging
+import Finder
 
 class MotorSimulator:
     mundo= None #instancia inicial
     modoExecucao= '' #a= aprendizagem, t= teste
-    agentes= []
+    # agentes= []
 
     def __init__(self, worldSize):
         self.worldSize= worldSize
@@ -24,6 +25,7 @@ class MotorSimulator:
         return self.agentes
 
     def displayMundo(self):
+        print("")
         s= self.mundo.sizeMap
 
         for i in range(0, s):
@@ -43,7 +45,7 @@ class MotorSimulator:
                         row+= "U  "
                     case _:
                         found = False
-                        for a in self.agentes:  # verificar se agente esta na posicao atual
+                        for a in self.mundo.getAgentes():  # verificar se agente esta na posicao atual
                            if (a.x == i and a.y == j and found == False):
                               row += "A  "
                               found = True
@@ -62,9 +64,15 @@ class MotorSimulator:
         pass  # modo de teste
 
     def farolBurro(self):
-        a= self.agentes[0]
+        a= self.mundo.getAgentes()[0]
         while(a.found == False):
-            newPos= a.acaoBurro()
+            while(True): #verificar q posicao gerada seja dentro do mapa
+                newAccao= a.acaoBurro()
+                newPos= (newAccao[0]+a.x, newAccao[1]+a.y)
+
+                if(newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
+                    break
+
             obj= self.mundo.getObject(newPos[0], newPos[1])
 
             match obj:
@@ -75,6 +83,8 @@ class MotorSimulator:
                     a.atualizarPosicao(newPos)
                 case _: #se for outro agente ou um obstaculo
                     print("Obstaculo encontrado!")
+
+            self.displayMundo()
 
     def mainMenu(self):
         while True:
@@ -92,6 +102,7 @@ class MotorSimulator:
                 print("\n==== Modo de Execução ====")
                 print("  1. Modo de Aprendizagem (Learning Mode)")
                 print("  2. Modo de Teste (Testing Mode)")
+                print("  3. Solução Burro")
                 print("  0. Sair")
 
                 choice1 = input("Selecione a opção: ")
@@ -107,7 +118,6 @@ class MotorSimulator:
 
                     if choice2 == "1":
                         print("a aprender com algoritmo genetico!")
-                        self.farolBurro()
                         # learning com algoritmo genetico
                         # self.genetico()
                     elif choice2 == "2":
@@ -125,6 +135,8 @@ class MotorSimulator:
                     # self.testing()
                     # imprimir mundo para ser visualizado
                     # self.displayMundo()
+                elif choice1 == "3":
+                    self.farolBurro()
                 elif choice1 == "0":
                     break
                 else:
