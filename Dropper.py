@@ -1,6 +1,6 @@
 import Agente
 
-class Dropper(Agente):
+class Dropper(): #tirei agente...
     recursosParaDepositar= []
     totalDepositado= 0
 

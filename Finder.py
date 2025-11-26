@@ -1,7 +1,7 @@
 import Agente
 import random
 
-class Finder(Agente): #extends abstract Agente
+class Finder(): #extends abstract Agente Sse tiver Agente no ()
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
     #construtor
@@ -29,6 +29,7 @@ class Finder(Agente): #extends abstract Agente
     #@Override #diz para nao fazer override mas eu acho q se devia :(
     def acaoBurro(self): #para ele fazer move para o farol especificamente
         choice= random.choice(self.actions)
+
         return choice
 
     def atualizarPosicao(self, pos):
