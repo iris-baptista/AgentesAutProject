@@ -1,19 +1,30 @@
 import random
 from Ambiente import Obstaculo, EspacoVazio, Cesto, Recurso
+from Forager import Forager
+from Dropper import Dropper
 
 class Foraging: #ambiente
-    #tem atributes sizeMap, obstaculos, cestos, e recursos
+    #tem atributes sizeMap, obstaculos, cestos, recursos, e agentes
 
-    def __init__(self, sizeMundo, dificuldade= 0.3, posObstaculos= None, posCestos= None, posRecursos= None): #queremos indicar as posicoes do farol ou do mapa?
+    #okay tb devia ter as posicoes q queria q eles comecarem...
+    #ver do ficheiro
+    def __init__(self, sizeMundo, dificuldade= 0.3, posObstaculos= None, posCestos= None, posRecursos= None, numForagers= 1, numDroppers= 0): #queremos indicar as posicoes do farol ou do mapa?
         self.sizeMap= sizeMundo
+        takenPos= []
 
         # adicionar obstaculos
         if (posObstaculos == None):  # se nao for dado, posicao aleatoria escolhida
-            numToGenerate = (int) (sizeMundo * sizeMundo) * dificuldade  # fazer baseado numa percentagem
+            numToGenerate = (int) ((sizeMundo * sizeMundo) * dificuldade)  # fazer baseado numa percentagem
             posObstaculos = []
             for i in range(0, numToGenerate):
-                x = random.randint(0, sizeMundo - 1)
-                y = random.randint(0, sizeMundo - 1)
+                while(True):
+                    x = random.randint(0, sizeMundo - 1)
+                    y = random.randint(0, sizeMundo - 1)
+
+                    if((x, y) not in takenPos):
+                        break
+
+                takenPos.append((x, y))
                 posObstaculos.append((x, y))
 
         self.obstaculos = []
@@ -22,11 +33,17 @@ class Foraging: #ambiente
 
         #adicionar cestos
         if(posCestos == None): #se nao for dado, posicao aleatoria escolhida
-            numToGenerate = (int) (sizeMundo * sizeMundo) * 0.1  # fazer baseado numa percentagem
+            numToGenerate = (int) ((sizeMundo * sizeMundo) * 0.1)  # fazer baseado numa percentagem
             posCestos = []
             for i in range(0, numToGenerate):
-                x = random.randint(0, sizeMundo - 1)
-                y = random.randint(0, sizeMundo - 1)
+                while(True):
+                    x = random.randint(0, sizeMundo - 1)
+                    y = random.randint(0, sizeMundo - 1)
+
+                    if((x, y) not in takenPos):
+                        break
+
+                takenPos.append((x, y))
                 posCestos.append((x, y))
 
         self.cestos = []
@@ -37,11 +54,17 @@ class Foraging: #ambiente
 
         #adicionar recursos
         if(posRecursos == None): #se nao for dado, posicao aleatoria escolhida
-            numToGenerate = (int) (sizeMundo * sizeMundo) * 0.2  # fazer baseado numa percentagem
+            numToGenerate = (int) ((sizeMundo * sizeMundo) * 0.2)  # fazer baseado numa percentagem
             posRecursos = []
             for i in range(0, numToGenerate):
-                x = random.randint(0, sizeMundo - 1)
-                y = random.randint(0, sizeMundo - 1)
+                while(True):
+                    x = random.randint(0, sizeMundo - 1)
+                    y = random.randint(0, sizeMundo - 1)
+
+                    if((x, y) not in takenPos):
+                        break
+
+                takenPos.append((x, y))
                 posRecursos.append((x, y))
 
         self.recursos = []
@@ -49,6 +72,27 @@ class Foraging: #ambiente
         for r in posRecursos:
             self.recursos.append(Recurso(f"R{index}", r[0], r[1]))
             index += 1
+
+        self.agentes = []
+        for i in range(0, numForagers):
+            while (True):  # check position not taken
+                foragerPos = (random.randint(0, sizeMundo - 1), random.randint(0, sizeMundo - 1))
+
+                if (foragerPos not in takenPos):
+                    break
+
+            takenPos.append(foragerPos)
+            self.agentes.append(Forager(foragerPos))
+
+        for j in range(0, numDroppers):
+            while (True):  # check position not taken
+                dropperPos = (random.randint(0, sizeMundo - 1), random.randint(0, sizeMundo - 1))
+
+                if (dropperPos not in takenPos):
+                    break
+
+            takenPos.append(dropperPos)
+            self.agentes.append(Dropper(dropperPos))
 
     #devolve objeto na posicao dada
     def getObject(self, x, y):
@@ -64,11 +108,16 @@ class Foraging: #ambiente
 
         for o in self.obstaculos:
             if x == o.x and y == o.y:
-                print("Foi contra um obstaculo...")
+                #print("Foi contra um obstaculo...")
                 return o
 
         return EspacoVazio(x, y) #se nao encontrou um obstaculo ou um farol segue (ignora q pode ser outro agente...)
 
+    def getAgentes(self):
+        return self.agentes
+
+    def removeRecurso(self, r):
+        self.recursos.remove(r)
 
     # #observacao para mandar ao agente dado?
     # def observacaoPara(self, agente): #agente do tipo Agente

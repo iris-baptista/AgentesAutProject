@@ -6,7 +6,7 @@ from Coordenator import Coordenator
 class Farol: #foraging
     # tem atributes sizeMap, obstaculos, farol, e agentes!
 
-    def __init__(self, sizeMundo, dificuldade= 0.3, posFarol= None, posObstaculos= None, numFinders= 1, numCoord= 0): #queremos indicar as posicoes do farol ou do mapa?
+    def __init__(self, sizeMundo, dificuldade= 0.3, posFarol= None, posObstaculos= None, numFinders= 1, numCoords= 0): #queremos indicar as posicoes do farol ou do mapa?
         self.sizeMap= sizeMundo
         takenPos= [] #nao e uma atribute, so para facilitar esta parte das definicoes
 
@@ -55,7 +55,7 @@ class Farol: #foraging
             takenPos.append(finderPos)
             self.agentes.append(Finder(finderPos))
 
-        for j in range(0, numCoord):
+        for j in range(0, numCoords):
             while (True):  # check position not taken
                 coordPos = (random.randint(0, sizeMundo - 1), random.randint(0, sizeMundo - 1))
 
