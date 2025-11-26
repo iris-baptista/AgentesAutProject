@@ -27,23 +27,9 @@ def compute_novelty(current_behavior, archive, k=5):
 class MotorSimulator:
     mundo= None #instancia inicial
     modoExecucao= '' #a= aprendizagem, t= teste
-    agentes= []
 
     def __init__(self, worldSize):
         self.worldSize= worldSize
-
-    # #cria um simulador novo
-    # def criar(self, nomeFicheiro):  # nomeFicheiro do tipo string
-    #     #falta leitura de ficheiro para ter estes valores
-    #     mundo= None
-    #     modoExecucao= ''
-    #     agentes= []
-    #
-    #     return MotorSimulator(mundo, modoExecucao, agentes)
-
-    #devolve lista de agentes
-    def listaAgentes(self):
-        return self.agentes
 
     def displayMundo(self):
         s= self.mundo.sizeMap
@@ -52,8 +38,6 @@ class MotorSimulator:
             row = ""
             for j in range(0, s):
                 obj= self.mundo.getObject(i, j)
-                # print(obj.__class__)
-                # print(i, j)
                 match obj:
                     case LightHouse():
                         row+= "F  "
@@ -65,7 +49,7 @@ class MotorSimulator:
                         row+= "U  "
                     case _:
                         found = False
-                        for a in self.agentes:  # verificar se agente esta na posicao atual
+                        for a in self.mundo.getAgentes():  # verificar se agente esta na posicao atual
                            if (a.x == i and a.y == j and found == False):
                               row += "A  "
                               found = True
@@ -159,6 +143,62 @@ class MotorSimulator:
     def testing(self):
         pass  # modo de teste
 
+    def farolBurro(self):
+        a= self.mundo.getAgentes()[0]
+        while(a.found == False):
+            while(True): #verificar q posicao gerada seja dentro do mapa
+                newAccao= a.acaoBurro()
+                newPos= (newAccao[0]+a.x, newAccao[1]+a.y)
+
+                if(newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
+                    break
+
+            obj= self.mundo.getObject(newPos[0], newPos[1])
+            match obj:
+                case LightHouse():
+                    a.found= True
+                    print("Encontrou o farol!")
+                case EspacoVazio():
+                    a.atualizarPosicao(newPos)
+                case _: #se for outro agente ou um obstaculo
+                    print("Obstaculo encontrado!")
+
+            self.displayMundo()
+            print("")
+
+    def foragingBurro(self):
+        a= self.mundo.getAgentes()[0]
+        while(True): #preciso de um timer de algum genero, por agora vou usar um while e ja altero
+            while (True):  # verificar q posicao gerada seja dentro do mapa
+                newAccao = a.acaoBurro()
+                newPos = (newAccao[0] + a.x, newAccao[1] + a.y)
+
+                if (newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
+                    break
+
+            obj = self.mundo.getObject(newPos[0], newPos[1])
+            match obj:
+                case Recurso():
+                    print(f"Encontrou o recurso {obj.name}")
+
+                    a.collectRecurso(obj)
+                    self.mundo.removeRecurso(obj)
+                case Cesto():
+                    print(f"Encontrou o cesto {obj.name}")
+
+                    toDesposit= a.sendRecurso()
+                    for r in toDesposit:
+                        a.points+= 1 #assumir agora q cada fruta e 1, alterar mais tarde
+                        #ter um print com os pontos depositados
+
+                case EspacoVazio():
+                    a.atualizarPosicao(newPos)
+                case _:  # se for outro agente ou um obstaculo #separar estes casos?
+                    print("Obstaculo encontrado!")
+
+            self.displayMundo()
+            print("")
+
     def mainMenu(self):
         while True:
             print("\n======= Projeto de Agentes Autónomos =======")
@@ -169,13 +209,14 @@ class MotorSimulator:
 
             choice = input("Selecione a opção: ")
 
-            if choice == "1":
+            if choice == "1": #problema do Farol
                 self.mundo = Farol(self.worldSize)
                 print("Mundo Farol: ")
                 self.displayMundo()
                 print("\n==== Modo de Execução ====")
                 print("  1. Modo de Aprendizagem (Learning Mode)")
                 print("  2. Modo de Teste (Testing Mode)")
+                print("  3. Solução Burra")
                 print("  0. Sair")
 
                 choice1 = input("Selecione a opção: ")
@@ -208,16 +249,19 @@ class MotorSimulator:
                     # self.testing()
                     # imprimir mundo para ser visualizado
                     # self.displayMundo()
+                elif choice1 == "3":
+                    self.farolBurro()
                 elif choice1 == "0":
                     break
                 else:
                     print("Opção inválida, por favor tente novamente")
-            elif choice == "2":
+            elif choice == "2": #problema Foraging
                 self.mundo = Foraging(self.worldSize)
                 self.displayMundo()
                 print("\n==== Modo de Execução ====")
                 print("  1. Modo de Aprendizagem (Learning Mode)")
                 print("  2. Modo de Teste (Testing Mode)")
+                print("  3. Solução Burra")
                 print("  0. Sair")
 
                 choice3 = input("Selecione a opção: ")
@@ -249,17 +293,17 @@ class MotorSimulator:
                     # self.testing()
                     # imprimir mundo para ser visualizado
                     # self.displayMundo()
+                elif choice3 == "3":
+                    self.foragingBurro()
                 elif choice3 == "0":
                     break
                 else:
                     print("Opção inválida, por favor tente novamente")
-            elif choice == "0":
+            elif choice == "0": #fechar programa
                 print("A terminar...")
                 break
             else:
                 print("Opção inválida, por favor tente novamente")
-
-
 
 if __name__ == "__main__":
     sim = MotorSimulator(10)
