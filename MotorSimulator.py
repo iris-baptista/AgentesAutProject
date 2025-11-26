@@ -1,6 +1,28 @@
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
 from Farol import Farol
 from Foraging import Foraging
+import random
+import Agente
+import Finder
+
+
+def jaccard_distance(set1, set2):
+    intersection = len(set1 & set2)
+    union = len(set1 | set2)
+    return 1 - intersection / union if union != 0 else 0
+
+
+def compute_novelty(current_behavior, archive, k=5):
+    # Handle the empty archive case
+    if not archive:
+        # The first item is, by definition, maximally novel
+        return 1.0
+
+    distances = [jaccard_distance(current_behavior, b) for b in archive]
+    distances.sort()
+
+    # Your original logic is now safe because we know len(distances) > 0
+    return sum(distances[:k]) / k if len(distances) >= k else sum(distances) / len(distances)
 
 class MotorSimulator:
     mundo= None #instancia inicial
@@ -11,7 +33,7 @@ class MotorSimulator:
 
     def displayMundo(self):
         s= self.mundo.sizeMap
-
+                                 
         for i in range(0, s):
             row = ""
             for j in range(0, s):
@@ -35,12 +57,88 @@ class MotorSimulator:
                             row += "•  "
             print(row)
 
-    def genetic(self):
-        pass  # aprendizagem com algoritmo genetico
+    def genetic(self, population, gen):
+        # --- EA Hyperparameters ---
+        POPULATION_SIZE = population
+        NUM_GENERATIONS = gen
+        MUTATION_RATE = 0.01
+        TOURNAMENT_SIZE = 3
+        N_ARCHIVE_ADD = 5  # Add top 5 most novel agents to archive each gen
 
-    def qlearning(self):
-        pass  # aprendizagem com algoritmo qlearning
-        # tirar do simulador e por no agente
+        # --- Initialization ---
+        archive = []
+        population = [Agente() for _ in range(POPULATION_SIZE)]
+        avg_fitness_per_gen = []
+        best_paths_per_gen = []
+
+        print("Starting evolution...")
+
+        # --- Generational Loop ---
+        for gen in range(NUM_GENERATIONS):
+            total_fitness = 0
+
+            # 1. Evaluate Population
+            for agent in population:
+                agent.run_simulation()
+
+                # --- Calculate and combine scores ---
+                novelty_score = compute_novelty(agent.behavior, archive)
+                objective_score = agent.calculate_objective_fitness()
+
+                # Combine the scores.
+                # You might need to add a weight, e.g.:
+                novelty_weight = 1000  # Make novelty competitive with fitness
+                agent.combined_fitness = (novelty_score * novelty_weight) + objective_score
+                total_fitness += agent.combined_fitness
+
+            # 2. Sort population by *combined_fitness*
+            population.sort(key=lambda x: x.combined_fitness, reverse=True)
+
+            # 3. Log results for this generation
+            avg_fitness = total_fitness / POPULATION_SIZE
+            avg_fitness_per_gen.append(avg_fitness)
+            best_paths_per_gen.append(population[0].path)
+
+            # Get the top agent's individual scores for logging
+            best_nov = compute_novelty(population[0].behavior, archive)
+            best_obj = population[0].calculate_objective_fitness()
+
+            print(
+                f"Gen {gen + 1}/{NUM_GENERATIONS} | Avg Combined: {avg_fitness:.2f} | Best Combined: {population[0].combined_fitness:.2f} (Nov: {best_nov:.2f}, Obj: {best_obj})")
+
+            # 4. Update archive with the most novel behaviors (from this gen)
+            #    We still update the archive based on *pure novelty*
+
+            # Sort by novelty just for archive update
+            population.sort(key=lambda x: compute_novelty(x.behavior, archive), reverse=True)
+            for i in range(N_ARCHIVE_ADD):
+                archive.append(population[i].behavior)
+
+            # Re-sort by combined fitness for breeding
+            population.sort(key=lambda x: x.combined_fitness, reverse=True)
+
+            # 5. Create new generation (Selection, Crossover, Mutation)
+            new_population = []
+
+            n_elite = POPULATION_SIZE // 10
+            new_population.extend(population[:n_elite])
+
+            while len(new_population) < POPULATION_SIZE:
+                parent1 = Finder.select_parent(population, TOURNAMENT_SIZE)  # This now uses combined_fitness
+                parent2 = Finder.select_parent(population, TOURNAMENT_SIZE)
+
+                child1, child2 = Finder.crossover(parent1, parent2)
+
+                child1.mutate(MUTATION_RATE)
+                child2.mutate(MUTATION_RATE)
+
+                new_population.append(child1)
+                if len(new_population) < POPULATION_SIZE:
+                    new_population.append(child2)
+
+            population = new_population
+
+        print("Evolution complete.")
 
     def testing(self):
         pass  # modo de teste
@@ -113,6 +211,7 @@ class MotorSimulator:
 
             if choice == "1": #problema do Farol
                 self.mundo = Farol(self.worldSize)
+                print("Mundo Farol: ")
                 self.displayMundo()
                 print("\n==== Modo de Execução ====")
                 print("  1. Modo de Aprendizagem (Learning Mode)")
