@@ -8,8 +8,10 @@ class Foraging: #ambiente
 
     #okay tb devia ter as posicoes q queria q eles comecarem...
     #ver do ficheiro
-    def __init__(self, sizeMundo, dificuldade= 0.3, posObstaculos= None, posCestos= None, posRecursos= None, numForagers= 1, numDroppers= 0): #queremos indicar as posicoes do farol ou do mapa?
+    #ter uma atribute para o tempo a correr
+    def __init__(self, sizeMundo, dificuldade= 0.3, posObstaculos= None, posCestos= None, posRecursos= None, numForagers= 1, numDroppers= 0, tempo= 5): #queremos indicar as posicoes do farol ou do mapa?
         self.sizeMap= sizeMundo
+        self.tempo= tempo #tempo default e 30 segs i guess
         takenPos= []
 
         # adicionar obstaculos

@@ -16,7 +16,7 @@ class Forager(): #extends abstract Agente #tirei o agente...
         self.recursosCollected.append(r)
 
     #manda recursos a um agente dropper para ser depositado
-    def sendRecurso(self):
+    def sendRecursos(self):
         toSend= self.recursosCollected
         self.recursosCollected= [] #empty out inventory
 
