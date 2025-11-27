@@ -1,6 +1,8 @@
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
 from Farol import Farol
 from Foraging import Foraging
+from datetime import datetime
+import time
 import random
 import Agente
 import Finder
@@ -168,7 +170,8 @@ class MotorSimulator:
 
     def foragingBurro(self):
         a= self.mundo.getAgentes()[0]
-        while(True): #preciso de um timer de algum genero, por agora vou usar um while e ja altero
+        initialTime= currentTime= time.time() #time() devolve tempo atual em segundos (desde epoch)
+        while( (currentTime - initialTime) <= self.mundo.tempo): #"timer" para correr a quantidade de tempo dada
             while (True):  # verificar q posicao gerada seja dentro do mapa
                 newAccao = a.acaoBurro()
                 newPos = (newAccao[0] + a.x, newAccao[1] + a.y)
@@ -186,10 +189,13 @@ class MotorSimulator:
                 case Cesto():
                     print(f"Encontrou o cesto {obj.name}")
 
-                    toDesposit= a.sendRecurso()
+                    toDesposit= a.sendRecursos()
+                    pointsDeposited= 0
                     for r in toDesposit:
-                        a.points+= 1 #assumir agora q cada fruta e 1, alterar mais tarde
-                        #ter um print com os pontos depositados
+                        pointsDeposited+= 1 #assumir agora q cada fruta e 1, alterar mais tarde
+
+                    a.points+= pointsDeposited
+                    print("Depositou ", pointsDeposited, " pontos!")
 
                 case EspacoVazio():
                     a.atualizarPosicao(newPos)
@@ -198,6 +204,10 @@ class MotorSimulator:
 
             self.displayMundo()
             print("")
+
+            currentTime = time.time()
+
+        print("Total of points: ", a.points)
 
     def mainMenu(self):
         while True:
