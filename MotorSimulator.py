@@ -92,9 +92,12 @@ class MotorSimulator:
                     print(f"Encontrou o cesto {obj.name}")
 
                     toDesposit= a.sendRecursos()
+                    pointsDeposited= 0
                     for r in toDesposit:
-                        a.points+= 1 #assumir agora q cada fruta e 1, alterar mais tarde
-                        #ter um print com os pontos depositados
+                        pointsDeposited+= 1 #assumir agora q cada fruta e 1, alterar mais tarde
+
+                    a.points+= pointsDeposited
+                    print("Depositou ", pointsDeposited, " pontos!")
 
                 case EspacoVazio():
                     a.atualizarPosicao(newPos)
