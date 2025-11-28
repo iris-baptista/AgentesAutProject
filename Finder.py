@@ -11,16 +11,13 @@ class Finder(): #extends abstract Agente Sse tiver Agente no ()
         self.found= False
         # self.fitness= 0
         # self.novelty
-        # self.path= []
-        # self.steps= 50
+        self.path= []
+        self.steps= 50
         # # nao percebi behaviour
-        #
-        # if(genotype != None):
-        #     self.genotype= genotype
-        # else:
-        #     self.genotype= []
-        #     for i in range(0, self.steps):
-        #         self.genotype.append(random.choice(self.actions))
+
+        self.genotype = []
+        for i in range(0, self.steps):
+            self.genotype.append(random.choice(self.actions))
 
 
     def criar(self, posInitial):
@@ -65,8 +62,7 @@ class Finder(): #extends abstract Agente Sse tiver Agente no ()
     #     # devolve objeto do tipo accao
     #     pass
 
-
-    # --- Genetic Algorithm ---
+    # move to AGENT!
     def calculate_objective_fitness(self):
         """Calculates the agent's goal-oriented fitness score."""
         key_reward = len(self.keys_found) * 100
@@ -75,7 +71,7 @@ class Finder(): #extends abstract Agente Sse tiver Agente no ()
 
         return key_reward + treasure_reward + exploration_reward
 
-    def crossover(parent1, parent2):
+    def crossover(self,parent1, parent2):
         """Performs single-point crossover on two parent genotypes."""
         point = random.randint(1, len(parent1.genotype) - 1)
         child1_geno = parent1.genotype[:point] + parent2.genotype[point:]
@@ -88,11 +84,12 @@ class Finder(): #extends abstract Agente Sse tiver Agente no ()
             if random.random() < mutation_rate:
                 self.genotype[i] = random.choice(self.actions)
 
-    def select_parent(population, tournament_size):
+    def select_parent(self,population, tournament_size):
         """Selects a parent using tournament selection based on *combined_fitness*."""
         tournament = random.sample(population, tournament_size)
         tournament.sort(key=lambda x: x.combined_fitness, reverse=True)
         return tournament[0]
+    # end of move to AGENT!
 
     def run_simulation(self):
         """Runs the agent's genotype in a fresh environment to get its behavior."""
