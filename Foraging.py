@@ -6,13 +6,15 @@ import random
 class Foraging: #ambiente
     #tem atributes sizeMap, obstaculos, cestos, recursos, agentes, e tempo a correr
 
-    def __init__(self, sizeMundo, dificuldade= 0.3, posObstaculos= None, posCestos= None, posRecursos= None, numForagers= 1, numDroppers= 0, tempo= 0.5):
+    def __init__(self, sizeMundo):
         self.sizeMap= sizeMundo
-        self.tempo= tempo #tempo default e 30 segs i guess
         takenPos= []
 
-        # adicionar obstaculos
-        if (posObstaculos == None):  # se nao for dado, posicao aleatoria escolhida
+        file= open("config_foraging.txt", "r")
+        dificuldade = float((file.readline()).split("=")[1])
+
+        posObstaculos = ((file.readline()).split("=")[1]).split("\n")[0]  # adicionar obstaculos
+        if (posObstaculos == "None"):  # se nao for dado, posicao aleatoria escolhida
             numToGenerate = (int) ((sizeMundo * sizeMundo) * dificuldade)  # fazer baseado numa percentagem
             posObstaculos = []
             for i in range(0, numToGenerate):
@@ -26,12 +28,24 @@ class Foraging: #ambiente
                 takenPos.append((x, y))
                 posObstaculos.append((x, y))
 
+        else:
+            posObstaculos = []
+
+            toConvert = posObstaculos[2:-2].split("),(")
+            for toC in toConvert:
+                numbers = toC.split(",")
+                x = int(numbers[0])
+                y = int(numbers[1])
+
+                takenPos.append((x, y))
+                posObstaculos.append((x, y))
+
         self.obstaculos = []
         for o in posObstaculos:
             self.obstaculos.append(Obstaculo(o[0], o[1]))
 
-        #adicionar cestos
-        if(posCestos == None): #se nao for dado, posicao aleatoria escolhida
+        posCestos = ((file.readline()).split("=")[1]).split("\n")[0]  #adicionar cestos
+        if(posCestos == "None"): #se nao for dado, posicao aleatoria escolhida
             numToGenerate = (int) ((sizeMundo * sizeMundo) * 0.1)  # fazer baseado numa percentagem
             posCestos = []
             for i in range(0, numToGenerate):
@@ -45,14 +59,26 @@ class Foraging: #ambiente
                 takenPos.append((x, y))
                 posCestos.append((x, y))
 
+        else:
+            posCestos = []
+
+            toConvert = posCestos[2:-2].split("),(")
+            for toC in toConvert:
+                numbers = toC.split(",")
+                x = int(numbers[0])
+                y = int(numbers[1])
+
+                takenPos.append((x, y))
+                posCestos.append((x, y))
+
         self.cestos = []
         index= 1
         for c in posCestos:
             self.cestos.append(Cesto(f"C{index}", c[0], c[1]))
             index+= 1
 
-        #adicionar recursos
-        if(posRecursos == None): #se nao for dado, posicao aleatoria escolhida
+        posRecursos = ((file.readline()).split("=")[1]).split("\n")[0] #adicionar recursos
+        if(posRecursos == "None"): #se nao for dado, posicao aleatoria escolhida
             numToGenerate = (int) ((sizeMundo * sizeMundo) * 0.2)  # fazer baseado numa percentagem
             posRecursos = []
             for i in range(0, numToGenerate):
@@ -66,32 +92,69 @@ class Foraging: #ambiente
                 takenPos.append((x, y))
                 posRecursos.append((x, y))
 
+        else:
+            posRecursos = []
+
+            toConvert = posCestos[2:-2].split("),(")
+            for toC in toConvert:
+                numbers = toC.split(",")
+                x = int(numbers[0])
+                y = int(numbers[1])
+
+                takenPos.append((x, y))
+                posRecursos.append((x, y))
+
         self.recursos = []
         index = 1
         for r in posRecursos:
             self.recursos.append(Recurso(f"R{index}", r[0], r[1]))
             index += 1
 
+        numForagers = int(((file.readline()).split("=")[1]).split("\n")[0])
+        posForagers = ((file.readline()).split("=")[1]).split("\n")[0]
         self.agentes = []
         for i in range(0, numForagers):
-            while (True):  # check position not taken
-                foragerPos = (random.randint(0, sizeMundo - 1), random.randint(0, sizeMundo - 1))
+            if(posForagers == "None"):
+                while (True):  # check position not taken
+                    foragerPos = (random.randint(0, sizeMundo - 1), random.randint(0, sizeMundo - 1))
 
-                if (foragerPos not in takenPos):
-                    break
+                    if (foragerPos not in takenPos):
+                        break
 
-            takenPos.append(foragerPos)
-            self.agentes.append(Forager(foragerPos))
+                takenPos.append(foragerPos)
+                self.agentes.append(Forager(foragerPos))
+            else:
+                toConvert = posForagers[2:-2].split("),(")
+                for toC in toConvert:
+                    numbers = toC.split(",")
+                    foragerPos = (int(numbers[0]), int(numbers[1]))
 
+                    takenPos.append(foragerPos)
+                    self.agentes.append(Forager(foragerPos))
+
+        numDroppers = int(((file.readline()).split("=")[1]).split("\n")[0])
+        posDroppers = ((file.readline()).split("=")[1]).split("\n")[0]
         for j in range(0, numDroppers):
-            while (True):  # check position not taken
-                dropperPos = (random.randint(0, sizeMundo - 1), random.randint(0, sizeMundo - 1))
+            if(posDroppers == "None"):
+                while (True):  # check position not taken
+                    dropperPos = (random.randint(0, sizeMundo - 1), random.randint(0, sizeMundo - 1))
 
-                if (dropperPos not in takenPos):
-                    break
+                    if (dropperPos not in takenPos):
+                        break
 
-            takenPos.append(dropperPos)
-            self.agentes.append(Dropper(dropperPos))
+                takenPos.append(dropperPos)
+                self.agentes.append(Dropper(dropperPos))
+            else:
+                toConvert = posDroppers[2:-2].split("),(")
+                for toC in toConvert:
+                    numbers = toC.split(",")
+                    dropperPos = (int(numbers[0]), int(numbers[1]))
+
+                    takenPos.append(dropperPos)
+                    self.agentes.append(Dropper(dropperPos))
+
+        self.tempo= float(((file.readline()).split("=")[1]).split("\n")[0])
+        file.close()
 
     #devolve objeto na posicao dada
     def getObject(self, x, y):
