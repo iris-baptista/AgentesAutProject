@@ -1,7 +1,7 @@
 import Agente
 import random
 
-class Forager(): #extends abstract Agente #tirei o agente...
+class Forager(Agente): #extends abstract Agente
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)] #pode ir para o agente abstrato
 
     #construtor
@@ -28,15 +28,5 @@ class Forager(): #extends abstract Agente #tirei o agente...
 
         return choice
 
-    def atualizarPosicao(self, pos): #isto tb...
-        self.x= pos[0]
-        self.y= pos[1]
-
-    # #processa observacao?
-    # def observacao(self, obs):  # obs da class Observation
-    #     pass
-    #
-    # #avalia o estado atual
-    # def avaliacao(self, recompensa):  # recompensa e um double
-    #     pass
-
+    def run_simulation(self):
+        pass
