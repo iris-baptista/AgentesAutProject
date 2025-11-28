@@ -1,0 +1,11 @@
+dificuldade=0.3
+posObstaculos=None
+posCestos=None
+posRecursos=None
+numForagers=1
+posForagers=None
+numDroppers=0
+posDroppers=None
+tempo(secs)=0.5
+
+!NAO TER ESPACOS!
