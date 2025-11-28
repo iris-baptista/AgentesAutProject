@@ -146,6 +146,7 @@ class MotorSimulator:
         pass  # modo de teste
 
     def farolBurro(self):
+        start= time.time()
         a= self.mundo.getAgentes()[0]
         while(a.found == False):
             while(True): #verificar q posicao gerada seja dentro do mapa
@@ -168,6 +169,10 @@ class MotorSimulator:
             self.displayMundo()
             print("")
 
+        end= time.time()
+        msegs= round((end-start)*1000, 2) #round to 2 decimal places
+        print(f"Demorou ~{msegs} milisegundos para encontrar o farol!")
+
     def foragingBurro(self):
         a= self.mundo.getAgentes()[0]
         initialTime= currentTime= time.time() #time() devolve tempo atual em segundos (desde epoch)
@@ -182,7 +187,7 @@ class MotorSimulator:
             obj = self.mundo.getObject(newPos[0], newPos[1])
             match obj:
                 case Recurso():
-                    print(f"Encontrou o recurso {obj.name} que vale {obj.pontos} pontos")
+                    print(f"Encontrou o recurso {obj.name} que vale {obj.pontos} ponto(s)")
 
                     a.collectRecurso(obj)
                     self.mundo.removeRecurso(obj)
@@ -195,7 +200,7 @@ class MotorSimulator:
                         pointsDeposited+= r.pontos
 
                     a.points+= pointsDeposited
-                    print("Depositou ", pointsDeposited, " pontos!")
+                    print(f"Depositou {pointsDeposited} ponto(s)!")
 
                 case EspacoVazio():
                     a.atualizarPosicao(newPos)

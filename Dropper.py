@@ -19,7 +19,7 @@ class Dropper(Agente):
 
         for r in self.recursosParaDepositar:
             self.pontosDepositados+= r.pontos
-            print("Depositou o recurso ", r.name, "que valia ", r.pontos, " pontos!")
+            print("Depositou o recurso ", r.name, "que valia ", r.pontos, " ponto(s)!")
 
         self.recursosParaDepositar= []
 
