@@ -1,3 +1,5 @@
+import random
+
 class Obstaculo:
     def __init__(self, x, y):
         self.x= x
@@ -25,3 +27,5 @@ class Recurso:
         self.name= name
         self.x= x
         self.y= y
+
+        self.pontos= random.randint(1, 5)

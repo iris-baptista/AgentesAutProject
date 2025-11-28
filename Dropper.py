@@ -2,7 +2,7 @@ from Agente import Agente
 
 class Dropper(Agente):
     recursosParaDepositar= []
-    totalDepositado= 0
+    pontosDepositados= 0
 
     #construtor
     def __init__(self, posInitial):
@@ -18,8 +18,8 @@ class Dropper(Agente):
         self.getRecursos() #necessario?
 
         for r in self.recursosParaDepositar:
-            self.totalDepositado+= 1
-            print("Depositou o recurso ", r.name)
+            self.pontosDepositados+= r.pontos
+            print("Depositou o recurso ", r.name, "que valia ", r.pontos, " pontos!")
 
         self.recursosParaDepositar= []
 
