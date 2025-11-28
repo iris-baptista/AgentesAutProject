@@ -1,18 +1,14 @@
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
 from Farol import Farol
 from Foraging import Foraging
-from datetime import datetime
+from Agente import Agente
+from Finder import Finder
 import time
-import random
-import Agente
-import Finder
-
 
 def jaccard_distance(set1, set2):
     intersection = len(set1 & set2)
     union = len(set1 | set2)
     return 1 - intersection / union if union != 0 else 0
-
 
 def compute_novelty(current_behavior, archive, k=5):
     # Handle the empty archive case
@@ -182,7 +178,7 @@ class MotorSimulator:
             obj = self.mundo.getObject(newPos[0], newPos[1])
             match obj:
                 case Recurso():
-                    print(f"Encontrou o recurso {obj.name}")
+                    print(f"Encontrou o recurso {obj.name} que vale {obj.pontos} pontos")
 
                     a.collectRecurso(obj)
                     self.mundo.removeRecurso(obj)
@@ -192,7 +188,7 @@ class MotorSimulator:
                     toDesposit= a.sendRecursos()
                     pointsDeposited= 0
                     for r in toDesposit:
-                        pointsDeposited+= 1 #assumir agora q cada fruta e 1, alterar mais tarde
+                        pointsDeposited+= r.pontos
 
                     a.points+= pointsDeposited
                     print("Depositou ", pointsDeposited, " pontos!")

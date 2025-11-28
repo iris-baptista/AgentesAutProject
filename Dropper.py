@@ -1,21 +1,13 @@
-import Agente
+from Agente import Agente
 
-class Dropper(): #tirei agente...
+class Dropper(Agente):
     recursosParaDepositar= []
-    totalDepositado= 0
+    pontosDepositados= 0
 
     #construtor
-    def __init__(self, nomeFicheiro):
-        #acho q isto esta mal
-        return super().criar(nomeFicheiro)
-
-    #processa observacao?
-    def observacao(self, obs):  # obs da class Observation
-        pass
-
-    #avalia o estado atual
-    def avaliacao(self, recompensa):  # recompensa e um double
-        pass
+    def __init__(self, posInitial):
+        self.x= posInitial[0]
+        self.y= posInitial[1]
 
     #vai pedir recursos ao forager
     def getRecursos(self):
@@ -26,6 +18,13 @@ class Dropper(): #tirei agente...
         self.getRecursos() #necessario?
 
         for r in self.recursosParaDepositar:
-            self.totalDepositado+= 1
+            self.pontosDepositados+= r.pontos
+            print("Depositou o recurso ", r.name, "que valia ", r.pontos, " pontos!")
 
         self.recursosParaDepositar= []
+
+    def acaoBurro(self):
+        pass
+
+    def run_simulation(self):
+        pass

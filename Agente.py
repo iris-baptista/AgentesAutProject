@@ -1,29 +1,42 @@
 from abc import ABC, abstractmethod
-import random
 
 class Agente(ABC):
-    #criar um agente novo
     @abstractmethod
-    def criar(self, posInitial):  #nao se tem de usar ficheiro, mais tarde se quiseremos podemos ir ver
-        pass
-
-    @abstractmethod
-    def observacao(self, obs):  # obs da class Observation
-        pass
-
-    #devolve accao q o agente vai fazer
-    def age(self):
-        #devolve objeto do tipo accao
+    def acaoBurro(self):
         pass
 
     @abstractmethod
-    def avaliacao(self, recompensa):  # recompensa e um double
+    def run_simulation(self):
         pass
 
-    #???
-    def instala(self, sensor):  # sensor da class Sensor
-        pass
+    def atualizarPosicao(self, pos):
+        self.x= pos[0]
+        self.y= pos[1]
 
-    #comunica com o agente dado
-    def comunica(self, msg, recetor):  # msg do tipo string, recetior do tipo Agente
-        pass
+    # --- Genetic Algorithm ---
+    def calculate_objective_fitness(self): #pode ser abstrato???
+        """Calculates the agent's goal-oriented fitness score."""
+        key_reward = len(self.keys_found) * 100
+        treasure_reward = len(self.treasures_opened) * 500
+        exploration_reward = len(self.behavior) * 1
+
+        return key_reward + treasure_reward + exploration_reward
+
+    def crossover(self, parent1, parent2):
+        """Performs single-point crossover on two parent genotypes."""
+        point = random.randint(1, len(parent1.genotype) - 1)
+        child1_geno = parent1.genotype[:point] + parent2.genotype[point:]
+        child2_geno = parent2.genotype[:point] + parent1.genotype[point:]
+        return Finder(child1_geno), Finder(child2_geno)
+
+    def mutate(self, mutation_rate):
+        """Randomly changes some actions in the genotype."""
+        for i in range(len(self.genotype)):
+            if random.random() < mutation_rate:
+                self.genotype[i] = random.choice(self.actions)
+
+    def select_parent(population, tournament_size):
+        """Selects a parent using tournament selection based on *combined_fitness*."""
+        tournament = random.sample(population, tournament_size)
+        tournament.sort(key=lambda x: x.combined_fitness, reverse=True)
+        return tournament[0]

@@ -1,7 +1,7 @@
-import Agente
+from Agente import Agente
 import random
 
-class Finder(): #extends abstract Agente Sse tiver Agente no ()
+class Finder(Agente):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
     #construtor
@@ -22,77 +22,10 @@ class Finder(): #extends abstract Agente Sse tiver Agente no ()
         #     for i in range(0, self.steps):
         #         self.genotype.append(random.choice(self.actions))
 
-
-    def criar(self, posInitial):
-        return Finder(posInitial)
-
-    #@Override #diz para nao fazer override mas eu acho q se devia :(
     def acaoBurro(self): #para ele fazer move para o farol especificamente
         choice= random.choice(self.actions)
 
         return choice
-
-    def atualizarPosicao(self, pos):
-        self.x= pos[0]
-        self.y= pos[1]
-
-    # def evoluir(self, mundo):
-    #
-    #     #self.path.append(currentPos)
-    #
-    #     # for a in self.genotype: #vai atualizar o genotype
-    #         #nova posicao posicao sendo a antiga + a
-    #
-    #         #verificar q a nova e valida
-    #
-    #         #get object na possivel nova posicao
-    #
-    #         #update coisas
-    #
-    #         #adicionar path
-    #         pass
-
-    # #processa observacao?
-    # def observacao(self, obs):  # obs da class Observation
-    #     pass
-    #
-    # #avalia o estado atual
-    # def avaliacao(self, recompensa):  # recompensa e um double
-    #     pass
-    #
-    # # @Override #diz para nao fazer override mas eu acho q se devia :(
-    # def age(self): #para ele fazer move para o farol especificamente
-    #     # devolve objeto do tipo accao
-    #     pass
-
-
-    # --- Genetic Algorithm ---
-    def calculate_objective_fitness(self):
-        """Calculates the agent's goal-oriented fitness score."""
-        key_reward = len(self.keys_found) * 100
-        treasure_reward = len(self.treasures_opened) * 500
-        exploration_reward = len(self.behavior) * 1
-
-        return key_reward + treasure_reward + exploration_reward
-
-    def crossover(parent1, parent2):
-        """Performs single-point crossover on two parent genotypes."""
-        point = random.randint(1, len(parent1.genotype) - 1)
-        child1_geno = parent1.genotype[:point] + parent2.genotype[point:]
-        child2_geno = parent2.genotype[:point] + parent1.genotype[point:]
-        return Finder(child1_geno), Finder(child2_geno)
-
-    def mutate(self, mutation_rate):
-        """Randomly changes some actions in the genotype."""
-        for i in range(len(self.genotype)):
-            if random.random() < mutation_rate:
-                self.genotype[i] = random.choice(self.actions)
-
-    def select_parent(population, tournament_size):
-        """Selects a parent using tournament selection based on *combined_fitness*."""
-        tournament = random.sample(population, tournament_size)
-        tournament.sort(key=lambda x: x.combined_fitness, reverse=True)
-        return tournament[0]
 
     def run_simulation(self):
         """Runs the agent's genotype in a fresh environment to get its behavior."""
