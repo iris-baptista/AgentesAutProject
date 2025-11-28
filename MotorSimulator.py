@@ -1,9 +1,9 @@
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
 from Farol import Farol
 from Foraging import Foraging
+from Agente import Agente
+from Finder import Finder
 import time
-import Agente
-import Finder
 
 def jaccard_distance(set1, set2):
     intersection = len(set1 & set2)

@@ -1,4 +1,4 @@
-import Agente
+from Agente import Agente
 
 class Dropper(Agente):
     recursosParaDepositar= []
