@@ -4,6 +4,8 @@ from Foraging import Foraging
 from Agente import Agente
 from Finder import Finder
 import time
+import random
+from Agente import select_parent
 
 def jaccard_distance(set1, set2):
     intersection = len(set1 & set2)
@@ -38,13 +40,13 @@ class MotorSimulator:
                 obj= self.mundo.getObject(i, j)
                 match obj:
                     case LightHouse():
-                        row+= "F  "
+                        row+= "𖤓  "
                     case Obstaculo():
-                        row+= "0  "
+                        row+= "■  "
                     case Recurso():
                         row+= "*  "
                     case Cesto():
-                        row+= "U  "
+                        row+= "u  "
                     case _:
                         found = False
                         for a in self.mundo.getAgentes():  # verificar se agente esta na posicao atual
@@ -65,7 +67,7 @@ class MotorSimulator:
 
         # --- Initialization ---
         archive = []
-        population = [Agente() for _ in range(POPULATION_SIZE)]
+        population = [Finder() for _ in range(POPULATION_SIZE)]
         avg_fitness_per_gen = []
         best_paths_per_gen = []
 
@@ -122,8 +124,8 @@ class MotorSimulator:
             new_population.extend(population[:n_elite])
 
             while len(new_population) < POPULATION_SIZE:
-                parent1 = Finder.select_parent(population, TOURNAMENT_SIZE)  # This now uses combined_fitness
-                parent2 = Finder.select_parent(population, TOURNAMENT_SIZE)
+                parent1 = Agente.select_parent(population, TOURNAMENT_SIZE)  # This now uses combined_fitness
+                parent2 = Agente.select_parent(population, TOURNAMENT_SIZE)
 
                 child1, child2 = Finder.crossover(parent1, parent2)
 
@@ -237,9 +239,10 @@ class MotorSimulator:
                     choice2 = input("Selecione a opção: ")
 
                     if choice2 == "1":
+                        population = input("Selecione o tamanho da população: ")
+                        gen = input("Selecione o número de gerações: ")
+                        # self.genetic(population, gen)
                         print("a aprender com algoritmo genetico!")
-                        # learning com algoritmo genetico
-                        # self.genetico()
                     elif choice2 == "2":
                         print("a aprender com algoritmo q-learning!")
                         # learning com algoritmo q-learning

@@ -11,16 +11,13 @@ class Finder(Agente):
         self.found= False
         # self.fitness= 0
         # self.novelty
-        # self.path= []
-        # self.steps= 50
+        self.path= []
+        self.steps= 50
         # # nao percebi behaviour
-        #
-        # if(genotype != None):
-        #     self.genotype= genotype
-        # else:
-        #     self.genotype= []
-        #     for i in range(0, self.steps):
-        #         self.genotype.append(random.choice(self.actions))
+
+        self.genotype = []
+        for i in range(0, self.steps):
+            self.genotype.append(random.choice(self.actions))
 
     def acaoBurro(self): #para ele fazer move para o farol especificamente
         choice= random.choice(self.actions)
