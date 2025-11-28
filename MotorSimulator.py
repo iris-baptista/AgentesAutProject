@@ -4,8 +4,9 @@ from Foraging import Foraging
 from Agente import Agente
 from Finder import Finder
 import time
+import copy
 import random
-from Agente import select_parent
+#from Agente import select_parent
 
 def jaccard_distance(set1, set2):
     intersection = len(set1 & set2)
@@ -25,6 +26,7 @@ def compute_novelty(current_behavior, archive, k=5):
     return sum(distances[:k]) / k if len(distances) >= k else sum(distances) / len(distances)
 
 class MotorSimulator:
+    mundoOriginal= None
     mundo= None #instancia inicial
     modoExecucao= '' #a= aprendizagem, t= teste
 
@@ -218,98 +220,83 @@ class MotorSimulator:
             choice = input("Selecione a opção: ")
 
             if choice == "1": #problema do Farol
-                self.mundo = Farol(self.worldSize)
-                print("Mundo Farol: ")
-                self.displayMundo()
-                print("\n==== Modo de Execução ====")
-                print("  1. Modo de Aprendizagem (Learning Mode)")
-                print("  2. Modo de Teste (Testing Mode)")
-                print("  3. Solução Burra")
-                print("  0. Sair")
+                #para automizar mais tarde
+                while(True):
+                    self.mundo= Farol(self.worldSize)
+                    print("Mundo Farol: ")
+                    self.displayMundo()
 
-                choice1 = input("Selecione a opção: ")
-
-                if choice1 == "1":
-                    self.modoExecucao = 'a'
-                    print("\n==== Política do Agente ====")
-                    print("  1. Algoritmo Genético")
-                    print("  2. Algoritmo Q-Learning")
-                    print("  0. Sair")
-
-                    choice2 = input("Selecione a opção: ")
-
-                    if choice2 == "1":
-                        population = input("Selecione o tamanho da população: ")
-                        gen = input("Selecione o número de gerações: ")
-                        # self.genetic(population, gen)
-                        print("a aprender com algoritmo genetico!")
-                    elif choice2 == "2":
-                        print("a aprender com algoritmo q-learning!")
-                        # learning com algoritmo q-learning
-                        # self.qlearning()
-                    elif choice2 == "0":
+                    again= input("Quer gerar outro mundo?(y/n) ")
+                    if(again == "n"):
                         break
-                    else:
-                        print("Opção inválida, por favor tente novamente")
-                elif choice1 == "2":
-                    self.modoExecucao = 't'
-                    print("a executar em modo de teste!")
-                    # correr em modo teste
-                    # self.testing()
-                    # imprimir mundo para ser visualizado
-                    # self.displayMundo()
-                elif choice1 == "3":
-                    self.farolBurro()
-                elif choice1 == "0":
-                    break
-                else:
-                    print("Opção inválida, por favor tente novamente")
+
+                self.mundoOriginal= copy.deepcopy(self.mundo)
+                self.subMenu()
             elif choice == "2": #problema Foraging
-                self.mundo = Foraging(self.worldSize)
-                self.displayMundo()
-                print("\n==== Modo de Execução ====")
-                print("  1. Modo de Aprendizagem (Learning Mode)")
-                print("  2. Modo de Teste (Testing Mode)")
-                print("  3. Solução Burra")
-                print("  0. Sair")
+                # para automizar mais tarde
+                while (True):
+                    self.mundo= Foraging(self.worldSize)
+                    print("Mundo Farol: ")
+                    self.displayMundo()
 
-                choice3 = input("Selecione a opção: ")
-
-                if choice3 == "1":
-                    self.modoExecucao = 'a'
-                    print("\n==== Política do Agente ====")
-                    print("  1. Algoritmo Genético")
-                    print("  2. Algoritmo Q-Learning")
-                    print("  0. Sair")
-
-                    choice4 = input("Selecione a opção: ")
-
-                    if choice4 == "1":
-                        print("a aprender com algoritmo genetico!")
-                        # learning com algoritmo genetico
-                        # self.genetico()
-                    elif choice4 == "2":
-                        print("a aprender com algoritmo q-learning!")
-                        # learning com algoritmo q-learning
-                        # self.qlearning()
-                    elif choice4 == "0":
+                    again = input("Quer gerar outro mundo?(y/n) ")
+                    if (again == "n"):
                         break
-                    else:
-                        print("Opção inválida, por favor tente novamente")
-                elif choice3 == "2":
-                    self.modoExecucao = 't'
-                    # correr em modo teste
-                    # self.testing()
-                    # imprimir mundo para ser visualizado
-                    # self.displayMundo()
-                elif choice3 == "3":
-                    self.foragingBurro()
-                elif choice3 == "0":
-                    break
-                else:
-                    print("Opção inválida, por favor tente novamente")
+
+                self.mundoOriginal= copy.deepcopy(self.mundo)
+                self.subMenu()
             elif choice == "0": #fechar programa
                 print("A terminar...")
+                break
+            else:
+                print("Opção inválida, por favor tente novamente")
+
+    def subMenu(self):
+        while(True):
+            self.mundo= copy.deepcopy(self.mundoOriginal) #para comecar sempre no mesmo estado inicial
+
+            print("\n==== Modo de Execução ====")
+            print("  1. Modo de Aprendizagem (Learning Mode)")
+            print("  2. Modo de Teste (Testing Mode)")
+            print("  3. Solução Burra")
+            print("  0. Sair")
+
+            choice1 = input("Selecione a opção: ")
+            if choice1 == "1": #learning mode
+                self.modoExecucao = 'a'
+                print("\n==== Política do Agente ====")
+                print("  1. Algoritmo Genético")
+                print("  2. Algoritmo Q-Learning")
+                # print("  0. Sair")
+
+                choice2 = input("Selecione a opção: ")
+
+                if choice2 == "1": #genetico
+                    population = input("Selecione o tamanho da população: ")
+                    gen = input("Selecione o número de gerações: ")
+                    # self.genetic(population, gen)
+                    print("a aprender com algoritmo genetico!")
+                elif choice2 == "2": #q learning
+                    print("a aprender com algoritmo q-learning!")
+                    # learning com algoritmo q-learning
+                    # self.qlearning()
+                # elif choice2 == "0":
+                #     break
+                else:
+                    print("Opção inválida, por favor tente novamente")
+            elif choice1 == "2": #modo teste
+                self.modoExecucao = 't'
+                print("a executar em modo de teste!")
+                # correr em modo teste
+                # self.testing()
+                # imprimir mundo para ser visualizado
+                # self.displayMundo()
+            elif choice1 == "3": #modo burro
+                if(type(self.mundo) == Farol):
+                    self.farolBurro()
+                else:
+                    self.foragingBurro()
+            elif choice1 == "0": #sair
                 break
             else:
                 print("Opção inválida, por favor tente novamente")
