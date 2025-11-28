@@ -3,9 +3,9 @@ import random
 
 class Agente(ABC):
     #criar um agente novo
-    @abstractmethod
-    def criar(self, posInitial):  #nao se tem de usar ficheiro, mais tarde se quiseremos podemos ir ver
-        pass
+    # @abstractmethod
+    # def criar(self, posInitial):  #nao se tem de usar ficheiro, mais tarde se quiseremos podemos ir ver
+    #     pass
 
     @abstractmethod
     def observacao(self, obs):  # obs da class Observation

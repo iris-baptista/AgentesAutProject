@@ -1,15 +1,12 @@
-import random
 from Ambiente import Obstaculo, EspacoVazio, Cesto, Recurso
 from Forager import Forager
 from Dropper import Dropper
+import random
 
 class Foraging: #ambiente
-    #tem atributes sizeMap, obstaculos, cestos, recursos, e agentes
+    #tem atributes sizeMap, obstaculos, cestos, recursos, agentes, e tempo a correr
 
-    #okay tb devia ter as posicoes q queria q eles comecarem...
-    #ver do ficheiro
-    #ter uma atribute para o tempo a correr
-    def __init__(self, sizeMundo, dificuldade= 0.3, posObstaculos= None, posCestos= None, posRecursos= None, numForagers= 1, numDroppers= 0, tempo= 0.5): #queremos indicar as posicoes do farol ou do mapa?
+    def __init__(self, sizeMundo, dificuldade= 0.3, posObstaculos= None, posCestos= None, posRecursos= None, numForagers= 1, numDroppers= 0, tempo= 0.5):
         self.sizeMap= sizeMundo
         self.tempo= tempo #tempo default e 30 segs i guess
         takenPos= []

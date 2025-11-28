@@ -1,18 +1,14 @@
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
 from Farol import Farol
 from Foraging import Foraging
-from datetime import datetime
 import time
-import random
 import Agente
 import Finder
-
 
 def jaccard_distance(set1, set2):
     intersection = len(set1 & set2)
     union = len(set1 | set2)
     return 1 - intersection / union if union != 0 else 0
-
 
 def compute_novelty(current_behavior, archive, k=5):
     # Handle the empty archive case
