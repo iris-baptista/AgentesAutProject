@@ -181,15 +181,11 @@ class Foraging: #ambiente
     def removeRecurso(self, r):
         self.recursos.remove(r)
 
-    # #observacao para mandar ao agente dado?
-    # def observacaoPara(self, agente): #agente do tipo Agente
-    #     #devolve objeto do tipo Observation
-    #     pass
-    #
-    # #atualiza ambiente
-    # def atualizar(self):
-    #     pass
-    #
-    # #movimenta o agente/faz a sua accao?
-    # def agir(self, accao, agente): #accao do tipo accao, agente do tipo Agente
-    #     pass
+    # observacao para mandar ao agente dado
+    def observacaoPara(self, agente):  # devolve array com objetos a volta do agente
+        above = self.getObject(agente.x, agente.y + 1)
+        bellow = self.getObject(agente.x, agente.y - 1)
+        left = self.getObject(agente.x - 1, agente.y)
+        right = self.getObject(agente.x + 1, agente.y)
+
+        return [above, bellow, left, right]
