@@ -5,6 +5,7 @@ from Agente import Agente
 from Finder import Finder
 import time
 import copy
+import numpy as np
 import random
 #from Agente import select_parent
 
@@ -272,7 +273,6 @@ class MotorSimulator:
                 print("\n==== Política do Agente ====")
                 print("  1. Algoritmo Genético")
                 print("  2. Algoritmo Q-Learning")
-                # print("  0. Sair")
 
                 choice2 = input("Selecione a opção: ")
 
@@ -282,11 +282,17 @@ class MotorSimulator:
                     # self.genetic(population, gen)
                     print("a aprender com algoritmo genetico!")
                 elif choice2 == "2": #q learning
-                    print("a aprender com algoritmo q-learning!")
-                    # learning com algoritmo q-learning
-                    # self.qlearning()
-                # elif choice2 == "0":
-                #     break
+                    print("A aprender com algoritmo q-learning!")
+
+                    numEstados = self.mundo.sizeMap - 1 - len(self.mundo.obstaculos)  # 1 e o farol
+                    goal = -1  # vai ser os estados onde esta diretamente ao lado do farol
+                    numAcoes = len(self.actions)  # initializar valores
+                    probExplorar = 0.4  # demais?
+
+                    Q = np.zeros((numEstados, numAcoes))
+                    for a in self.mundo.getAgentes():
+                        a.qLearning(goal, Q, probExplorar, numEstados, numAcoes, goal)
+                        #passamos sempre o mesmo Q para todos os agentes?
                 else:
                     print("Opção inválida, por favor tente novamente")
             elif choice1 == "2": #modo teste
