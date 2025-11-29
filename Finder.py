@@ -102,7 +102,7 @@ class Finder(Agente):
                         ((1-learningRate)*QTable[currentState, action]) +
                         (learningRate*(reward+recompensa*np.max(QTable[nextState]))))
 
-                if(nextState == goal):
+                if(nextState == goal): #para quando encontra farol
                     break
 
                 currentState= nextState

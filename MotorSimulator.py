@@ -285,12 +285,12 @@ class MotorSimulator:
                     print("A aprender com algoritmo q-learning!")
 
                     numEstados = self.mundo.sizeMap - 1 - len(self.mundo.obstaculos)  # 1 e o farol
-                    goal = -1  # vai ser os estados onde esta diretamente ao lado do farol
                     numAcoes = len(self.actions)  # initializar valores
                     probExplorar = 0.4  # demais?
 
                     Q = np.zeros((numEstados, numAcoes))
                     for a in self.mundo.getAgentes():
+                        goal = -1  # vai ser os estados onde esta diretamente ao lado do farol#ver tipo de agente para saber o goal!
                         a.qLearning(goal, Q, probExplorar, numEstados, numAcoes, goal)
                         #passamos sempre o mesmo Q para todos os agentes?
                 else:

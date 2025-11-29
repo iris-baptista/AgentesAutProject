@@ -1,12 +1,9 @@
 from abc import ABC, abstractmethod
+import numpy as np
 
 class Agente(ABC):
     @abstractmethod
     def acaoBurro(self):
-        pass
-
-    @abstractmethod
-    def run_simulation(self):
         pass
 
     def atualizarPosicao(self, pos):
@@ -14,6 +11,10 @@ class Agente(ABC):
         self.y= pos[1]
 
     # --- Genetic Algorithm ---
+    @abstractmethod
+    def run_simulation(self):
+        pass
+
     def calculate_objective_fitness(self): #pode ser abstrato???
         """Calculates the agent's goal-oriented fitness score."""
         key_reward = len(self.keys_found) * 100
@@ -40,3 +41,12 @@ class Agente(ABC):
         tournament = random.sample(population, tournament_size)
         tournament.sort(key=lambda x: x.combined_fitness, reverse=True)
         return tournament[0]
+
+    # --- Q Learning ---
+    @abstractmethod
+    def qLearning(self, goal, QTable, probExplorar, numEstados, numAcoes):  # rede neuronal onde?
+        pass
+
+    @abstractmethod
+    def nextState(self, estado, acao):
+        pass
