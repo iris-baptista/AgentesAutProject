@@ -3,7 +3,6 @@ import numpy as np
 import time
 
 class Dropper(Agente):
-    recursosParaDepositar= []
     pontosDepositados= 0
 
     #construtor
@@ -17,7 +16,7 @@ class Dropper(Agente):
 
     #depositar todos os recursos q pode
     def depositRecursos(self):
-        self.getRecursos() #necessario?
+        recursosParaDepositar= self.getRecursos()
 
         for r in self.recursosParaDepositar:
             self.pontosDepositados+= r.pontos

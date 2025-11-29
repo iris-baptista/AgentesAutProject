@@ -4,8 +4,6 @@ import numpy as np
 import time
 
 class Forager(Agente): #extends abstract Agente
-    actions = [(0, 1), (1, 0), (0, -1), (-1, 0)] #pode ir para o agente abstrato
-
     #construtor
     def __init__(self, posInitial):
         self.x= posInitial[0]

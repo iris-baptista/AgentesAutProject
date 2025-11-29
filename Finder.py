@@ -3,8 +3,6 @@ import random
 import numpy as np
 
 class Finder(Agente):
-    actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-
     #construtor
     def __init__(self, posInitial): #genotype e o caminho q o agente utiliza, genotype= None
         self.x= posInitial[0]
@@ -109,6 +107,7 @@ class Finder(Agente):
                 #diminuir probabilidade de explorar?
 
         #queremos ver a tabela visualmente depois dos episodios?
+        return QTable
 
     def nextState(self, estado, acao): #estado vai ser o mundo? ou o index
         pass

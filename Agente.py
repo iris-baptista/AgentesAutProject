@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
 import numpy as np
+import random
+from Finder import Finder
 
 class Agente(ABC):
+    actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+
     @abstractmethod
     def acaoBurro(self):
         pass
@@ -36,7 +40,7 @@ class Agente(ABC):
             if random.random() < mutation_rate:
                 self.genotype[i] = random.choice(self.actions)
 
-    def select_parent(population, tournament_size):
+    def select_parent(self, population, tournament_size):
         """Selects a parent using tournament selection based on *combined_fitness*."""
         tournament = random.sample(population, tournament_size)
         tournament.sort(key=lambda x: x.combined_fitness, reverse=True)

@@ -6,8 +6,6 @@ from Finder import Finder
 import time
 import copy
 import numpy as np
-import random
-#from Agente import select_parent
 
 def jaccard_distance(set1, set2):
     intersection = len(set1 & set2)
@@ -143,8 +141,11 @@ class MotorSimulator:
 
         print("Evolution complete.")
 
-    def testing(self):
-        pass  # modo de teste
+    def testFarol(self):
+        pass
+
+    def testForaging(self):
+        pass
 
     def farolBurro(self):
         start= time.time()
@@ -285,7 +286,7 @@ class MotorSimulator:
                     print("A aprender com algoritmo q-learning!")
 
                     numEstados = self.mundo.sizeMap - 1 - len(self.mundo.obstaculos)  # 1 e o farol
-                    numAcoes = len(self.actions)  # initializar valores
+                    numAcoes = len(Agente.actions)  # initializar valores
                     probExplorar = 0.4  # demais?
 
                     Q = np.zeros((numEstados, numAcoes))
@@ -298,10 +299,11 @@ class MotorSimulator:
             elif choice1 == "2": #modo teste
                 self.modoExecucao = 't'
                 print("a executar em modo de teste!")
-                # correr em modo teste
-                # self.testing()
-                # imprimir mundo para ser visualizado
-                # self.displayMundo()
+
+                if(type(self.mundo) == Farol):
+                    self.testFarol()
+                else:
+                    self.testForaging()
             elif choice1 == "3": #modo burro
                 if(type(self.mundo) == Farol):
                     self.farolBurro()
