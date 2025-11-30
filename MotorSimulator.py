@@ -233,7 +233,13 @@ class MotorSimulator:
                     print("Mundo Farol: ")
                     self.displayMundo()
 
-                    again= input("Quer gerar outro mundo?(y/n) ")
+                    while(True): #verificar input valido
+                        again= input("Quer gerar outro mundo?(y/n) ")
+                        if(again == "n" or again == "y"):
+                            break
+                        else:
+                            print("Opção inválida, por favor tente novamente")
+
                     if(again == "n"):
                         break
 

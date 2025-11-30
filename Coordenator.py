@@ -46,7 +46,7 @@ class Coordenator(Agente):
                 # atualizar matriz DOUBLE CHECK FIM BC I DONT TRUST
                 QTable[currentState, action] = (
                         ((1 - learningRate) * QTable[currentState, action]) +
-                        (learningRate * (reward + recompensa * np.max(QTable[nextState]))))
+                        (learningRate * (reward + (recompensa * np.max(QTable[nextState])))))
 
                 if (nextState == goal):  # para quando encontra farol
                     break

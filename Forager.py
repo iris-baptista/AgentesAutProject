@@ -59,7 +59,7 @@ class Forager(Agente): #extends abstract Agente
                 # atualizar matriz DOUBLE CHECK FIM BC I DONT TRUST
                 QTable[currentState, action] = (
                         ((1 - learningRate) * QTable[currentState, action]) +
-                        (learningRate * (reward + recompensa * np.max(QTable[nextState]))))
+                        (learningRate * (reward + (recompensa * np.max(QTable[nextState])))))
 
                 if (time.time() - initialTime == 0.5): #para depois do tempo acabar #como e q tenho acesso ao tempo ;(
                     break

@@ -95,10 +95,10 @@ class Finder(Agente):
                 else: #ter um elif para se for um obstaculo?
                     reward= 0
 
-                #atualizar matriz DOUBLE CHECK FIM BC I DONT TRUST
+                #atualizar matriz
                 QTable[currentState,action]= (
-                        ((1-learningRate)*QTable[currentState, action]) +
-                        (learningRate*(reward+recompensa*np.max(QTable[nextState]))))
+                        ( (1 - learningRate) * QTable[currentState, action] ) +
+                        (learningRate * ( reward + ( recompensa * np.max(QTable[nextState])))))
 
                 if(nextState == goal): #para quando encontra farol
                     break

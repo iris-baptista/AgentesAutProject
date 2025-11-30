@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-import numpy as np
 import random
-from Finder import Finder
 
 class Agente(ABC):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
@@ -32,7 +30,7 @@ class Agente(ABC):
         point = random.randint(1, len(parent1.genotype) - 1)
         child1_geno = parent1.genotype[:point] + parent2.genotype[point:]
         child2_geno = parent2.genotype[:point] + parent1.genotype[point:]
-        return Finder(child1_geno), Finder(child2_geno)
+        return Agente(child1_geno), Agente(child2_geno) #nao deixa fazer import a Finder por q cria um loop
 
     def mutate(self, mutation_rate):
         """Randomly changes some actions in the genotype."""
