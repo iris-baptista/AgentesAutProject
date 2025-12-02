@@ -78,7 +78,8 @@ class Finder(Agente):
         numEpisodios = 1000  # muito?
 
         for episodio in range(numEpisodios): #deviamos comecar sempre no mesmo estado?
-            #escolhe um estado aleatoriamente
+            #escolhe um estado (inicial????) aleatoriamente
+            #feels wrong arent they supose to start in the same place? como e q eu sei a posicao nesta parte
             currentState= np.random.randint(0, numEstados) #estados representados por o index!
 
             while(True):
@@ -92,7 +93,7 @@ class Finder(Agente):
 
                 if(nextState == goal):
                     reward= 1
-                else: #ter um elif para se for um obstaculo?
+                else:
                     reward= 0
 
                 #atualizar matriz
@@ -104,10 +105,11 @@ class Finder(Agente):
                     break
 
                 currentState= nextState
-                #diminuir probabilidade de explorar?
+                probExplorar-= 0.01 #pouco/mais? #diminuir probabilidade de explorar
 
-        #queremos ver a tabela visualmente depois dos episodios?
         return QTable
 
-    def nextState(self, estado, acao): #estado vai ser o mundo? ou o index
+    def nextState(self, estado, acao): #estado e index
+        #obs resultado de action
+        #depending on sensors return next
         pass

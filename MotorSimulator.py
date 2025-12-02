@@ -1,8 +1,11 @@
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
+from Coordenator import Coordenator
 from Farol import Farol
 from Foraging import Foraging
 from Agente import Agente
 from Finder import Finder
+from Forager import Forager
+from Dropper import Dropper
 import time
 import copy
 import numpy as np
@@ -48,14 +51,11 @@ class MotorSimulator:
                         row+= "*  "
                     case Cesto():
                         row+= "u  "
+                    case Agente():
+                        row += "A  "
                     case _:
-                        found = False
-                        for a in self.mundo.getAgentes():  # verificar se agente esta na posicao atual
-                           if (a.x == i and a.y == j and found == False):
-                              row += "A  "
-                              found = True
-                        if (found == False):
-                            row += "•  "
+                        row += "•  "
+
             print(row)
 
     def genetic(self, population, gen):
@@ -291,21 +291,34 @@ class MotorSimulator:
                 elif choice2 == "2": #q learning
                     print("A aprender com algoritmo q-learning!")
 
-                    numEstados = self.mundo.sizeMap - 1 - len(self.mundo.obstaculos)  # 1 e o farol
                     numAcoes = len(Agente.actions)  # initializar valores
+                    if(type(self.mundo) == Farol):
+                        numEstados = 8
+                    else:
+                        numEstados= 15
                     probExplorar = 0.4  # demais?
 
-                    Q = np.zeros((numEstados, numAcoes))
                     for a in self.mundo.getAgentes():
-                        goal = -1  # vai ser os estados onde esta diretamente ao lado do farol#ver tipo de agente para saber o goal!
+                        match a:
+                            case Finder():
+                                goal = -1 #ao lado do farol
+                            case Coordenator():
+                                goal= -1 #idk
+                            case Forager():
+                                goal= -1 #next to recurso
+                            case Dropper():
+                                goal= -1 #next to cesto
+
+                        Q = np.zeros((numEstados, numAcoes))
                         a.qLearning(goal, Q, probExplorar, numEstados, numAcoes, goal)
-                        #passamos sempre o mesmo Q para todos os agentes?
+                        #guardar o q no agente ou correr o algoritmo outra vez no  test
                 else:
                     print("Opção inválida, por favor tente novamente")
             elif choice1 == "2": #modo teste
                 self.modoExecucao = 't'
                 print("a executar em modo de teste!")
 
+                #ver q tabela visualmente depois dos episodios?
                 if(type(self.mundo) == Farol):
                     self.testFarol()
                 else:

@@ -173,6 +173,10 @@ class Foraging: #ambiente
                 #print("Foi contra um obstaculo...")
                 return o
 
+        for a in self.agentes:
+            if x == a.x and y == a.y:
+                return a
+
         return EspacoVazio(x, y) #se nao encontrou um obstaculo ou um farol segue (ignora q pode ser outro agente...)
 
     def getAgentes(self):
@@ -181,11 +185,11 @@ class Foraging: #ambiente
     def removeRecurso(self, r):
         self.recursos.remove(r)
 
-    # observacao para mandar ao agente dado
-    def observacaoPara(self, agente):  # devolve array com objetos a volta do agente
-        above = self.getObject(agente.x, agente.y + 1)
-        bellow = self.getObject(agente.x, agente.y - 1)
-        left = self.getObject(agente.x - 1, agente.y)
-        right = self.getObject(agente.x + 1, agente.y)
+    # observacao para mandar a posicao dada
+    def observacaoPara(self, pos):  # devolve array com objetos a volta do agente
+        above = self.getObject(pos[0], pos[1] + 1)
+        bellow = self.getObject(pos[0], pos[1] - 1)
+        left = self.getObject(pos[0] - 1, pos[1])
+        right = self.getObject(pos[0] + 1, pos[1])
 
         return [above, bellow, left, right]
