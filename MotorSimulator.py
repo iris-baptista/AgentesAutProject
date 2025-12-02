@@ -158,15 +158,29 @@ class MotorSimulator:
                 if(newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
                     break
 
-            obj= self.mundo.getObject(newPos[0], newPos[1])
-            match obj:
-                case LightHouse():
-                    a.found= True
-                    print("Encontrou o farol!")
-                case EspacoVazio():
-                    a.atualizarPosicao(newPos)
-                case _: #se for outro agente ou um obstaculo
-                    print("Obstaculo encontrado!")
+            surrounding= self.mundo.observacaoPara(newPos)
+            present= False
+            for s in surrounding:
+                if(type(s) == LightHouse):
+                    present= True
+
+            obj = self.mundo.getObject(newPos[0], newPos[1])
+            if (type(obj) == LightHouse or present == True):
+                a.found = True
+                print("Encontrou o farol!")
+            elif (type(obj) == EspacoVazio):
+                a.atualizarPosicao(newPos)
+            else:
+                print("Obstaculo encontrado!")
+
+            # match obj:
+            #     case LightHouse():
+            #         a.found= True
+            #         print("Encontrou o farol!")
+            #     case EspacoVazio():
+            #         a.atualizarPosicao(newPos)
+            #     case _: #se for outro agente ou um obstaculo
+            #         print("Obstaculo encontrado!")
 
             self.displayMundo()
             print("")
