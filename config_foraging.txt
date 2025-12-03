@@ -6,6 +6,6 @@ numForagers=1
 posForagers=None
 numDroppers=0
 posDroppers=None
-tempo(secs)=0.5
+tempo(secs)=0.1
 
 !NAO TER ESPACOS!
