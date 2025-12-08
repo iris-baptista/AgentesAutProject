@@ -307,25 +307,24 @@ class MotorSimulator:
 
                     numAcoes = len(Agente.actions)  # initializar valores
                     if(type(self.mundo) == Farol):
-                        numEstados = 8
+                        numEstados= 8   #todas as variacoes possiveis para os sensores
                     else:
-                        numEstados= 15
+                        numEstados= 15 #variacoes possiveis para os sensores
                     probExplorar = 0.4  # demais?
 
                     for a in self.mundo.getAgentes():
-                        match a:
-                            case Finder():
-                                goal = -1 #ao lado do farol
-                            case Coordenator():
-                                goal= -1 #idk
-                            case Forager():
-                                goal= -1 #next to recurso
-                            case Dropper():
-                                goal= -1 #next to cesto
+                        if(type(a) != Coordenator): #coordenador nao treina
+                            match a:
+                                case Finder():
+                                    goals = [2, 4, 6, 7] #index de estado ao lado do farol
+                                case Forager():
+                                    goals= [2, 5, 8, 9, 11, 12, 13] #index de estado next to recurso
+                                case Dropper():
+                                    goals= [4, 7, 8, 10, 11, 13, 14] #index de estado next to cesto
 
-                        Q = np.zeros((numEstados, numAcoes))
-                        a.qLearning(goal, Q, probExplorar, numEstados, numAcoes, goal)
-                        #guardar o q no agente ou correr o algoritmo outra vez no  test
+                            Q = np.zeros((numEstados, numAcoes))
+                            a.qLearning(goals, Q, probExplorar, numEstados, numAcoes)
+                            #guardar o q no agente ou correr o algoritmo outra vez no  test
                 else:
                     print("Opção inválida, por favor tente novamente")
             elif choice1 == "2": #modo teste

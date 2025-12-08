@@ -8,9 +8,23 @@ class Agente(ABC):
     def acaoBurro(self):
         pass
 
+    def acao(self, action):
+        newPos = (action[0] + self.x, action[1] + self.y)
+
+        # so muda de posicao se for uma posicao valida
+        if (newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0): #dentro do mapa
+            # AGENTE NAO SABE O TAMANHO DO MUNDO UGHHHH
+            self.atualizarPosicao(newPos)
+            #falta verificar q nao vai sobrepor algo q nao pode
+
+
     def atualizarPosicao(self, pos):
         self.x= pos[0]
         self.y= pos[1]
+
+    def setStart(self): #devolve uma posicao aleatoria para o inicio
+        #check se nao esta bloqueado quando gera
+        pass
 
     # --- Genetic Algorithm ---
     @abstractmethod

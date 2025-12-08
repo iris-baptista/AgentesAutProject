@@ -1,12 +1,14 @@
 from Agente import Agente
 import random
 import numpy as np
+from Ambiente import Obstaculo, LightHouse
 
 class Finder(Agente):
     #construtor
     def __init__(self, posInitial): #genotype e o caminho q o agente utiliza, genotype= None
         self.x= posInitial[0]
         self.y= posInitial[1]
+        self.qTable= []
         self.found= False
         # self.fitness= 0
         # self.novelty
@@ -72,26 +74,27 @@ class Finder(Agente):
             self.path.append((env.agentx, env.agenty))
 
     #Fns Q-Leaning
-    def qLearning(self, goal, QTable, probExplorar, numEstados, numAcoes): #rede neuronal onde?
+    def qLearning(self, goals, QTable, probExplorar, numEstados, numAcoes): #rede neuronal onde?
         learningRate = 0.7  # demais? a menos? #% de info nova
         recompensa = 0.7  # demais? a menos? #valor atribuido ao proximo estado (?)
         numEpisodios = 1000  # muito?
 
         for episodio in range(numEpisodios): #deviamos comecar sempre no mesmo estado?
-            #escolhe um estado (inicial????) aleatoriamente
-            #feels wrong arent they supose to start in the same place? como e q eu sei a posicao nesta parte
-            currentState= np.random.randint(0, numEstados) #estados representados por o index!
+            #escolhe uma posicao aleatoria para comecar
+            self.setStart()
+            currentState= nextState() #get state for stating pos
 
             while(True):
-                #escolher se vamos explorar ou aproveitar
-                if(np.random.rand() <= probExplorar):
+                if(np.random.rand() <= probExplorar): #escolher se vamos explorar ou aproveitar
                     action= np.random.randint(0, numAcoes) #usar uma action nova/aleatoria
                 else:
                     action= np.argmax(QTable[currentState]) #usar um maximo conhecido
 
-                nextState= self.nextState(currentState, action)
+                self.acao(action)
+                #nextState= self.nextState(currentState, action)
+                nextState= self.nextState()
 
-                if(nextState == goal):
+                if(nextState in goals):
                     reward= 1
                 else:
                     reward= 0
@@ -101,15 +104,44 @@ class Finder(Agente):
                         ( (1 - learningRate) * QTable[currentState, action] ) +
                         (learningRate * ( reward + ( recompensa * np.max(QTable[nextState])))))
 
-                if(nextState == goal): #para quando encontra farol
+                if(nextState in goals): #para quando encontra farol
                     break
 
                 currentState= nextState
                 probExplorar-= 0.01 #pouco/mais? #diminuir probabilidade de explorar
 
-        return QTable
+        self.qTable= QTable #so vamos correr isto uma vez?
 
-    def nextState(self, estado, acao): #estado e index
-        #obs resultado de action
-        #depending on sensors return next
-        pass
+    # def nextState(self, estado, acao): #estado e index
+    #     #obs resultado de action
+    #     #depending on sensors return next
+    #     pass
+
+    def nextState(self): # estados representados por o index!
+        obs= observacaoPara((self.x, self.y)) #observacao para novo index
+        if(self.containsType(obs, Obstaculo)):
+            if(self.containsType(obs, LightHouse)):
+                if(self.containsType(obs, Agente)):
+                    return 7
+                else: #so farol, obstaculo, e espaco vazio
+                    return 4
+            elif(self.containsType(obs, Agente)):
+                return 5
+            else: #so obstaculos e espacos vazios
+                return 1
+        elif(self.containsType(obs, LightHouse)):
+            if(self.containsType(obs, Agente)):
+                return 6
+            else: #so farol e espaco vazio
+                return 2
+        elif(self.containsType(obs, Agente)):
+            return 3
+        else: #so espacos vazios
+            return 0
+
+    def containsType(self, list, type): #na class abstrata?
+        for item in list:
+            if isinstance(item, type):
+                return True
+
+        return False
