@@ -46,21 +46,24 @@ class MotorSimulator:
             choice = input("Selecione a opção: ")
 
             if choice == "1": #problema do Farol
-                #para automizar mais tarde
-                while(True):
-                    self.mundo= Farol(self.worldSize)
-                    print("Mundo Farol: ")
-                    self.displayMundo()
+                self.mundo = Farol(self.worldSize)
+                print("Mundo Farol: ")
+                self.displayMundo()
 
-                    while(True): #verificar input valido
-                        again= input("Quer gerar outro mundo?(y/n) ")
-                        if(again == "n" or again == "y"):
-                            break
-                        else:
-                            print("Opção inválida, por favor tente novamente")
-
-                    if(again == "n"):
-                        break
+                # while(True):
+                #     self.mundo= Farol(self.worldSize)
+                #     print("Mundo Farol: ")
+                #     self.displayMundo()
+                #
+                #     while(True): #verificar input valido
+                #         again= input("Quer gerar outro mundo?(y/n) ")
+                #         if(again == "n" or again == "y"):
+                #             break
+                #         else:
+                #             print("Opção inválida, por favor tente novamente")
+                #
+                #     if(again == "n"):
+                #         break
 
                 self.mundoOriginal= copy.deepcopy(self.mundo)
                 self.subMenu()

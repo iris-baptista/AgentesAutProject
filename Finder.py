@@ -94,12 +94,12 @@ class Finder(Agente):
     #Fns Q-Leaning
     def qLearning(self, goals, QTable, probExplorar, numEstados, numAcoes): #rede neuronal onde?
         learningRate = 0.7  # demais? a menos? #% de info nova
-        recompensa = 0.7  # demais? a menos? #valor atribuido ao proximo estado (?)
-        numEpisodios = 1000  # muito?
+        desconto = 0.9  # quanto mais alto maior a quantidade de info q passa para tras
+        numEpisodios = 1000  # aumentar
 
         for episodio in range(numEpisodios): #deviamos comecar sempre no mesmo estado?
             #escolhe uma posicao aleatoria para comecar
-            self.setStart()
+            self.mundoPertence.resetStart() #double check later
             currentState= nextState() #get state for stating pos
 
             while(True):
@@ -120,13 +120,13 @@ class Finder(Agente):
                 #atualizar matriz
                 QTable[currentState,action]= (
                         ( (1 - learningRate) * QTable[currentState, action] ) +
-                        (learningRate * ( reward + ( recompensa * np.max(QTable[nextState])))))
+                        (learningRate * ( reward + ( desconto * np.max(QTable[nextState])))))
 
                 if(nextState in goals): #para quando encontra farol
                     break
 
                 currentState= nextState
-                probExplorar-= 0.01 #pouco/mais? #diminuir probabilidade de explorar
+                probExplorar-= 0.0001 #pouco/mais? #diminuir probabilidade de explorar
 
         self.qTable= QTable
 
