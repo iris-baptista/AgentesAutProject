@@ -1,7 +1,7 @@
 from Agente import Agente
 import random
 import numpy as np
-from Ambiente import Obstaculo, LightHouse
+from Ambiente import Obstaculo, LightHouse, EspacoVazio
 
 class Finder(Agente):
     #construtor
@@ -24,6 +24,24 @@ class Finder(Agente):
         choice= random.choice(self.actions)
 
         return choice
+
+    def acao(self, action):
+        newPos = (action[0] + self.x, action[1] + self.y)
+
+        # so muda de posicao se for uma posicao valida/der para sobrepor!
+        tamanho = self.mundoPertence.sizeMap
+        if (newPos[0] < tamanho and newPos[0] >= 0 and newPos[1] < tamanho and newPos[1] >= 0):  # dentro do mapa
+            obj = self.mundoPertence.getObject(newPos[0], newPos[1])
+            match obj:  # pode sobrepor espacos vazios e recursos
+                case EspacoVazio():
+                    self.atualizarPosicao(newPos)
+                case LightHouse():
+                    self.found = True
+                    print("Encontrou o farol!")
+                case _: # nao pode sobrepor agentes ou obstaculos
+                    print("Obstaculo encontrado!")
+        else:
+            print("Out of Bounds!")
 
     def run_simulation(self):
         """Runs the agent's genotype in a fresh environment to get its behavior."""
@@ -92,7 +110,7 @@ class Finder(Agente):
 
                 self.acao(action)
                 #nextState= self.nextState(currentState, action)
-                nextState= self.nextState()
+                nextState= nextState(self)
 
                 if(nextState in goals):
                     reward= 1
@@ -110,7 +128,7 @@ class Finder(Agente):
                 currentState= nextState
                 probExplorar-= 0.01 #pouco/mais? #diminuir probabilidade de explorar
 
-        self.qTable= QTable #so vamos correr isto uma vez?
+        self.qTable= QTable
 
     # def nextState(self, estado, acao): #estado e index
     #     #obs resultado de action
@@ -118,7 +136,7 @@ class Finder(Agente):
     #     pass
 
     def nextState(self): # estados representados por o index!
-        obs= observacaoPara((self.x, self.y)) #observacao para novo index
+        obs= self.mundoPertence.observacaoPara((self.x, self.y)) #observacao para novo index
         if(self.containsType(obs, Obstaculo)):
             if(self.containsType(obs, LightHouse)):
                 if(self.containsType(obs, Agente)):
@@ -138,10 +156,3 @@ class Finder(Agente):
             return 3
         else: #so espacos vazios
             return 0
-
-    def containsType(self, list, type): #na class abstrata?
-        for item in list:
-            if isinstance(item, type):
-                return True
-
-        return False

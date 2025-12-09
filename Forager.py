@@ -28,6 +28,9 @@ class Forager(Agente): #extends abstract Agente
 
         return choice
 
+    def acao(self, action):
+        pass
+
     def run_simulation(self):
         pass
 

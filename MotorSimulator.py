@@ -35,6 +35,123 @@ class MotorSimulator:
     def __init__(self, worldSize):
         self.worldSize= worldSize
 
+    def mainMenu(self):
+        while True:
+            print("\n======= Projeto de Agentes Autónomos =======")
+            print("Feito por Constança Ferreira e Íris Baptista")
+            print("  1. Problema do Farol")
+            print("  2. Problema da Recoleção (Foraging)")
+            print("  0. Sair")
+
+            choice = input("Selecione a opção: ")
+
+            if choice == "1": #problema do Farol
+                #para automizar mais tarde
+                while(True):
+                    self.mundo= Farol(self.worldSize)
+                    print("Mundo Farol: ")
+                    self.displayMundo()
+
+                    while(True): #verificar input valido
+                        again= input("Quer gerar outro mundo?(y/n) ")
+                        if(again == "n" or again == "y"):
+                            break
+                        else:
+                            print("Opção inválida, por favor tente novamente")
+
+                    if(again == "n"):
+                        break
+
+                self.mundoOriginal= copy.deepcopy(self.mundo)
+                self.subMenu()
+            elif choice == "2": #problema Foraging
+                # para automizar mais tarde
+                while (True):
+                    self.mundo= Foraging(self.worldSize)
+                    print("Mundo Farol: ")
+                    self.displayMundo()
+
+                    again = input("Quer gerar outro mundo?(y/n) ")
+                    if (again == "n"):
+                        break
+
+                self.mundoOriginal= copy.deepcopy(self.mundo)
+                self.subMenu()
+            elif choice == "0": #fechar programa
+                print("A terminar...")
+                break
+            else:
+                print("Opção inválida, por favor tente novamente")
+
+    def subMenu(self):
+        while(True):
+            self.mundo= copy.deepcopy(self.mundoOriginal) #para comecar sempre no mesmo estado inicial
+
+            print("\n==== Modo de Execução ====")
+            print("  1. Modo de Aprendizagem (Learning Mode)")
+            print("  2. Modo de Teste (Testing Mode)")
+            print("  3. Solução Burra")
+            print("  0. Sair")
+
+            choice1 = input("Selecione a opção: ")
+            if choice1 == "1": #learning mode
+                self.modoExecucao = 'a'
+                print("\n==== Política do Agente ====")
+                print("  1. Algoritmo Genético")
+                print("  2. Algoritmo Q-Learning")
+
+                choice2 = input("Selecione a opção: ")
+
+                if choice2 == "1": #genetico
+                    population = input("Selecione o tamanho da população: ")
+                    gen = input("Selecione o número de gerações: ")
+                    # self.genetic(population, gen)
+                    print("a aprender com algoritmo genetico!")
+                elif choice2 == "2": #q learning
+                    print("A aprender com algoritmo q-learning!")
+
+                    numAcoes = len(Agente.actions)  # initializar valores
+                    if(type(self.mundo) == Farol):
+                        numEstados= 8   #todas as variacoes possiveis para os sensores
+                    else:
+                        numEstados= 15 #variacoes possiveis para os sensores
+                    probExplorar = 0.4  # demais?
+
+                    for a in self.mundo.getAgentes():
+                        if(type(a) != Coordenator): #coordenador nao treina
+                            a.mundoPertence.setMundo(self.mundo)
+                            match a:
+                                case Finder():
+                                    goals = [2, 4, 6, 7] #index de estado ao lado do farol
+                                case Forager():
+                                    goals= [2, 5, 8, 9, 11, 12, 13] #index de estado next to recurso
+                                case Dropper():
+                                    goals= [4, 7, 8, 10, 11, 13, 14] #index de estado next to cesto
+
+                            Q = np.zeros((numEstados, numAcoes))
+                            a.qLearning(goals, Q, probExplorar, numEstados, numAcoes)
+                            #guardar o q no agente ou correr o algoritmo outra vez no  test
+                else:
+                    print("Opção inválida, por favor tente novamente")
+            elif choice1 == "2": #modo teste
+                self.modoExecucao = 't'
+                print("a executar em modo de teste!")
+
+                #ver q tabela visualmente depois dos episodios?
+                if(type(self.mundo) == Farol):
+                    self.testFarol()
+                else:
+                    self.testForaging()
+            elif choice1 == "3": #modo burro
+                if(type(self.mundo) == Farol):
+                    self.farolBurro()
+                else:
+                    self.foragingBurro()
+            elif choice1 == "0": #sair
+                break
+            else:
+                print("Opção inválida, por favor tente novamente")
+
     def displayMundo(self):
         s= self.mundo.sizeMap
                                  
@@ -57,6 +174,89 @@ class MotorSimulator:
                         row += "•  "
 
             print(row)
+
+    def farolBurro(self):
+        start= time.time()
+        a= self.mundo.getAgentes()[0]
+        while(a.found == False):
+            while(True): #verificar q posicao gerada seja dentro do mapa
+                newAccao= a.acaoBurro()
+                newPos= (newAccao[0]+a.x, newAccao[1]+a.y)
+
+                if(newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
+                    break
+
+            surrounding= self.mundo.observacaoPara(newPos)
+            present= False
+            for s in surrounding:
+                if(type(s) == LightHouse):
+                    present= True
+
+            if(present == True):
+                a.found = True
+                a.atualizarPosicao(newPos)
+                print("Encontrou o farol!")
+            else: #se nao encontrou o farol
+                obj = self.mundo.getObject(newPos[0], newPos[1])
+                if (type(obj) == EspacoVazio):
+                    a.atualizarPosicao(newPos)
+                else: #obstaculo ou agente
+                    print("Obstaculo encontrado!")
+
+            self.displayMundo()
+            print("")
+
+        end= time.time()
+        msegs= round((end-start)*1000, 2) #round to 2 decimal places
+        print(f"Demorou ~{msegs} milisegundos para encontrar o farol!")
+
+    def foragingBurro(self):
+        a= self.mundo.getAgentes()[0]
+        initialTime= currentTime= time.time() #time() devolve tempo atual em segundos (desde epoch)
+        while( (currentTime - initialTime) <= self.mundo.tempo): #"timer" para correr a quantidade de tempo dada
+            while (True):  # verificar q posicao gerada seja dentro do mapa
+                newAccao = a.acaoBurro()
+                newPos = (newAccao[0] + a.x, newAccao[1] + a.y)
+
+                if (newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
+                    break
+
+            moved= False
+            obj = self.mundo.getObject(newPos[0], newPos[1])
+            match obj:
+                case Recurso(): #tem de sobrepor recurso para collect
+                    print(f"Encontrou o recurso {obj.name} que vale {obj.pontos} ponto(s)")
+
+                    a.collectRecurso(obj)
+                    self.mundo.removeRecurso(obj)
+                    moved = True
+                case EspacoVazio():
+                    moved= True
+                case _:  # se for outro agente, um obstaculo, ou um cesto
+                    print("Obstaculo encontrado!")
+
+            if(moved == True):
+                a.atualizarPosicao(newPos)
+
+                surrounding = self.mundo.observacaoPara(newPos)
+                for s in surrounding:
+                    if (type(s) == Cesto):
+                        print(f"Encontrou o cesto {s.name}")
+
+                        toDesposit = a.sendRecursos()
+                        pointsDeposited = 0
+                        for r in toDesposit:
+                            pointsDeposited += r.pontos
+
+                        a.points += pointsDeposited
+                        print(f"Depositou {pointsDeposited} ponto(s)!")
+
+            self.displayMundo()
+            print("")
+
+            currentTime = time.time()
+
+        print("Total of points: ", a.points)
 
     def genetic(self, population, gen):
         # --- EA Hyperparameters ---
@@ -146,205 +346,6 @@ class MotorSimulator:
 
     def testForaging(self):
         pass
-
-    def farolBurro(self):
-        start= time.time()
-        a= self.mundo.getAgentes()[0]
-        while(a.found == False):
-            while(True): #verificar q posicao gerada seja dentro do mapa
-                newAccao= a.acaoBurro()
-                newPos= (newAccao[0]+a.x, newAccao[1]+a.y)
-
-                if(newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
-                    break
-
-            surrounding= self.mundo.observacaoPara(newPos)
-            present= False
-            for s in surrounding:
-                if(type(s) == LightHouse):
-                    present= True
-
-            if(present == True):
-                a.found = True
-                a.atualizarPosicao(newPos)
-                print("Encontrou o farol!")
-            else: #se nao encontrou o farol
-                obj = self.mundo.getObject(newPos[0], newPos[1])
-                if (type(obj) == EspacoVazio):
-                    a.atualizarPosicao(newPos)
-                else: #obstaculo ou agente
-                    print("Obstaculo encontrado!")
-
-            self.displayMundo()
-            print("")
-
-        end= time.time()
-        msegs= round((end-start)*1000, 2) #round to 2 decimal places
-        print(f"Demorou ~{msegs} milisegundos para encontrar o farol!")
-
-    def foragingBurro(self):
-        a= self.mundo.getAgentes()[0]
-        initialTime= currentTime= time.time() #time() devolve tempo atual em segundos (desde epoch)
-        while( (currentTime - initialTime) <= self.mundo.tempo): #"timer" para correr a quantidade de tempo dada
-            while (True):  # verificar q posicao gerada seja dentro do mapa
-                newAccao = a.acaoBurro()
-                newPos = (newAccao[0] + a.x, newAccao[1] + a.y)
-
-                if (newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
-                    break
-
-            moved= False
-            obj = self.mundo.getObject(newPos[0], newPos[1])
-            match obj:
-                case Recurso(): #tem de sobrepor recurso para collect
-                    print(f"Encontrou o recurso {obj.name} que vale {obj.pontos} ponto(s)")
-
-                    a.collectRecurso(obj)
-                    self.mundo.removeRecurso(obj)
-                    moved = True
-                case EspacoVazio():
-                    moved= True
-                case _:  # se for outro agente, um obstaculo, ou um cesto
-                    print("Obstaculo encontrado!")
-
-            if(moved == True):
-                a.atualizarPosicao(newPos)
-
-                surrounding = self.mundo.observacaoPara(newPos)
-                for s in surrounding:
-                    if (type(s) == Cesto):
-                        print(f"Encontrou o cesto {s.name}")
-
-                        toDesposit = a.sendRecursos()
-                        pointsDeposited = 0
-                        for r in toDesposit:
-                            pointsDeposited += r.pontos
-
-                        a.points += pointsDeposited
-                        print(f"Depositou {pointsDeposited} ponto(s)!")
-
-            self.displayMundo()
-            print("")
-
-            currentTime = time.time()
-
-        print("Total of points: ", a.points)
-
-    def mainMenu(self):
-        while True:
-            print("\n======= Projeto de Agentes Autónomos =======")
-            print("Feito por Constança Ferreira e Íris Baptista")
-            print("  1. Problema do Farol")
-            print("  2. Problema da Recoleção (Foraging)")
-            print("  0. Sair")
-
-            choice = input("Selecione a opção: ")
-
-            if choice == "1": #problema do Farol
-                #para automizar mais tarde
-                while(True):
-                    self.mundo= Farol(self.worldSize)
-                    print("Mundo Farol: ")
-                    self.displayMundo()
-
-                    while(True): #verificar input valido
-                        again= input("Quer gerar outro mundo?(y/n) ")
-                        if(again == "n" or again == "y"):
-                            break
-                        else:
-                            print("Opção inválida, por favor tente novamente")
-
-                    if(again == "n"):
-                        break
-
-                self.mundoOriginal= copy.deepcopy(self.mundo)
-                self.subMenu()
-            elif choice == "2": #problema Foraging
-                # para automizar mais tarde
-                while (True):
-                    self.mundo= Foraging(self.worldSize)
-                    print("Mundo Farol: ")
-                    self.displayMundo()
-
-                    again = input("Quer gerar outro mundo?(y/n) ")
-                    if (again == "n"):
-                        break
-
-                self.mundoOriginal= copy.deepcopy(self.mundo)
-                self.subMenu()
-            elif choice == "0": #fechar programa
-                print("A terminar...")
-                break
-            else:
-                print("Opção inválida, por favor tente novamente")
-
-    def subMenu(self):
-        while(True):
-            self.mundo= copy.deepcopy(self.mundoOriginal) #para comecar sempre no mesmo estado inicial
-
-            print("\n==== Modo de Execução ====")
-            print("  1. Modo de Aprendizagem (Learning Mode)")
-            print("  2. Modo de Teste (Testing Mode)")
-            print("  3. Solução Burra")
-            print("  0. Sair")
-
-            choice1 = input("Selecione a opção: ")
-            if choice1 == "1": #learning mode
-                self.modoExecucao = 'a'
-                print("\n==== Política do Agente ====")
-                print("  1. Algoritmo Genético")
-                print("  2. Algoritmo Q-Learning")
-
-                choice2 = input("Selecione a opção: ")
-
-                if choice2 == "1": #genetico
-                    population = input("Selecione o tamanho da população: ")
-                    gen = input("Selecione o número de gerações: ")
-                    # self.genetic(population, gen)
-                    print("a aprender com algoritmo genetico!")
-                elif choice2 == "2": #q learning
-                    print("A aprender com algoritmo q-learning!")
-
-                    numAcoes = len(Agente.actions)  # initializar valores
-                    if(type(self.mundo) == Farol):
-                        numEstados= 8   #todas as variacoes possiveis para os sensores
-                    else:
-                        numEstados= 15 #variacoes possiveis para os sensores
-                    probExplorar = 0.4  # demais?
-
-                    for a in self.mundo.getAgentes():
-                        if(type(a) != Coordenator): #coordenador nao treina
-                            match a:
-                                case Finder():
-                                    goals = [2, 4, 6, 7] #index de estado ao lado do farol
-                                case Forager():
-                                    goals= [2, 5, 8, 9, 11, 12, 13] #index de estado next to recurso
-                                case Dropper():
-                                    goals= [4, 7, 8, 10, 11, 13, 14] #index de estado next to cesto
-
-                            Q = np.zeros((numEstados, numAcoes))
-                            a.qLearning(goals, Q, probExplorar, numEstados, numAcoes)
-                            #guardar o q no agente ou correr o algoritmo outra vez no  test
-                else:
-                    print("Opção inválida, por favor tente novamente")
-            elif choice1 == "2": #modo teste
-                self.modoExecucao = 't'
-                print("a executar em modo de teste!")
-
-                #ver q tabela visualmente depois dos episodios?
-                if(type(self.mundo) == Farol):
-                    self.testFarol()
-                else:
-                    self.testForaging()
-            elif choice1 == "3": #modo burro
-                if(type(self.mundo) == Farol):
-                    self.farolBurro()
-                else:
-                    self.foragingBurro()
-            elif choice1 == "0": #sair
-                break
-            else:
-                print("Opção inválida, por favor tente novamente")
 
 if __name__ == "__main__":
     sim = MotorSimulator(10)

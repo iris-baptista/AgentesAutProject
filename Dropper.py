@@ -27,6 +27,9 @@ class Dropper(Agente):
     def acaoBurro(self):
         pass
 
+    def acao(self, action):
+        pass
+
     def run_simulation(self):
         pass
 

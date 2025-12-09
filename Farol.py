@@ -110,8 +110,7 @@ class Farol: #foraging
 
         file.close()
 
-    #devolve objeto na posicao dada
-    def getObject(self, x, y):
+    def getObject(self, x, y):  #devolve objeto na posicao dada
         if x == self.farol.x and y == self.farol.y:
             return self.farol
 
@@ -136,3 +135,7 @@ class Farol: #foraging
         right= self.getObject(pos[0]+1, pos[1])
 
         return [above, bellow, left, right]
+
+    def resetStart(self): #devolve uma posicao aleatoria para o inicio
+        for a in self.getAgentes(): #check q nao ha agentes bloqueados quando gera
+            pass

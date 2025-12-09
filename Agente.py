@@ -1,30 +1,24 @@
 from abc import ABC, abstractmethod
 import random
 
+from Ambiente import EspacoVazio
+
+
 class Agente(ABC):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    mundoPertence= None
 
     @abstractmethod
     def acaoBurro(self):
         pass
 
+    @abstractmethod
     def acao(self, action):
-        newPos = (action[0] + self.x, action[1] + self.y)
-
-        # so muda de posicao se for uma posicao valida
-        if (newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0): #dentro do mapa
-            # AGENTE NAO SABE O TAMANHO DO MUNDO UGHHHH
-            self.atualizarPosicao(newPos)
-            #falta verificar q nao vai sobrepor algo q nao pode
-
+        pass
 
     def atualizarPosicao(self, pos):
         self.x= pos[0]
         self.y= pos[1]
-
-    def setStart(self): #devolve uma posicao aleatoria para o inicio
-        #check se nao esta bloqueado quando gera
-        pass
 
     # --- Genetic Algorithm ---
     @abstractmethod
@@ -59,6 +53,9 @@ class Agente(ABC):
         return tournament[0]
 
     # --- Q Learning ---
+    def setMundo(self, m):
+        self.mundoPertence= m
+
     @abstractmethod
     def qLearning(self, goal, QTable, probExplorar, numEstados, numAcoes):  # rede neuronal onde?
         pass
@@ -66,3 +63,10 @@ class Agente(ABC):
     @abstractmethod
     def nextState(self, estado, acao):
         pass
+
+    def containsType(self, list, type):
+        for item in list:
+            if isinstance(item, type):
+                return True
+
+        return False
