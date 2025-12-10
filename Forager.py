@@ -1,5 +1,4 @@
 from Agente import Agente
-import random
 import numpy as np
 import time
 
@@ -8,7 +7,7 @@ class Forager(Agente): #extends abstract Agente
     def __init__(self, posInitial):
         self.x= posInitial[0]
         self.y= posInitial[1]
-        self.points= 0 #initializar pontos
+        #self.points= 0 #initializar pontos
         self.recursosCollected= [] #comeca sem nada
 
     #adicionar um recurso encontrado ao inventario
@@ -22,11 +21,6 @@ class Forager(Agente): #extends abstract Agente
 
         #acho q vai haver algo de msgs aqui
         return toSend
-
-    def acaoBurro(self): #isto pode ser no abstrato tb
-        choice= random.choice(self.actions)
-
-        return choice
 
     def acao(self, action):
         pass

@@ -118,11 +118,11 @@ class MotorSimulator:
                         numEstados= 8   #todas as variacoes possiveis para os sensores
                     else:
                         numEstados= 15 #variacoes possiveis para os sensores
-                    probExplorar = 0.4  # demais?
+                    probExplorar = 0.6  # demais?
 
                     for a in self.mundo.getAgentes():
                         if(type(a) != Coordenator): #coordenador nao treina
-                            a.mundoPertence.setMundo(self.mundo)
+                            a.setMundo(self.mundo)
                             match a:
                                 case Finder():
                                     goals = [2, 4, 6, 7] #index de estado ao lado do farol
@@ -215,51 +215,55 @@ class MotorSimulator:
 
     def foragingBurro(self):
         a= self.mundo.getAgentes()[0]
+
         initialTime= currentTime= time.time() #time() devolve tempo atual em segundos (desde epoch)
         while( (currentTime - initialTime) <= self.mundo.tempo): #"timer" para correr a quantidade de tempo dada
-            while (True):  # verificar q posicao gerada seja dentro do mapa
-                newAccao = a.acaoBurro()
-                newPos = (newAccao[0] + a.x, newAccao[1] + a.y)
+            for a in self.mundo.getAgentes():
+                while (True):  # verificar q posicao gerada seja dentro do mapa
+                    newAccao = a.acaoBurro()
+                    newPos = (newAccao[0] + a.x, newAccao[1] + a.y)
 
-                if (newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
-                    break
+                    if (newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
+                        break
 
-            moved= False
-            obj = self.mundo.getObject(newPos[0], newPos[1])
-            match obj:
-                case Recurso(): #tem de sobrepor recurso para collect
-                    print(f"Encontrou o recurso {obj.name} que vale {obj.pontos} ponto(s)")
+                moved= False
+                obj = self.mundo.getObject(newPos[0], newPos[1])
+                match obj:
+                    case Recurso(): #tem de sobrepor recurso para collect
+                        if(type(a) == Forager): #so sobrepoem o recurso se for um forager
+                            print(f"Encontrou o recurso {obj.name} que vale {obj.pontos} ponto(s)")
 
-                    a.collectRecurso(obj)
-                    self.mundo.removeRecurso(obj)
-                    moved = True
-                case EspacoVazio():
-                    moved= True
-                case _:  # se for outro agente, um obstaculo, ou um cesto
-                    print("Obstaculo encontrado!")
+                            a.collectRecurso(obj)
+                            self.mundo.removeRecurso(obj)
+                            moved = True
+                    case EspacoVazio():
+                        moved= True
+                    case _:  # se for outro agente, um obstaculo, ou um cesto
+                        print("Obstaculo encontrado!")
 
-            if(moved == True):
-                a.atualizarPosicao(newPos)
+                if(moved == True):
+                    a.atualizarPosicao(newPos)
 
-                surrounding = self.mundo.observacaoPara(newPos)
-                for s in surrounding:
-                    if (type(s) == Cesto):
-                        print(f"Encontrou o cesto {s.name}")
+                    if(type(a) == Dropper):
+                        surrounding = self.mundo.observacaoPara(newPos)
+                        for s in surrounding:
+                            if (type(s) == Cesto):
+                                print(f"Encontrou o cesto {s.name}")
 
-                        toDesposit = a.sendRecursos()
-                        pointsDeposited = 0
-                        for r in toDesposit:
-                            pointsDeposited += r.pontos
-
-                        a.points += pointsDeposited
-                        print(f"Depositou {pointsDeposited} ponto(s)!")
+                                pointsDeposited= a.depositRecursos()
+                                print(f"Depositou um total de {pointsDeposited} ponto(s)!")
 
             self.displayMundo()
             print("")
 
             currentTime = time.time()
 
-        print("Total of points: ", a.points)
+        totalPoints= 0
+        for a in self.mundo.getAgentes():
+            if(type(a) == Dropper):
+                totalPoints+= a.pontosDepositados
+
+        print("Total of points: ", totalPoints)
 
     def genetic(self, population, gen):
         # --- EA Hyperparameters ---

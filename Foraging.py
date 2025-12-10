@@ -110,9 +110,10 @@ class Foraging: #ambiente
             self.recursos.append(Recurso(f"R{index}", r[0], r[1]))
             index += 1
 
+        self.agentes = []
         numForagers = int(((file.readline()).split("=")[1]).split("\n")[0])
         posForagers = ((file.readline()).split("=")[1]).split("\n")[0]
-        self.agentes = []
+        foragers= []
         for i in range(0, numForagers):
             if(posForagers == "None"):
                 while (True):  # check position not taken
@@ -122,7 +123,9 @@ class Foraging: #ambiente
                         break
 
                 takenPos.append(foragerPos)
-                self.agentes.append(Forager(foragerPos))
+                newForager= Forager(foragerPos)
+                self.agentes.append(newForager)
+                foragers.append(newForager)
             else:
                 toConvert = posForagers[2:-2].split("),(")
                 for toC in toConvert:
@@ -130,7 +133,9 @@ class Foraging: #ambiente
                     foragerPos = (int(numbers[0]), int(numbers[1]))
 
                     takenPos.append(foragerPos)
-                    self.agentes.append(Forager(foragerPos))
+                    newForager = Forager(foragerPos)
+                    self.agentes.append(newForager)
+                    foragers.append(newForager)
 
         numDroppers = int(((file.readline()).split("=")[1]).split("\n")[0])
         posDroppers = ((file.readline()).split("=")[1]).split("\n")[0]
@@ -143,7 +148,7 @@ class Foraging: #ambiente
                         break
 
                 takenPos.append(dropperPos)
-                self.agentes.append(Dropper(dropperPos))
+                self.agentes.append(Dropper(dropperPos, foragers))
             else:
                 toConvert = posDroppers[2:-2].split("),(")
                 for toC in toConvert:
@@ -151,7 +156,7 @@ class Foraging: #ambiente
                     dropperPos = (int(numbers[0]), int(numbers[1]))
 
                     takenPos.append(dropperPos)
-                    self.agentes.append(Dropper(dropperPos))
+                    self.agentes.append(Dropper(dropperPos, foragers))
 
         self.tempo= float(((file.readline()).split("=")[1]).split("\n")[0])
         file.close()

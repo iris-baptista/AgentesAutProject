@@ -8,9 +8,10 @@ class Agente(ABC):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
     mundoPertence= None
 
-    @abstractmethod
     def acaoBurro(self):
-        pass
+        choice = random.choice(self.actions)
+
+        return choice
 
     @abstractmethod
     def acao(self, action):

@@ -6,26 +6,33 @@ class Dropper(Agente):
     pontosDepositados= 0
 
     #construtor
-    def __init__(self, posInitial):
+    def __init__(self, posInitial, foragers):
         self.x= posInitial[0]
         self.y= posInitial[1]
+        self.foragers= foragers
+        self.pontosDepositados= 0
 
     #vai pedir recursos ao forager
     def getRecursos(self):
-        pass
+        recursosParaDepositar = []
+        for friend in self.foragers:
+            recursosCollected= friend.sendRecursos()
+            for recurso in recursosCollected:
+                recursosParaDepositar.append(recurso)
+
+        return recursosParaDepositar
 
     #depositar todos os recursos q pode
     def depositRecursos(self):
         recursosParaDepositar= self.getRecursos()
 
-        for r in self.recursosParaDepositar:
-            self.pontosDepositados+= r.pontos
+        totalDeposited= 0
+        for r in recursosParaDepositar:
+            totalDeposited += r.pontos
             print("Depositou o recurso ", r.name, "que valia ", r.pontos, " ponto(s)!")
 
-        self.recursosParaDepositar= []
-
-    def acaoBurro(self):
-        pass
+        self.pontosDepositados += totalDeposited
+        return totalDeposited
 
     def acao(self, action):
         pass

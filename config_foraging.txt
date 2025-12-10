@@ -4,7 +4,7 @@ posCestos=None
 posRecursos=None
 numForagers=1
 posForagers=None
-numDroppers=0
+numDroppers=1
 posDroppers=None
 tempo(secs)=0.1
 

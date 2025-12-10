@@ -173,7 +173,7 @@ class Farol: #foraging
             while (True):  # check position not taken
                 newFinderPos = (random.randint(0, self.sizeMap - 1), random.randint(0, self.sizeMap - 1))
 
-                if (type(self.getObject(newFinderPos)) == EspacoVazio):
+                if (type(self.getObject(newFinderPos[0], newFinderPos[1])) == EspacoVazio):
                     break
 
             a.atualizarPosicao(newFinderPos)
