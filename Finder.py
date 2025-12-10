@@ -20,11 +20,6 @@ class Finder(Agente):
         for i in range(0, self.steps):
             self.genotype.append(random.choice(self.actions))
 
-    def acaoBurro(self): #para ele fazer move para o farol especificamente
-        choice= random.choice(self.actions)
-
-        return choice
-
     def acao(self, action):
         newPos = (action[0] + self.x, action[1] + self.y)
 
@@ -32,7 +27,7 @@ class Finder(Agente):
         tamanho = self.mundoPertence.sizeMap
         if (newPos[0] < tamanho and newPos[0] >= 0 and newPos[1] < tamanho and newPos[1] >= 0):  # dentro do mapa
             obj = self.mundoPertence.getObject(newPos[0], newPos[1])
-            match obj:  # pode sobrepor espacos vazios e recursos
+            match obj:  # pode sobrepor espacos vazios
                 case EspacoVazio():
                     self.atualizarPosicao(newPos)
                     # print("Movido para", newPos)
