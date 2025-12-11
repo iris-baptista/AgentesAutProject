@@ -10,7 +10,6 @@ class Dropper(Agente):
     def __init__(self, posInitial, foragers):
         self.x= posInitial[0]
         self.y= posInitial[1]
-        self.qTable= []
         self.foragers= foragers
         self.pontosDepositados= 0
 

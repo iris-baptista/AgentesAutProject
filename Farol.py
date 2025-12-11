@@ -154,7 +154,7 @@ class Farol: #foraging
             if x == a.x and y == a.y:
                 return a
 
-        return EspacoVazio(x, y) #se nao encontrou um obstaculo ou um farol segue (ignora q pode ser outro agente...)
+        return EspacoVazio(x, y) #se nao encontrou um obstaculo ou um farol segue
 
     def getAgentes(self):
         return self.agentes

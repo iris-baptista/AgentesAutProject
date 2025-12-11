@@ -20,7 +20,6 @@ class Forager(Agente): #extends abstract Agente
         toSend= self.recursosCollected
         self.recursosCollected= [] #empty out inventory
 
-        #acho q vai haver algo de msgs aqui
         return toSend
 
     def acao(self, action):

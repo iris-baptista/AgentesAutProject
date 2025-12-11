@@ -8,7 +8,6 @@ class Finder(Agente):
     def __init__(self, posInitial): #genotype e o caminho q o agente utiliza, genotype= None
         self.x= posInitial[0]
         self.y= posInitial[1]
-        self.qTable= []
         self.found= False
         # self.fitness= 0
         # self.novelty
@@ -152,6 +151,7 @@ class Finder(Agente):
 
         self.qTable= QTable
         print(QTable)
+        self.showGraph();
 
     # def nextState(self, estado, acao): #estado e index
     #     #obs resultado de action

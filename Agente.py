@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 import random
-
-from Ambiente import EspacoVazio
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Agente(ABC):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
     mundoPertence= None
+    qTable = []
 
     def acaoBurro(self):
         choice = random.choice(self.actions)
@@ -71,3 +72,25 @@ class Agente(ABC):
                 return True
 
         return False
+
+    def showGraph(self):
+        plt.figure(figsize=(6, 6))
+        plt.title('Q-Values')
+
+        plt.imshow(self.qTable, 'magma', interpolation='nearest')  #Spectral, magma, plasma, YlOrRd, RdBu, PiYG
+        plt.xticks(np.arange(4), ['Up', 'Right', 'Down', 'Left'])
+        plt.xlabel('Action')
+        plt.yticks(np.arange(8), ['0', '1', '2', '3', '4', '5', '6', '7'])
+        plt.ylabel('Estado')
+        plt.gca().invert_yaxis()
+
+        for i in range(8):
+            for j in range(4):
+                value = self.qTable[i][j]
+                if (value <= np.max(self.qTable) / 2):
+                    plt.text(j, i, f'{value:.2f}', ha='center', va='center', color='white')
+                else:
+                    plt.text(j, i, f'{value:.2f}', ha='center', va='center', color='black')
+
+        plt.colorbar()
+        plt.show()
