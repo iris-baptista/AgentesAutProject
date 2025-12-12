@@ -147,8 +147,6 @@ class Finder(Agente):
 
             probExplorar-= 0.0001 #pouco/mais? #diminuir probabilidade de explorar
 
-                # print("Farol pos", (self.mundoPertence.farol.x,self.mundoPertence.farol.y), "current", (self.x, self.y))
-
         self.qTable= QTable
         print(QTable)
         self.showGraph();

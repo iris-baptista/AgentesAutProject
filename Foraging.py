@@ -163,6 +163,9 @@ class Foraging: #ambiente
 
     #devolve objeto na posicao dada
     def getObject(self, x, y):
+        for a in self.agentes: #agente primeiro para sobrepor recursos
+            if x == a.x and y == a.y:
+                return a
         for c in self.cestos:
             if x == c.x and y == c.y:
                 #print(f"Encontrou o cesto {c.name}")
@@ -177,10 +180,6 @@ class Foraging: #ambiente
             if x == o.x and y == o.y:
                 #print("Foi contra um obstaculo...")
                 return o
-
-        for a in self.agentes:
-            if x == a.x and y == a.y:
-                return a
 
         return EspacoVazio(x, y) #se nao encontrou um obstaculo ou um farol segue (ignora q pode ser outro agente...)
 
@@ -198,3 +197,13 @@ class Foraging: #ambiente
         right = self.getObject(pos[0] + 1, pos[1])
 
         return [above, bellow, left, right]
+
+    def resetStart(self): #devolve uma posicao aleatoria para o inicio
+        for a in self.getAgentes():
+            while (True):  # check position not taken
+                newPos = (random.randint(0, self.sizeMap - 1), random.randint(0, self.sizeMap - 1))
+
+                if (type(self.getObject(newPos[0], newPos[1])) == EspacoVazio):
+                    break
+
+            a.atualizarPosicao(newPos)

@@ -1,6 +1,6 @@
 from Agente import Agente
 import numpy as np
-from Ambiente import EspacoVazio, Recurso
+from Ambiente import EspacoVazio, Recurso, Obstaculo, Cesto
 import time
 
 class Forager(Agente): #extends abstract Agente
@@ -110,6 +110,43 @@ class Forager(Agente): #extends abstract Agente
 
         self.qTable = QTable
         print(QTable)
+        self.showGraph();
 
-    def nextState(self, estado, acao):  # estado vai ser o mundo? ou o index
-        pass
+    def nextState(self):  # estado vai ser o mundo? ou o index
+        obs = self.mundoPertence.observacaoPara((self.x, self.y))  # observacao para novo index
+        if (self.containsType(obs, Obstaculo)):
+            if (self.containsType(obs, Recurso)):
+                if (self.containsType(obs, Cesto)):
+                    return 11
+                elif (self.containsType(obs, Agente)):
+                    return 12
+                else:
+                    return 5
+            elif (self.containsType(obs, Agente)):
+                return 6
+            elif (self.containsType(obs, Cesto)):
+                if (self.containsType(obs, Agente)):
+                    return 14
+                else:
+                    return 7
+            else:
+                return 1
+        elif (self.containsType(obs, Recurso)):
+            if (self.containsType(obs, Cesto)):
+                if(self.containsType(obs, Agente)):
+                    return 13
+                else:
+                    return 8
+            elif (self.containsType(obs, Agente)):
+                return 9
+            else:
+                return 2
+        elif (self.containsType(obs, Agente)):
+            if (self.containsType(obs, Cesto)):
+                return 10
+            else:
+                return 3
+        elif (self.containsType(obs, Cesto)):
+            return 4
+        else:  # so espacos vazios
+            return 0

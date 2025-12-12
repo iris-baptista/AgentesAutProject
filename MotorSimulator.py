@@ -230,12 +230,13 @@ class MotorSimulator:
                 obj = self.mundo.getObject(newPos[0], newPos[1])
                 match obj:
                     case Recurso(): #tem de sobrepor recurso para collect
+                        moved = True #dropper tb sobrepoem o recurso
+
                         if(type(a) == Forager): #so sobrepoem o recurso se for um forager
                             print(f"Encontrou o recurso {obj.name} que vale {obj.pontos} ponto(s)")
 
                             a.collectRecurso(obj)
                             self.mundo.removeRecurso(obj)
-                            moved = True
                     case EspacoVazio():
                         moved= True
                     case _:  # se for outro agente, um obstaculo, ou um cesto
@@ -349,6 +350,8 @@ class MotorSimulator:
         print("Evolution complete.")
 
     def testFarol(self):
+        #com genetic
+        #com q learning
         pass
 
     def testForaging(self):

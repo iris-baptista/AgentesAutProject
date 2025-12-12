@@ -1,7 +1,7 @@
 from Agente import Agente
 import numpy as np
 import time
-from Ambiente import EspacoVazio, Cesto
+from Ambiente import EspacoVazio, Cesto, Recurso, Obstaculo
 
 class Dropper(Agente):
     pontosDepositados= 0
@@ -42,7 +42,7 @@ class Dropper(Agente):
         tamanho = self.mundoPertence.sizeMap
         if (newPos[0] < tamanho and newPos[0] >= 0 and newPos[1] < tamanho and newPos[1] >= 0):  # dentro do mapa
             obj = self.mundoPertence.getObject(newPos[0], newPos[1])
-            match obj:  # pode sobrepor espacos vazios
+            match obj:  # pode sobrepor espacos vazios e recursos
                 case EspacoVazio():
                     self.atualizarPosicao(newPos)
                     # print("Movido para", newPos)
@@ -51,6 +51,8 @@ class Dropper(Agente):
                     for s in surrounding:
                         if (type(s) == Cesto):
                             self.depositRecursos()
+                case Recurso():
+                    self.atualizarPosicao(newPos); #sobrepoem sem colecionar
                 case _:  #nao pode sobrepor agentes ou obstaculos ou cestos ou recursos
                     # print("Obstaculo encontrado!")
                     return False
@@ -122,8 +124,45 @@ class Dropper(Agente):
 
         self.qTable = QTable
         print(QTable)
+        self.showGraph();
 
         # queremos ver a tabela visualmente depois dos episodios?
 
-    def nextState(self, estado, acao):  # estado vai ser o mundo? ou o index
-        pass
+    def nextState(self):  # estado vai ser o mundo? ou o index
+        obs = self.mundoPertence.observacaoPara((self.x, self.y))  # observacao para novo index
+        if (self.containsType(obs, Obstaculo)):
+            if (self.containsType(obs, Recurso)):
+                if (self.containsType(obs, Cesto)):
+                    return 11
+                elif (self.containsType(obs, Agente)):
+                    return 12
+                else:
+                    return 5
+            elif (self.containsType(obs, Agente)):
+                return 6
+            elif (self.containsType(obs, Cesto)):
+                if (self.containsType(obs, Agente)):
+                    return 14
+                else:
+                    return 7
+            else:
+                return 1
+        elif (self.containsType(obs, Recurso)):
+            if (self.containsType(obs, Cesto)):
+                if (self.containsType(obs, Agente)):
+                    return 13
+                else:
+                    return 8
+            elif (self.containsType(obs, Agente)):
+                return 9
+            else:
+                return 2
+        elif (self.containsType(obs, Agente)):
+            if (self.containsType(obs, Cesto)):
+                return 10
+            else:
+                return 3
+        elif (self.containsType(obs, Cesto)):
+            return 4
+        else:  # so espacos vazios
+            return 0
