@@ -97,17 +97,18 @@ class Finder(Agente):
         numEpisodios = 2000  # aumentar
 
         for episodio in range(numEpisodios): #deviamos comecar sempre no mesmo estado?
-            if(episodio % 100 == 0):
-                print("Comecar episodio:",episodio+1)
-                learningRate-= 0.001
+            # if(episodio % 100 == 0):
+            #     print("Comecar episodio:",episodio+1)
+            #     print("QTable atual", QTable)
+            #     learningRate-= 0.001
 
-            # print("Comecar episodio:",episodio)
+            print("Comecar episodio:",episodio)
 
             #escolhe uma posicao aleatoria para comecar
             self.mundoPertence.resetStart() #double check later
             currentState= self.nextState() #get state for stating pos
 
-            # print("starting while")
+            print("starting while")
             while(True):
                 #escolher INDEX da proxima acao
                 if(np.random.rand() <= probExplorar): #escolher se vamos explorar ou aproveitar
@@ -120,7 +121,7 @@ class Finder(Agente):
                 moved= self.acao(self.actions[action])
                 # print("moved?", moved)
 
-                #nextState= self.nextState(currentState, action)
+                # nextState= self.nextState(currentState, action)
                 nextState= self.nextState()
                 # print("nextState is", nextState)
 
@@ -149,7 +150,7 @@ class Finder(Agente):
 
         self.qTable= QTable
         print(QTable)
-        self.showGraph();
+        self.showGraph()
 
     # def nextState(self, estado, acao): #estado e index
     #     #obs resultado de action
