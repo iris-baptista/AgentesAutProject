@@ -40,7 +40,7 @@ class Dropper(Agente):
         tamanho = self.mundoPertence.sizeMap
         if (newPos[0] < tamanho and newPos[0] >= 0 and newPos[1] < tamanho and newPos[1] >= 0):  # dentro do mapa
             obj = self.mundoPertence.getObject(newPos[0], newPos[1])
-            match obj:  # pode sobrepor espacos vazios e recursos
+            match obj:  # pode sobrepor espacos vazios
                 case EspacoVazio():
                     self.atualizarPosicao(newPos)
                     # print("Movido para", newPos)
@@ -49,8 +49,6 @@ class Dropper(Agente):
                     for s in surrounding:
                         if (type(s) == Cesto):
                             self.depositRecursos()
-                case Recurso():
-                    self.atualizarPosicao(newPos); #sobrepoem sem colecionar
                 case _:  #nao pode sobrepor agentes ou obstaculos ou cestos ou recursos
                     # print("Obstaculo encontrado!")
                     return False

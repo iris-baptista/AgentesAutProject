@@ -186,22 +186,17 @@ class MotorSimulator:
                         if(newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
                             break
 
-                    surrounding= self.mundo.observacaoPara(newPos)
-                    present= False
-                    for s in surrounding:
-                        if(type(s) == LightHouse):
-                            present= True
-
-                    if(present == True):
-                        a.found = True
+                    obj = self.mundo.getObject(newPos[0], newPos[1])
+                    if (type(obj) == EspacoVazio):
                         a.atualizarPosicao(newPos)
-                        print("Encontrou o farol!")
-                    else: #se nao encontrou o farol
-                        obj = self.mundo.getObject(newPos[0], newPos[1])
-                        if (type(obj) == EspacoVazio):
-                            a.atualizarPosicao(newPos)
-                        else: #obstaculo ou agente
-                            print("Obstaculo encontrado!")
+
+                        surrounding = self.mundo.observacaoPara(newPos)
+                        for s in surrounding:
+                            if (type(s) == LightHouse):
+                                a.found = True
+                                print("Encontrou o farol!")
+                    else:  # obstaculo ou agente
+                        print("Obstaculo encontrado!")
                 else:
                     a.atualizarPosicao((-1, -1)) #para nao estar no mapa
 
@@ -230,13 +225,12 @@ class MotorSimulator:
                 obj = self.mundo.getObject(newPos[0], newPos[1])
                 match obj:
                     case Recurso(): #tem de sobrepor recurso para collect
-                        moved = True #dropper tb sobrepoem o recurso
-
                         if(type(a) == Forager): #so sobrepoem o recurso se for um forager
                             print(f"Encontrou o recurso {obj.name} que vale {obj.pontos} ponto(s)")
 
                             a.collectRecurso(obj)
                             self.mundo.removeRecurso(obj)
+                            moved = True  # dropper n sobrepoem o recurso
                     case EspacoVazio():
                         moved= True
                     case _:  # se for outro agente, um obstaculo, ou um cesto
