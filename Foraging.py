@@ -163,7 +163,7 @@ class Foraging: #ambiente
 
     #devolve objeto na posicao dada
     def getObject(self, x, y):
-        for a in self.agentes: #agente primeiro para sobrepor recursos
+        for a in self.agentes: #agente primeiro para sobrepor recursos (get rid of?)
             if x == a.x and y == a.y:
                 return a
         for c in self.cestos:
@@ -189,7 +189,7 @@ class Foraging: #ambiente
     def removeRecurso(self, r):
         self.recursos.remove(r)
 
-    # observacao para mandar a posicao dada
+    # observacao para mandar a posicao dada (valores dos sensores da posicao dada)
     def observacaoPara(self, pos):  # devolve array com objetos a volta do agente
         above = self.getObject(pos[0], pos[1] + 1)
         bellow = self.getObject(pos[0], pos[1] - 1)
@@ -198,7 +198,7 @@ class Foraging: #ambiente
 
         return [above, bellow, left, right]
 
-    def resetStart(self): #devolve uma posicao aleatoria para o inicio
+    def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
         for a in self.getAgentes():
             while (True):  # check position not taken
                 newPos = (random.randint(0, self.sizeMap - 1), random.randint(0, self.sizeMap - 1))

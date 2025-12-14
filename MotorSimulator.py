@@ -52,29 +52,12 @@ class MotorSimulator:
                 self.mundo = Farol(self.worldSize)
                 print("Mundo Farol: ")
                 self.displayMundo()
-
-                # while(True):
-                #     self.mundo= Farol(self.worldSize)
-                #     print("Mundo Farol: ")
-                #     self.displayMundo()
-                #
-                #     while(True): #verificar input valido
-                #         again= input("Quer gerar outro mundo?(y/n) ")
-                #         if(again == "n" or again == "y"):
-                #             break
-                #         else:
-                #             print("Opção inválida, por favor tente novamente")
-                #
-                #     if(again == "n"):
-                #         break
-
                 self.mundoOriginal= copy.deepcopy(self.mundo)
                 self.subMenu()
             elif choice == "2": #problema Foraging
-                # para automizar mais tarde
-                while (True):
+                while (True): #manter escolha para testing
                     self.mundo= Foraging(self.worldSize)
-                    print("Mundo Farol: ")
+                    print("Mundo Foraging: ")
                     self.displayMundo()
 
                     again = input("Quer gerar outro mundo?(y/n) ")
@@ -115,6 +98,9 @@ class MotorSimulator:
                     print("a aprender com algoritmo genetico!")
                 elif choice2 == "2": #q learning
                     print("A aprender com algoritmo Q-learning!")
+                    learningRate = 0.7  # demais? a menos? #% de info nova
+                    desconto = 0.9  # quanto mais alto maior a quantidade de info q passa para tras
+                    probExplorar = 0.6  # demais?
 
                     if(type(self.mundo) == Farol):
                         for a in self.mundo.getAgentes():
@@ -125,7 +111,7 @@ class MotorSimulator:
                                     a.qTable = np.zeros((8, len(Agente.actions))) #8 estados
                                     #NAO ESTA DAR!!!
 
-                        self.qLearningFarol(self.mundo)
+                        self.qLearningFarol(learningRate, desconto, probExplorar)
                     else:
                         for a in self.mundo.getAgentes():
                             if (type(a) != Coordenator):  # coordenador nao treina
@@ -135,29 +121,20 @@ class MotorSimulator:
                                     a.qTable = np.zeros((15, len(Agente.actions))) #15 variacoes possiveis para os sensores
                                     #NAO ESTA DAR!!!
 
-                        self.qLearningForaging(self.mundo)
+                        self.qLearningForaging(learningRate, desconto, probExplorar)
 
-                    # for a in self.mundo.getAgentes():
-                    #     if(type(a) != Coordenator): #coordenador nao treina
-                    #         a.setMundo(self.mundo)
-                    #         match a:
-                    #             case Finder():
-                    #                 pass
-                    #             case Forager():
-                    #                 goals= [2, 5, 8, 9, 11, 12, 13] #index de estado next to recurso
-                    #             case Dropper():
-                    #                 goals= [4, 7, 8, 10, 11, 13, 14] #index de estado next to cesto
-                    #
-                    #         a.qLearning(goals, Q, probExplorar, numEstados, numAcoes)
-                    #         print("Finished")
-                            #guardar o q no agente ou correr o algoritmo outra vez no  test
+                    index = 0
+                    for a in self.mundo.getAgentes():
+                        print("QTable final do Agente", (index + 1), ":", type(a).__name__, "\n", a.qTable)
+                        index += 1
+
+                    self.showGraphs()
                 else:
                     print("Opção inválida, por favor tente novamente")
             elif choice1 == "2": #modo teste
                 self.modoExecucao = 't'
                 print("a executar em modo de teste!")
 
-                #ver q tabela visualmente depois dos episodios?
                 if(type(self.mundo) == Farol):
                     self.testFarol()
                 else:
@@ -239,8 +216,6 @@ class MotorSimulator:
         print(f"Demorou ~{msegs} milisegundos para encontrar o farol!")
 
     def foragingBurro(self):
-        a= self.mundo.getAgentes()[0] #delete?
-
         initialTime= currentTime= time.time() #time() devolve tempo atual em segundos (desde epoch)
         while( (currentTime - initialTime) <= self.mundo.tempo): #"timer" para correr a quantidade de tempo dada
             for a in self.mundo.getAgentes():
@@ -374,44 +349,37 @@ class MotorSimulator:
 
         print("Evolution complete.")
 
-    def qLearningFarol(self, mundo):
-        learningRate = 0.7  # demais? a menos? #% de info nova
-        desconto = 0.9  # quanto mais alto maior a quantidade de info q passa para tras
-        probExplorar = 0.6  # demais?
+    def qLearningFarol(self, learningRate, desconto, probExplorar):
         goals = [2, 4, 6, 7]  # index de estado ao lado do farol
 
         print("Comecar episodio: 1")
         index = 0
-        for a in mundo.getAgentes():  # for each agent
+        for a in self.mundo.getAgentes():  # for each agent
             print("QTable initial do Agente", (index + 1), "\n", a.qTable)
             index += 1
 
         numEpisodios = 2000  # aumentar
-        for episodio in range(numEpisodios):  # deviamos comecar sempre no mesmo estado?
+        for episodio in range(numEpisodios):
             if((episodio+1) % 100 == 0):
                 index= 0
-                for a in mundo.getAgentes():  # for each agent
+                for a in self.mundo.getAgentes():  # for each agent
                     print("QTable atual do Agente", (index+1) ,"\n", a.qTable)
                     index+= 1
 
                 print("Comecar episodio:", episodio+1)
                 learningRate-= 0.001
 
-            # print("Comecar episodio:", episodio)
-
             # escolhe uma posicao aleatoria para comecar
-            mundo.resetStart()  # double check later
+            self.mundo.resetStart()
             currentStates= []
-            for a in mundo.getAgentes(): #for each agent
+            for a in self.mundo.getAgentes(): #for each agent
                 currentStates.append(a.nextState())  # get state for stating pos
                 a.found= False #comecar cada episodio com found= false
 
-            # print("starting while")
             while (True):
                 done = True
-                # print(currentStates)
                 index= 0
-                for a in mundo.getAgentes():
+                for a in self.mundo.getAgentes():
                     if(a.found == False): #so fazemos move os q ainda nao encontraram
                         done= False
 
@@ -421,15 +389,9 @@ class MotorSimulator:
                         else:
                             action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
 
-                        # print("Index is", action)
-                        # print("Action is", self.actions[action])
                         moved = a.acao(Agente.actions[action])
-                        # print("moved?", moved)
 
-                        # nextState= self.nextState(currentState, action)
                         nextState = a.nextState()
-                        # print("nextState is", nextState)
-
                         if (nextState in goals):
                             reward = 1
                         elif (moved == False):
@@ -437,18 +399,14 @@ class MotorSimulator:
                         else:
                             reward = 0
 
-                        # print("reward is", reward)
                         # atualizar matriz
                         a.qTable[currentStates[index], action] = (
                                 ((1 - learningRate) * a.qTable[currentStates[index], action]) +
                                 (learningRate * (reward + (desconto * np.max(a.qTable[nextState])))))
 
-                        # print("goal?")
                         if (nextState in goals):  # para quando encontra farol
-                            # print("yes")
                             a.found= True #agente conclui
                             break
-                        # print("no")
 
                         currentStates[index] = nextState
                         index+= 1
@@ -460,21 +418,10 @@ class MotorSimulator:
 
             probExplorar -= 0.0001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
 
-        #self.qTable = QTable
-        for a in mundo.getAgentes():
-            print("QTable final do Agente", (index+1) ,"\n", a.qTable)
-            index+= 1
-
-        self.showGraphs(mundo.getAgentes())
-
-    def qLearningForaging(self, mundo):
-        learningRate = 0.7  # demais? a menos? #% de info nova
-        desconto = 0.9  # quanto mais alto maior a quantidade de info q passa para tras
-        probExplorar = 0.6  # demais?
-
+    def qLearningForaging(self, learningRate, desconto, probExplorar):
         print("Comecar episodio: 1")
         index = 0
-        for a in mundo.getAgentes():  # for each agent
+        for a in self.mundo.getAgentes():  # for each agent
             print("QTable initial do Agente", (index + 1), "\n", a.qTable)
             index += 1
 
@@ -482,19 +429,17 @@ class MotorSimulator:
         for episodio in range(numEpisodios):  # deviamos comecar sempre no mesmo estado?
             if ((episodio + 1) % 100 == 0):
                 index = 0
-                for a in mundo.getAgentes():  # for each agent
+                for a in self.mundo.getAgentes():  # for each agent
                     print("QTable atual do Agente", (index + 1), "\n", a.qTable)
                     index += 1
 
                 print("Comecar episodio:", episodio + 1)
                 learningRate -= 0.001
 
-            # print("Comecar episodio:", episodio)
-
             # escolhe uma posicao aleatoria para comecar
-            mundo.resetStart()  # double check later
+            self.mundo.resetStart()
             currentStates = []
-            for a in mundo.getAgentes():  # for each agent
+            for a in self.mundo.getAgentes():  # for each agent
                 currentStates.append(a.nextState())  # get state for stating pos
 
                 if(type(a) == Forager):
@@ -502,12 +447,10 @@ class MotorSimulator:
                 else: #se for um dropper
                     a.pontosDepositados= 0 #comecar cada episodio sem pontos
 
-            # print("starting while")
             initialTime = currentTime = time.time()
             while ((currentTime - initialTime) <= self.mundo.tempo):
-                # print(currentStates)
                 index = 0
-                for a in mundo.getAgentes():
+                for a in self.mundo.getAgentes():
                     match a:
                         case Forager():
                             goals= [2, 5, 8, 9, 11, 12, 13]  # index de estado next to recurso
@@ -520,16 +463,9 @@ class MotorSimulator:
                     else:
                         action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
 
-                    # print("Index is", action)
-                    # print("Action is", self.actions[action])
-                    # acted= se moved ou depositou
                     moved = a.acao(Agente.actions[action])
-                    # print("moved?", moved)
 
-                    # nextState= self.nextState(currentState, action)
                     nextState = a.nextState()
-                    # print("nextState is", nextState)
-
                     if (nextState in goals):
                         reward = 1
                     elif (moved == False):
@@ -537,14 +473,10 @@ class MotorSimulator:
                     else:
                         reward = 0
 
-                    # print("reward is", reward)
                     # atualizar matriz
                     a.qTable[currentStates[index], action] = (
                             ((1 - learningRate) * a.qTable[currentStates[index], action]) +
                             (learningRate * (reward + (desconto * np.max(a.qTable[nextState])))))
-
-                    # print("goal?")
-                    # print("no")
 
                     currentStates[index] = nextState
                     index += 1
@@ -553,32 +485,34 @@ class MotorSimulator:
 
             probExplorar -= 0.0001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
 
-        # self.qTable = QTable
-        for a in mundo.getAgentes():
-            print("QTable final do Agente", (index + 1), "\n", a.qTable)
-            index += 1
+    def showGraphs(self):
+        agents= self.mundo.getAgentes()
 
-        self.showGraphs(mundo.getAgentes())
-
-    def showGraphs(self, agents):
         fig, graphs = plt.subplots(1, len(agents), figsize=(8, 8))
         fig.suptitle('Learned Q-values For Each Agent')
 
         if(len(agents) == 1):
             graphs = [graphs]
 
+        match self.mundo:
+            case Farol():
+                y = np.array(['0', '1', '2', '3', '4', '5', '6', '7'])
+                rangeY= 8
+            case Foraging():
+                y = np.array(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'])
+                rangeY= 15
+
         x = np.array(['Up', 'Right', 'Down', 'Left'])
-        y = np.array(['0', '1', '2', '3', '4', '5', '6', '7'])
         for i in range(0, len(agents)):
             currentQTable= agents[i].qTable
 
             #setting up graph
-            graphs[i].set_title(f'Agente {i + 1}')
+            graphs[i].set_title(f'Agente {i + 1}: {type(agents[i]).__name__}')
             image = graphs[i].imshow(currentQTable, cmap='magma', interpolation='nearest')  # RdBu, PiYG
             graphs[i].set_xlabel('Action')
             graphs[i].set_ylabel('Estado')
             graphs[i].set_xticks(np.arange(4), x)
-            graphs[i].set_yticks(np.arange(8), y)
+            graphs[i].set_yticks(np.arange(rangeY), y)
             graphs[i].invert_yaxis()
 
             #adding colorbar

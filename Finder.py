@@ -1,6 +1,5 @@
 from Agente import Agente
 import random
-import numpy as np
 from Ambiente import Obstaculo, LightHouse, EspacoVazio
 
 class Finder(Agente):
@@ -42,6 +41,7 @@ class Finder(Agente):
             # print("Out of Bounds!")
             return False
 
+    #Fns genetic
     def run_simulation(self):
         """Runs the agent's genotype in a fresh environment to get its behavior."""
         env = Farol()
@@ -91,72 +91,6 @@ class Finder(Agente):
             self.path.append((env.agentx, env.agenty))
 
     #Fns Q-Leaning
-    def qLearning(self, goals, QTable, probExplorar, numEstados, numAcoes): #rede neuronal onde?
-        learningRate = 0.7  # demais? a menos? #% de info nova
-        desconto = 0.9  # quanto mais alto maior a quantidade de info q passa para tras
-        numEpisodios = 2000  # aumentar
-
-        for episodio in range(numEpisodios): #deviamos comecar sempre no mesmo estado?
-            # if(episodio % 100 == 0):
-            #     print("Comecar episodio:",episodio+1)
-            #     print("QTable atual", QTable)
-            #     learningRate-= 0.001
-
-            print("Comecar episodio:",episodio)
-
-            #escolhe uma posicao aleatoria para comecar
-            self.mundoPertence.resetStart() #double check later
-            currentState= self.nextState() #get state for stating pos
-
-            print("starting while")
-            while(True):
-                #escolher INDEX da proxima acao
-                if(np.random.rand() <= probExplorar): #escolher se vamos explorar ou aproveitar
-                    action= np.random.randint(0, numAcoes) #usar uma action nova/aleatoria
-                else:
-                    action= np.argmax(QTable[currentState]) #usar um maximo conhecido
-
-                # print("Index is", action)
-                # print("Action is", self.actions[action])
-                moved= self.acao(self.actions[action])
-                # print("moved?", moved)
-
-                # nextState= self.nextState(currentState, action)
-                nextState= self.nextState()
-                # print("nextState is", nextState)
-
-                if(nextState in goals):
-                    reward= 1
-                elif(moved == False):
-                    reward= -1
-                else:
-                    reward= 0
-
-                # print("reward is", reward)
-                #atualizar matriz
-                QTable[currentState,action]= (
-                        ( (1 - learningRate) * QTable[currentState, action] ) +
-                        (learningRate * ( reward + ( desconto * np.max(QTable[nextState])))))
-
-                # print("goal?")
-                if(nextState in goals): #para quando encontra farol
-                    # print("yes")
-                    break
-                # print("no")
-
-                currentState= nextState
-
-            probExplorar-= 0.0001 #pouco/mais? #diminuir probabilidade de explorar
-
-        self.qTable= QTable
-        print(QTable)
-        self.showGraph()
-
-    # def nextState(self, estado, acao): #estado e index
-    #     #obs resultado de action
-    #     #depending on sensors return next
-    #     pass
-
     def nextState(self): # estados representados por o index!
         obs= self.mundoPertence.observacaoPara((self.x, self.y)) #observacao para novo index
         if(self.containsType(obs, Obstaculo)):

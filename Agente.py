@@ -58,10 +58,6 @@ class Agente(ABC):
         self.mundoPertence= m
 
     @abstractmethod
-    def qLearning(self, goal, QTable, probExplorar, numEstados, numAcoes):  # rede neuronal onde?
-        pass
-
-    @abstractmethod
     def nextState(self, estado, acao):
         pass
 
@@ -71,25 +67,3 @@ class Agente(ABC):
                 return True
 
         return False
-
-    def showGraph(self):
-        plt.figure(figsize=(6, 6))
-        plt.title('Q-Values')
-
-        plt.imshow(self.qTable, 'magma', interpolation='nearest')  #Spectral, magma, plasma, YlOrRd, RdBu, PiYG
-        plt.xticks(np.arange(4), ['Up', 'Right', 'Down', 'Left'])
-        plt.xlabel('Action')
-        plt.yticks(np.arange(8), ['0', '1', '2', '3', '4', '5', '6', '7'])
-        plt.ylabel('Estado')
-        plt.gca().invert_yaxis()
-
-        for i in range(8):
-            for j in range(4):
-                value = self.qTable[i][j]
-                if (value <= np.max(self.qTable) / 2):
-                    plt.text(j, i, f'{value:.2f}', ha='center', va='center', color='white')
-                else:
-                    plt.text(j, i, f'{value:.2f}', ha='center', va='center', color='black')
-
-        plt.colorbar()
-        plt.show()

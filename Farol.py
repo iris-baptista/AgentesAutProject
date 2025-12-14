@@ -168,7 +168,7 @@ class Farol: #foraging
 
         return [above, bellow, left, right]
 
-    def resetStart(self): #devolve uma posicao aleatoria para o inicio
+    def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
         for a in self.getAgentes():
             while (True):  # check position not taken
                 newFinderPos = (random.randint(0, self.sizeMap - 1), random.randint(0, self.sizeMap - 1))
