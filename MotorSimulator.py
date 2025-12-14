@@ -1,3 +1,6 @@
+from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
 from Coordenator import Coordenator
 from Farol import Farol
@@ -124,8 +127,15 @@ class MotorSimulator:
 
                         self.qLearningFarol(self.mundo)
                     else:
-                        numEstados= 15 #variacoes possiveis para os sensores
+                        for a in self.mundo.getAgentes():
+                            if (type(a) != Coordenator):  # coordenador nao treina
+                                a.setMundo(self.mundo)
 
+                                if (a.qTable is None): #se e a primeira vez a correr o algoritmo
+                                    a.qTable = np.zeros((15, len(Agente.actions))) #15 variacoes possiveis para os sensores
+                                    #NAO ESTA DAR!!!
+
+                        self.qLearningForaging(self.mundo)
 
                     # for a in self.mundo.getAgentes():
                     #     if(type(a) != Coordenator): #coordenador nao treina
@@ -229,7 +239,7 @@ class MotorSimulator:
         print(f"Demorou ~{msegs} milisegundos para encontrar o farol!")
 
     def foragingBurro(self):
-        a= self.mundo.getAgentes()[0]
+        a= self.mundo.getAgentes()[0] #delete?
 
         initialTime= currentTime= time.time() #time() devolve tempo atual em segundos (desde epoch)
         while( (currentTime - initialTime) <= self.mundo.tempo): #"timer" para correr a quantidade de tempo dada
@@ -453,7 +463,140 @@ class MotorSimulator:
         #self.qTable = QTable
         for a in mundo.getAgentes():
             print("QTable final do Agente", (index+1) ,"\n", a.qTable)
-            a.showGraph()
+            index+= 1
+
+        self.showGraphs(mundo.getAgentes())
+
+    def qLearningForaging(self, mundo):
+        learningRate = 0.7  # demais? a menos? #% de info nova
+        desconto = 0.9  # quanto mais alto maior a quantidade de info q passa para tras
+        probExplorar = 0.6  # demais?
+
+        print("Comecar episodio: 1")
+        index = 0
+        for a in mundo.getAgentes():  # for each agent
+            print("QTable initial do Agente", (index + 1), "\n", a.qTable)
+            index += 1
+
+        numEpisodios = 2000  # aumentar
+        for episodio in range(numEpisodios):  # deviamos comecar sempre no mesmo estado?
+            if ((episodio + 1) % 100 == 0):
+                index = 0
+                for a in mundo.getAgentes():  # for each agent
+                    print("QTable atual do Agente", (index + 1), "\n", a.qTable)
+                    index += 1
+
+                print("Comecar episodio:", episodio + 1)
+                learningRate -= 0.001
+
+            # print("Comecar episodio:", episodio)
+
+            # escolhe uma posicao aleatoria para comecar
+            mundo.resetStart()  # double check later
+            currentStates = []
+            for a in mundo.getAgentes():  # for each agent
+                currentStates.append(a.nextState())  # get state for stating pos
+
+                if(type(a) == Forager):
+                    a.recursosCollected= [] #comecar cada episodio sem recursos
+                else: #se for um dropper
+                    a.pontosDepositados= 0 #comecar cada episodio sem pontos
+
+            # print("starting while")
+            initialTime = currentTime = time.time()
+            while ((currentTime - initialTime) <= self.mundo.tempo):
+                # print(currentStates)
+                index = 0
+                for a in mundo.getAgentes():
+                    match a:
+                        case Forager():
+                            goals= [2, 5, 8, 9, 11, 12, 13]  # index de estado next to recurso
+                        case Dropper():
+                            goals= [4, 7, 8, 10, 11, 13, 14]  # index de estado next to cesto
+
+                    # escolher INDEX da proxima acao
+                    if (np.random.rand() <= probExplorar):  # escolher se vamos explorar ou aproveitar
+                        action = np.random.randint(0, len(Agente.actions))  # usar uma action nova/aleatoria
+                    else:
+                        action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
+
+                    # print("Index is", action)
+                    # print("Action is", self.actions[action])
+                    # acted= se moved ou depositou
+                    moved = a.acao(Agente.actions[action])
+                    # print("moved?", moved)
+
+                    # nextState= self.nextState(currentState, action)
+                    nextState = a.nextState()
+                    # print("nextState is", nextState)
+
+                    if (nextState in goals):
+                        reward = 1
+                    elif (moved == False):
+                        reward = -1
+                    else:
+                        reward = 0
+
+                    # print("reward is", reward)
+                    # atualizar matriz
+                    a.qTable[currentStates[index], action] = (
+                            ((1 - learningRate) * a.qTable[currentStates[index], action]) +
+                            (learningRate * (reward + (desconto * np.max(a.qTable[nextState])))))
+
+                    # print("goal?")
+                    # print("no")
+
+                    currentStates[index] = nextState
+                    index += 1
+
+                currentTime = time.time()
+
+            probExplorar -= 0.0001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
+
+        # self.qTable = QTable
+        for a in mundo.getAgentes():
+            print("QTable final do Agente", (index + 1), "\n", a.qTable)
+            index += 1
+
+        self.showGraphs(mundo.getAgentes())
+
+    def showGraphs(self, agents):
+        fig, graphs = plt.subplots(1, len(agents), figsize=(8, 8))
+        fig.suptitle('Learned Q-values For Each Agent')
+
+        if(len(agents) == 1):
+            graphs = [graphs]
+
+        x = np.array(['Up', 'Right', 'Down', 'Left'])
+        y = np.array(['0', '1', '2', '3', '4', '5', '6', '7'])
+        for i in range(0, len(agents)):
+            currentQTable= agents[i].qTable
+
+            #setting up graph
+            graphs[i].set_title(f'Agente {i + 1}')
+            image = graphs[i].imshow(currentQTable, cmap='magma', interpolation='nearest')  # RdBu, PiYG
+            graphs[i].set_xlabel('Action')
+            graphs[i].set_ylabel('Estado')
+            graphs[i].set_xticks(np.arange(4), x)
+            graphs[i].set_yticks(np.arange(8), y)
+            graphs[i].invert_yaxis()
+
+            #adding colorbar
+            divider = make_axes_locatable(graphs[i])
+            cax = divider.append_axes("right", size="5%", pad=0.08)
+            plt.colorbar(image, cax=cax)
+
+            #ajustar cores de numeros para dar para ler
+            for j in range(len(currentQTable)):
+                for k in range(4):
+                    value = currentQTable[j][k]
+                    if (value <= np.max(currentQTable) / 2):
+                        graphs[i].text(k, j, f'{value:.2f}', ha='center', va='center', color='white')
+                    else:
+                        graphs[i].text(k, j, f'{value:.2f}', ha='center', va='center', color='black')
+
+        fig.subplots_adjust(wspace=0.5) #para graficos nao estarem colados
+        plt.show()
 
     def testFarol(self):
         #com genetic

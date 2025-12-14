@@ -3,7 +3,6 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 class Agente(ABC):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
     mundoPertence= None
