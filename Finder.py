@@ -1,9 +1,8 @@
 from Agente import Agente
 import random
+from Ambiente import Obstaculo, LightHouse, EspacoVazio
 
 class Finder(Agente):
-    actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-
     #construtor
     def __init__(self, posInitial): #genotype e o caminho q o agente utiliza, genotype= None
         self.x= posInitial[0]
@@ -19,11 +18,30 @@ class Finder(Agente):
         for i in range(0, self.steps):
             self.genotype.append(random.choice(self.actions))
 
-    def acaoBurro(self): #para ele fazer move para o farol especificamente
-        choice= random.choice(self.actions)
+    def acao(self, action):
+        newPos = (action[0] + self.x, action[1] + self.y)
 
-        return choice
+        # so muda de posicao se for uma posicao valida/der para sobrepor!
+        tamanho = self.mundoPertence.sizeMap
+        if (newPos[0] < tamanho and newPos[0] >= 0 and newPos[1] < tamanho and newPos[1] >= 0):  # dentro do mapa
+            obj = self.mundoPertence.getObject(newPos[0], newPos[1])
+            match obj:  # pode sobrepor espacos vazios
+                case EspacoVazio():
+                    self.atualizarPosicao(newPos)
+                    # print("Movido para", newPos)
+                case LightHouse():
+                    self.found = True
+                    # print("Encontrou o farol!")
+                case _: # nao pode sobrepor agentes ou obstaculos
+                    # print("Obstaculo encontrado!")
+                    return False
 
+            return True
+        else:
+            # print("Out of Bounds!")
+            return False
+
+    #Fns genetic
     def run_simulation(self):
         """Runs the agent's genotype in a fresh environment to get its behavior."""
         env = Farol()
@@ -71,3 +89,26 @@ class Finder(Agente):
             # 5. Record behavior
             self.behavior.add((env.agentx, env.agenty))
             self.path.append((env.agentx, env.agenty))
+
+    #Fns Q-Leaning
+    def nextState(self): # estados representados por o index!
+        obs= self.mundoPertence.observacaoPara((self.x, self.y)) #observacao para novo index
+        if(self.containsType(obs, Obstaculo)):
+            if(self.containsType(obs, LightHouse)):
+                if(self.containsType(obs, Agente)):
+                    return 7
+                else: #so farol, obstaculo, e espaco vazio
+                    return 4
+            elif(self.containsType(obs, Agente)):
+                return 5
+            else: #so obstaculos e espacos vazios
+                return 1
+        elif(self.containsType(obs, LightHouse)):
+            if(self.containsType(obs, Agente)):
+                return 6
+            else: #so farol e espaco vazio
+                return 2
+        elif(self.containsType(obs, Agente)):
+            return 3
+        else: #so espacos vazios
+            return 0

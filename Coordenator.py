@@ -8,12 +8,21 @@ class Coordenator(Agente):
         self.x= posInitial[0]
         self.y= posInitial[1]
 
-    #devolve proxima coord na direcao do farol para o agente
+    #devolve direcao do farol para o agente
     def toFarol(self): #devia passar agente no parametro?
         pass
 
+    #coordenador does not move
     def acaoBurro(self):
         pass
 
+    def acao(self, action):
+        pass
+
+    # Fns genetic (coordenador is not trained!)
     def run_simulation(self):
+        pass
+
+    # Fns Q-Leaning (coordenador is not trained!)
+    def nextState(self):
         pass

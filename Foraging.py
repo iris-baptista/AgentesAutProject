@@ -4,7 +4,7 @@ from Dropper import Dropper
 import random
 
 class Foraging: #ambiente
-    #tem atributes sizeMap, obstaculos, cestos, recursos, agentes, e tempo a correr
+    #tem atributes sizeMap, obstaculos, cestos, recursos, agentes, posicao initial dos agentes, recursosOriginais e tempo a correr
 
     def __init__(self, sizeMundo):
         self.sizeMap= sizeMundo
@@ -105,14 +105,19 @@ class Foraging: #ambiente
                 posRecursos.append((x, y))
 
         self.recursos = []
+        self.ogRecursos = []
         index = 1
         for r in posRecursos:
-            self.recursos.append(Recurso(f"R{index}", r[0], r[1]))
+            novoRecurso= Recurso(f"R{index}", r[0], r[1])
+            self.recursos.append(novoRecurso)
+            self.ogRecursos.append(novoRecurso)
             index += 1
 
+        self.agentes = []
+        self.ogPosAgentes = []
         numForagers = int(((file.readline()).split("=")[1]).split("\n")[0])
         posForagers = ((file.readline()).split("=")[1]).split("\n")[0]
-        self.agentes = []
+        foragers= []
         for i in range(0, numForagers):
             if(posForagers == "None"):
                 while (True):  # check position not taken
@@ -122,7 +127,10 @@ class Foraging: #ambiente
                         break
 
                 takenPos.append(foragerPos)
-                self.agentes.append(Forager(foragerPos))
+                self.ogPosAgentes.append(foragerPos)
+                newForager= Forager(foragerPos)
+                self.agentes.append(newForager)
+                foragers.append(newForager)
             else:
                 toConvert = posForagers[2:-2].split("),(")
                 for toC in toConvert:
@@ -130,7 +138,10 @@ class Foraging: #ambiente
                     foragerPos = (int(numbers[0]), int(numbers[1]))
 
                     takenPos.append(foragerPos)
-                    self.agentes.append(Forager(foragerPos))
+                    self.ogPosAgentes.append(foragerPos)
+                    newForager = Forager(foragerPos)
+                    self.agentes.append(newForager)
+                    foragers.append(newForager)
 
         numDroppers = int(((file.readline()).split("=")[1]).split("\n")[0])
         posDroppers = ((file.readline()).split("=")[1]).split("\n")[0]
@@ -143,7 +154,8 @@ class Foraging: #ambiente
                         break
 
                 takenPos.append(dropperPos)
-                self.agentes.append(Dropper(dropperPos))
+                self.ogPosAgentes.append(dropperPos)
+                self.agentes.append(Dropper(dropperPos, foragers))
             else:
                 toConvert = posDroppers[2:-2].split("),(")
                 for toC in toConvert:
@@ -151,13 +163,17 @@ class Foraging: #ambiente
                     dropperPos = (int(numbers[0]), int(numbers[1]))
 
                     takenPos.append(dropperPos)
-                    self.agentes.append(Dropper(dropperPos))
+                    self.ogPosAgentes.append(dropperPos)
+                    self.agentes.append(Dropper(dropperPos, foragers))
 
         self.tempo= float(((file.readline()).split("=")[1]).split("\n")[0])
         file.close()
 
     #devolve objeto na posicao dada
     def getObject(self, x, y):
+        for a in self.agentes: #agente primeiro para sobrepor recursos (get rid of?)
+            if x == a.x and y == a.y:
+                return a
         for c in self.cestos:
             if x == c.x and y == c.y:
                 #print(f"Encontrou o cesto {c.name}")
@@ -178,18 +194,40 @@ class Foraging: #ambiente
     def getAgentes(self):
         return self.agentes
 
+    def getOGPosAgentes(self):
+        return self.ogPosAgentes
+
     def removeRecurso(self, r):
         self.recursos.remove(r)
 
-    # #observacao para mandar ao agente dado?
-    # def observacaoPara(self, agente): #agente do tipo Agente
-    #     #devolve objeto do tipo Observation
-    #     pass
-    #
-    # #atualiza ambiente
-    # def atualizar(self):
-    #     pass
-    #
-    # #movimenta o agente/faz a sua accao?
-    # def agir(self, accao, agente): #accao do tipo accao, agente do tipo Agente
-    #     pass
+    # observacao para mandar a posicao dada (valores dos sensores da posicao dada)
+    def observacaoPara(self, pos):  # devolve array com objetos a volta do agente
+        above = self.getObject(pos[0], pos[1] + 1)
+        bellow = self.getObject(pos[0], pos[1] - 1)
+        left = self.getObject(pos[0] - 1, pos[1])
+        right = self.getObject(pos[0] + 1, pos[1])
+
+        return [above, bellow, left, right]
+
+    def resetMundo(self):
+        for i in range(0, len(self.getAgentes())):
+            a= self.getAgentes()[i]
+            a.atualizarPosicao(self.ogPosAgentes[i])
+
+            #resetting atributes
+            if(type(a) == Forager):
+                a.recursosCollected= []
+            else:
+                a.pontosDepositados= 0
+
+        self.recursos = self.ogRecursos.copy()
+
+    def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
+        for a in self.getAgentes():
+            while (True):  # check position not taken
+                newPos = (random.randint(0, self.sizeMap - 1), random.randint(0, self.sizeMap - 1))
+
+                if (type(self.getObject(newPos[0], newPos[1])) == EspacoVazio):
+                    break
+
+            a.atualizarPosicao(newPos)

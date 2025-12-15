@@ -1,12 +1,20 @@
 from abc import ABC, abstractmethod
+import random
+import matplotlib.pyplot as plt
+import numpy as np
 
 class Agente(ABC):
-    @abstractmethod
+    actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    mundoPertence= None
+    qTable = None #sera por isto?
+
     def acaoBurro(self):
-        pass
+        choice = random.choice(self.actions)
+
+        return choice
 
     @abstractmethod
-    def run_simulation(self):
+    def acao(self, action):
         pass
 
     def atualizarPosicao(self, pos):
@@ -14,6 +22,10 @@ class Agente(ABC):
         self.y= pos[1]
 
     # --- Genetic Algorithm ---
+    @abstractmethod
+    def run_simulation(self):
+        pass
+
     def calculate_objective_fitness(self): #pode ser abstrato???
         """Calculates the agent's goal-oriented fitness score."""
         key_reward = len(self.keys_found) * 100
@@ -27,7 +39,7 @@ class Agente(ABC):
         point = random.randint(1, len(parent1.genotype) - 1)
         child1_geno = parent1.genotype[:point] + parent2.genotype[point:]
         child2_geno = parent2.genotype[:point] + parent1.genotype[point:]
-        return Finder(child1_geno), Finder(child2_geno)
+        return Agente(child1_geno), Agente(child2_geno) #nao deixa fazer import a Finder por q cria um loop
 
     def mutate(self, mutation_rate):
         """Randomly changes some actions in the genotype."""
@@ -35,8 +47,23 @@ class Agente(ABC):
             if random.random() < mutation_rate:
                 self.genotype[i] = random.choice(self.actions)
 
-    def select_parent(population, tournament_size):
+    def select_parent(self, population, tournament_size):
         """Selects a parent using tournament selection based on *combined_fitness*."""
         tournament = random.sample(population, tournament_size)
         tournament.sort(key=lambda x: x.combined_fitness, reverse=True)
         return tournament[0]
+
+    # --- Q Learning ---
+    def setMundo(self, m):
+        self.mundoPertence= m
+
+    @abstractmethod
+    def nextState(self, estado, acao):
+        pass
+
+    def containsType(self, list, type):
+        for item in list:
+            if isinstance(item, type):
+                return True
+
+        return False
