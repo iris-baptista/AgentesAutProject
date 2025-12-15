@@ -4,7 +4,7 @@ from Dropper import Dropper
 import random
 
 class Foraging: #ambiente
-    #tem atributes sizeMap, obstaculos, cestos, recursos, agentes, e tempo a correr
+    #tem atributes sizeMap, obstaculos, cestos, recursos, agentes, posicao initial dos agentes, recursosOriginais e tempo a correr
 
     def __init__(self, sizeMundo):
         self.sizeMap= sizeMundo
@@ -105,12 +105,16 @@ class Foraging: #ambiente
                 posRecursos.append((x, y))
 
         self.recursos = []
+        self.ogRecursos = []
         index = 1
         for r in posRecursos:
-            self.recursos.append(Recurso(f"R{index}", r[0], r[1]))
+            novoRecurso= Recurso(f"R{index}", r[0], r[1])
+            self.recursos.append(novoRecurso)
+            self.ogRecursos.append(novoRecurso)
             index += 1
 
         self.agentes = []
+        self.ogPosAgentes = []
         numForagers = int(((file.readline()).split("=")[1]).split("\n")[0])
         posForagers = ((file.readline()).split("=")[1]).split("\n")[0]
         foragers= []
@@ -123,6 +127,7 @@ class Foraging: #ambiente
                         break
 
                 takenPos.append(foragerPos)
+                self.ogPosAgentes.append(foragerPos)
                 newForager= Forager(foragerPos)
                 self.agentes.append(newForager)
                 foragers.append(newForager)
@@ -133,6 +138,7 @@ class Foraging: #ambiente
                     foragerPos = (int(numbers[0]), int(numbers[1]))
 
                     takenPos.append(foragerPos)
+                    self.ogPosAgentes.append(foragerPos)
                     newForager = Forager(foragerPos)
                     self.agentes.append(newForager)
                     foragers.append(newForager)
@@ -148,6 +154,7 @@ class Foraging: #ambiente
                         break
 
                 takenPos.append(dropperPos)
+                self.ogPosAgentes.append(dropperPos)
                 self.agentes.append(Dropper(dropperPos, foragers))
             else:
                 toConvert = posDroppers[2:-2].split("),(")
@@ -156,6 +163,7 @@ class Foraging: #ambiente
                     dropperPos = (int(numbers[0]), int(numbers[1]))
 
                     takenPos.append(dropperPos)
+                    self.ogPosAgentes.append(dropperPos)
                     self.agentes.append(Dropper(dropperPos, foragers))
 
         self.tempo= float(((file.readline()).split("=")[1]).split("\n")[0])
@@ -186,6 +194,9 @@ class Foraging: #ambiente
     def getAgentes(self):
         return self.agentes
 
+    def getOGPosAgentes(self):
+        return self.ogPosAgentes
+
     def removeRecurso(self, r):
         self.recursos.remove(r)
 
@@ -197,6 +208,12 @@ class Foraging: #ambiente
         right = self.getObject(pos[0] + 1, pos[1])
 
         return [above, bellow, left, right]
+
+    def resetMundo(self):
+        for i in range(0, len(self.getAgentes())):
+            self.getAgentes()[i].atualizarPosicao(self.ogPosAgentes[i])
+
+        self.recursos = self.ogRecursos.copy()
 
     def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
         for a in self.getAgentes():

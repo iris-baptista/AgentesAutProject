@@ -31,7 +31,6 @@ def compute_novelty(current_behavior, archive, k=5):
     return sum(distances[:k]) / k if len(distances) >= k else sum(distances) / len(distances)
 
 class MotorSimulator:
-    mundoOriginal= None
     mundo= None #instancia inicial
     modoExecucao= '' #a= aprendizagem, t= teste
 
@@ -52,7 +51,6 @@ class MotorSimulator:
                 self.mundo = Farol(self.worldSize)
                 print("Mundo Farol: ")
                 self.displayMundo()
-                self.mundoOriginal= copy.deepcopy(self.mundo)
                 self.subMenu()
             elif choice == "2": #problema Foraging
                 while (True): #manter escolha para testing
@@ -64,7 +62,6 @@ class MotorSimulator:
                     if (again == "n"):
                         break
 
-                self.mundoOriginal= copy.deepcopy(self.mundo)
                 self.subMenu()
             elif choice == "0": #fechar programa
                 print("A terminar...")
@@ -74,7 +71,7 @@ class MotorSimulator:
 
     def subMenu(self):
         while(True):
-            self.mundo= copy.deepcopy(self.mundoOriginal) #para comecar sempre no mesmo estado inicial
+            self.mundo.resetMundo()
 
             print("\n==== Modo de Execução ====")
             print("  1. Modo de Aprendizagem (Learning Mode)")
@@ -109,7 +106,6 @@ class MotorSimulator:
 
                                 if (a.qTable is None): #se e a primeira vez a correr o algoritmo
                                     a.qTable = np.zeros((8, len(Agente.actions))) #8 estados
-                                    #NAO ESTA DAR!!!
 
                         self.qLearningFarol(learningRate, desconto, probExplorar)
                     else:
@@ -429,6 +425,9 @@ class MotorSimulator:
 
                 print("Comecar episodio:", episodio + 1)
                 learningRate -= 0.001
+
+            #por os rescursos de volta
+            self.mundo.resetMundo()
 
             # escolhe uma posicao aleatoria para comecar
             self.mundo.resetStart()

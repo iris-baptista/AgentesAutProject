@@ -4,12 +4,13 @@ from Coordenator import Coordenator
 import random
 
 class Farol: #foraging
-    # tem atributes sizeMap, obstaculos, farol, e agentes!
+    # tem atributes sizeMap, obstaculos, farol, agentes, e a posicao initial dos agentes!
 
     def __init__(self, sizeMundo): #nao passei o nome do ficheiro ja q e sempre o mesmo para o farol
         self.sizeMap = sizeMundo
         self.obstaculos = []
         self.agentes = []
+        self.ogPosAgentes = []
         takenPos = [] #nao e uma atribute, so para facilitar esta parte das definicoes
 
         file= open("config_farol.txt", "r") #comecar leitura de configuracoes
@@ -76,6 +77,7 @@ class Farol: #foraging
                         break
 
                 takenPos.append(finderPos)
+                self.ogPosAgentes.append(finderPos)
                 self.agentes.append(Finder(finderPos))
 
             else: #no formato [(num,num),(num,num)...]
@@ -85,6 +87,7 @@ class Farol: #foraging
                     finderPos= (int(numbers[0]), int(numbers[1]))
 
                     takenPos.append(finderPos)
+                    self.ogPosAgentes.append(finderPos)
                     self.agentes.append(Finder(finderPos))
 
         numCoords= int(((file.readline()).split("=")[1]).split("\n")[0])
@@ -98,6 +101,7 @@ class Farol: #foraging
                         break
 
                 takenPos.append(coordPos)
+                self.ogPosAgentes.append(coordPos)
                 self.agentes.append(Coordenator(coordPos))
 
             else: #no formato [(num,num),(num,num)...]
@@ -107,6 +111,7 @@ class Farol: #foraging
                     coordPos= (int(numbers[0]), int(numbers[1]))
 
                     takenPos.append(coordPos)
+                    self.ogPosAgentes.append(coordPos)
                     self.agentes.append(Coordenator(coordPos))
 
         file.close()
@@ -159,6 +164,9 @@ class Farol: #foraging
     def getAgentes(self):
         return self.agentes
 
+    def getOGPosAgentes(self):
+        return self.ogPosAgentes
+
     #observacao para mandar a posicao dada
     def observacaoPara(self, pos): #devolve array com objetos a volta do agente
         above= self.getObject(pos[0], pos[1]+1)
@@ -167,6 +175,10 @@ class Farol: #foraging
         right= self.getObject(pos[0]+1, pos[1])
 
         return [above, bellow, left, right]
+
+    def resetMundo(self):
+        for i in range(0, len(self.getAgentes())):
+            self.getAgentes()[i].atualizarPosicao(self.ogPosAgentes[i])
 
     def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
         for a in self.getAgentes():
