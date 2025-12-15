@@ -1,11 +1,13 @@
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
+from Coordenator import Coordenator
 from Farol import Farol
+from Forager import Forager
 from Foraging import Foraging
 from Agente import Agente
 from Finder import Finder
+from Dropper import Dropper
 import time
 import random
-from Agente import select_parent
 
 def jaccard_distance(set1, set2):
     intersection = len(set1 & set2)
@@ -58,16 +60,22 @@ class MotorSimulator:
             print(row)
 
     def genetic(self, population, gen):
-        # --- EA Hyperparameters ---
-        POPULATION_SIZE = population
-        NUM_GENERATIONS = gen
+        POPULATION_SIZE = int(population)
+        NUM_GENERATIONS = int(gen)
         MUTATION_RATE = 0.01
         TOURNAMENT_SIZE = 3
         N_ARCHIVE_ADD = 5  # Add top 5 most novel agents to archive each gen
 
         # --- Initialization ---
         archive = []
-        population = [Finder() for _ in range(POPULATION_SIZE)]
+        population = []
+        if(type(self.mundo) == Farol):
+            for _ in range(POPULATION_SIZE):
+                population.append(Finder((0,0)))
+        else:
+            for _ in range(POPULATION_SIZE):
+                population.append(Forager((0,0)))
+                population.append(Dropper((0,0)))
         avg_fitness_per_gen = []
         best_paths_per_gen = []
 
@@ -79,7 +87,7 @@ class MotorSimulator:
 
             # 1. Evaluate Population
             for agent in population:
-                agent.run_simulation()
+                agent.run_simulation(self.worldSize)
 
                 # --- Calculate and combine scores ---
                 novelty_score = compute_novelty(agent.behavior, archive)
@@ -89,7 +97,7 @@ class MotorSimulator:
                 # You might need to add a weight, e.g.:
                 novelty_weight = 1000  # Make novelty competitive with fitness
                 agent.combined_fitness = (novelty_score * novelty_weight) + objective_score
-                total_fitness += agent.combined_fitness
+                total_fitness = total_fitness + agent.combined_fitness
 
             # 2. Sort population by *combined_fitness*
             population.sort(key=lambda x: x.combined_fitness, reverse=True)
@@ -124,10 +132,9 @@ class MotorSimulator:
             new_population.extend(population[:n_elite])
 
             while len(new_population) < POPULATION_SIZE:
-                parent1 = Agente.select_parent(population, TOURNAMENT_SIZE)  # This now uses combined_fitness
-                parent2 = Agente.select_parent(population, TOURNAMENT_SIZE)
+                parent1, parent2 = Agente.select_parent(population, TOURNAMENT_SIZE)
 
-                child1, child2 = Finder.crossover(parent1, parent2)
+                child1, child2 = parent1.crossover(parent1, parent2)
 
                 child1.mutate(MUTATION_RATE)
                 child2.mutate(MUTATION_RATE)
@@ -141,6 +148,7 @@ class MotorSimulator:
         print("Evolution complete.")
 
     def testing(self):
+        # agir baseada na política que aprenderam
         pass  # modo de teste
 
     def farolBurro(self):
@@ -241,8 +249,7 @@ class MotorSimulator:
                     if choice2 == "1":
                         population = input("Selecione o tamanho da população: ")
                         gen = input("Selecione o número de gerações: ")
-                        # self.genetic(population, gen)
-                        print("a aprender com algoritmo genetico!")
+                        self.genetic(population, gen)
                     elif choice2 == "2":
                         print("a aprender com algoritmo q-learning!")
                         # learning com algoritmo q-learning
@@ -277,25 +284,9 @@ class MotorSimulator:
 
                 if choice3 == "1":
                     self.modoExecucao = 'a'
-                    print("\n==== Política do Agente ====")
-                    print("  1. Algoritmo Genético")
-                    print("  2. Algoritmo Q-Learning")
-                    print("  0. Sair")
-
-                    choice4 = input("Selecione a opção: ")
-
-                    if choice4 == "1":
-                        print("a aprender com algoritmo genetico!")
-                        # learning com algoritmo genetico
-                        # self.genetico()
-                    elif choice4 == "2":
-                        print("a aprender com algoritmo q-learning!")
-                        # learning com algoritmo q-learning
-                        # self.qlearning()
-                    elif choice4 == "0":
-                        break
-                    else:
-                        print("Opção inválida, por favor tente novamente")
+                    print("a aprender com algoritmo q-learning!")
+                    # learning com algoritmo q-learning
+                    # self.qlearning()
                 elif choice3 == "2":
                     self.modoExecucao = 't'
                     # correr em modo teste

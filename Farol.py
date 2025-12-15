@@ -6,8 +6,8 @@ import random
 class Farol: #foraging
     # tem atributes sizeMap, obstaculos, farol, e agentes!
 
-    def __init__(self, sizeMundo): #nao passei o nome do ficheiro ja q e sempre o mesmo para o farol
-        self.sizeMap = sizeMundo
+    def __init__(self, world_size): #nao passei o nome do ficheiro ja q e sempre o mesmo para o farol
+        self.sizeMap = world_size
         takenPos = [] #nao e uma atribute, so para facilitar esta parte das definicoes
 
         file= open("config_farol.txt", "r") #comecar leitura de configuracoes
@@ -17,8 +17,8 @@ class Farol: #foraging
         if (posFarol == "None"): #se nao for dado, posicao aleatoria escolhida
             done= False
             while (done == False):
-                x = random.randint(0, sizeMundo - 1)
-                y = random.randint(0, sizeMundo - 1)
+                x = random.randint(0, world_size - 1)
+                y = random.randint(0, world_size - 1)
 
                 if ((x, y) not in takenPos):
                     done= True
@@ -33,13 +33,13 @@ class Farol: #foraging
 
         posObstaculos = ((file.readline()).split("=")[1]).split("\n")[0] #adicionar obstaculos
         if (posObstaculos == "None"):  # se nao for dado, posicao aleatoria escolhida
-            numToGenerate = (int)((sizeMundo * sizeMundo) * dificuldade)  # fazer baseado numa percentagem
+            numToGenerate = (int)((world_size * world_size) * dificuldade)  # fazer baseado numa percentagem
             posObstaculos = []
 
             for i in range(0, numToGenerate):
                 while (True):
-                    x = random.randint(0, sizeMundo - 1)
-                    y = random.randint(0, sizeMundo - 1)
+                    x = random.randint(0, world_size - 1)
+                    y = random.randint(0, world_size - 1)
 
                     if ((x, y) not in takenPos):
                         break
@@ -69,7 +69,7 @@ class Farol: #foraging
         for i in range(0, numFinders):
             if(posFinders == "None"):
                 while (True):  # check position not taken
-                    finderPos = (random.randint(0, sizeMundo - 1), random.randint(0, sizeMundo - 1))
+                    finderPos = (random.randint(0, world_size - 1), random.randint(0, world_size - 1))
 
                     if (finderPos not in takenPos):
                         break

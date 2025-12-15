@@ -15,5 +15,8 @@ class Coordenator(Agente):
     def acaoBurro(self):
         pass
 
-    def run_simulation(self):
+    def calculate_objective_fitness(self):
+        pass
+
+    def run_simulation(self, world_size):
         pass
