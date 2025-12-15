@@ -169,9 +169,13 @@ class MotorSimulator:
             print(row)
 
     def farolBurro(self):
-        start= time.time()
+        steps= []
+        for a in self.mundo.getAgentes():
+            steps.append(0)
+
         while(True):
             done= True
+            agentIndex= 0
             for a in self.mundo.getAgentes():
                 if(a.found == False):
                     done= False
@@ -182,6 +186,7 @@ class MotorSimulator:
                         if(newPos[0] < self.mundo.sizeMap and newPos[0] >= 0 and newPos[1] < self.mundo.sizeMap and newPos[1] >= 0):
                             break
 
+                    steps[agentIndex]+= 1
                     obj = self.mundo.getObject(newPos[0], newPos[1])
                     if (type(obj) == EspacoVazio):
                         a.atualizarPosicao(newPos)
@@ -196,15 +201,20 @@ class MotorSimulator:
                 else:
                     a.atualizarPosicao((-1, -1)) #para nao estar no mapa
 
+                agentIndex+= 1
+
             self.displayMundo()
             print("")
 
             if (done == True):
                 break
 
-        end= time.time()
-        msegs= round((end-start)*1000, 2) #round to 2 decimal places
-        print(f"Demorou ~{msegs} milisegundos para encontrar o farol!")
+        index= 0
+        for a in self.mundo.getAgentes():
+            print(f"Agente {index} precisou de {steps[index]} passos para encontrar o farol!")
+            index+= 1
+
+        return steps
 
     def foragingBurro(self):
         initialTime= currentTime= time.time() #time() devolve tempo atual em segundos (desde epoch)
@@ -255,6 +265,7 @@ class MotorSimulator:
                 totalPoints+= a.pontosDepositados
 
         print("Total of points: ", totalPoints)
+        return totalPoints
 
     def genetic(self, population, gen):
         # --- EA Hyperparameters ---

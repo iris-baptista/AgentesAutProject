@@ -211,7 +211,14 @@ class Foraging: #ambiente
 
     def resetMundo(self):
         for i in range(0, len(self.getAgentes())):
-            self.getAgentes()[i].atualizarPosicao(self.ogPosAgentes[i])
+            a= self.getAgentes()[i]
+            a.atualizarPosicao(self.ogPosAgentes[i])
+
+            #resetting atributes
+            if(type(a) == Forager):
+                a.recursosCollected= []
+            else:
+                a.pontosDepositados= 0
 
         self.recursos = self.ogRecursos.copy()
 

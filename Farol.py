@@ -178,7 +178,9 @@ class Farol: #foraging
 
     def resetMundo(self):
         for i in range(0, len(self.getAgentes())):
-            self.getAgentes()[i].atualizarPosicao(self.ogPosAgentes[i])
+            a= self.getAgentes()[i]
+            a.atualizarPosicao(self.ogPosAgentes[i])
+            a.found= False
 
     def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
         for a in self.getAgentes():
