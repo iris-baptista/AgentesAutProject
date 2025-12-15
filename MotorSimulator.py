@@ -62,20 +62,16 @@ class MotorSimulator:
     def genetic(self, population, gen):
         POPULATION_SIZE = int(population)
         NUM_GENERATIONS = int(gen)
-        MUTATION_RATE = 0.01
+        MUTATION_RATE = 0.05
+        LEARNING_RATE = 0.2
         TOURNAMENT_SIZE = 3
         N_ARCHIVE_ADD = 5  # Add top 5 most novel agents to archive each gen
 
         # --- Initialization ---
         archive = []
         population = []
-        if(type(self.mundo) == Farol):
-            for _ in range(POPULATION_SIZE):
-                population.append(Finder((0,0)))
-        else:
-            for _ in range(POPULATION_SIZE):
-                population.append(Forager((0,0)))
-                population.append(Dropper((0,0)))
+        for _ in range(POPULATION_SIZE):
+            population.append(Finder((0, 0)))
         avg_fitness_per_gen = []
         best_paths_per_gen = []
 
@@ -95,7 +91,7 @@ class MotorSimulator:
 
                 # Combine the scores.
                 # You might need to add a weight, e.g.:
-                novelty_weight = 1000  # Make novelty competitive with fitness
+                novelty_weight = 100  # Make novelty competitive with fitness
                 agent.combined_fitness = (novelty_score * novelty_weight) + objective_score
                 total_fitness = total_fitness + agent.combined_fitness
 
@@ -125,6 +121,11 @@ class MotorSimulator:
             # Re-sort by combined fitness for breeding
             population.sort(key=lambda x: x.combined_fitness, reverse=True)
 
+            # 5. Store top genotype in genPolitic for each agent
+            topGenotype = population[0].getGenotype()
+            for f in population:
+                f.addPolitic(topGenotype, self.worldSize)
+
             # 5. Create new generation (Selection, Crossover, Mutation)
             new_population = []
 
@@ -133,8 +134,14 @@ class MotorSimulator:
 
             while len(new_population) < POPULATION_SIZE:
                 parent1, parent2 = Agente.select_parent(population, TOURNAMENT_SIZE)
-
                 child1, child2 = parent1.crossover(parent1, parent2)
+
+                for child, parent in [(child1, parent1), (child2, parent2)]:
+                    if parent.genPolitic:  # se houver genótipos históricos
+                        historical_genotype = random.choice(parent.genPolitic)
+                        for i in range(int(len(historical_genotype) * LEARNING_RATE)):
+                            idx = random.randint(0, len(child.genotype) - 1)
+                            child.genotype[idx] = historical_genotype[idx]
 
                 child1.mutate(MUTATION_RATE)
                 child2.mutate(MUTATION_RATE)
@@ -147,7 +154,8 @@ class MotorSimulator:
 
         print("Evolution complete.")
 
-    def testing(self):
+    def testGenetic(self):
+        self.mundo.restartMundo()
         # agir baseada na política que aprenderam
         pass  # modo de teste
 
@@ -260,11 +268,7 @@ class MotorSimulator:
                         print("Opção inválida, por favor tente novamente")
                 elif choice1 == "2":
                     self.modoExecucao = 't'
-                    print("a executar em modo de teste!")
-                    # correr em modo teste
-                    # self.testing()
-                    # imprimir mundo para ser visualizado
-                    # self.displayMundo()
+                    self.testing()
                 elif choice1 == "3":
                     self.farolBurro()
                 elif choice1 == "0":

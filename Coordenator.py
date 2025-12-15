@@ -1,22 +1,17 @@
-from Agente import Agente
-
-class Coordenator(Agente):
-    farol= (0, 0)
+class Coordenator():
 
     # construtor
-    def __init__(self, posInitial):
-        self.x= posInitial[0]
-        self.y= posInitial[1]
+    def __init__(self, farolPos):
+        self.fx= farolPos[0]
+        self.fy= farolPos[1]
 
     #devolve proxima coord na direcao do farol para o agente
-    def toFarol(self): #devia passar agente no parametro?
-        pass
+    def toFarol(self, agent_x, agent_y): #devia passar agente no parametro?
+        dx = self.fx - agent_x
+        dy = self.fy - agent_y
 
-    def acaoBurro(self):
-        pass
-
-    def calculate_objective_fitness(self):
-        pass
-
-    def run_simulation(self, world_size):
-        pass
+        # escolher eixo dominante
+        if abs(dx) > abs(dy):
+            return (1, 0) if dx > 0 else (-1, 0)
+        else:
+            return (0, 1) if dy > 0 else (0, -1)
