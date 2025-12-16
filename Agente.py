@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 import random
-import matplotlib.pyplot as plt
-import numpy as np
 
 class Agente(ABC):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
@@ -10,36 +8,26 @@ class Agente(ABC):
 
     def acaoBurro(self):
         choice = random.choice(self.actions)
-
         return choice
 
     @abstractmethod
     def acao(self, action):
         pass
 
+    @abstractmethod
+    def run_simulation(self, world_size):
+        pass
+
     def atualizarPosicao(self, pos):
         self.x= pos[0]
         self.y= pos[1]
 
-    # --- Genetic Algorithm ---
     @abstractmethod
-    def run_simulation(self):
+    def calculate_objective_fitness(self):
         pass
 
-    def calculate_objective_fitness(self): #pode ser abstrato???
-        """Calculates the agent's goal-oriented fitness score."""
-        key_reward = len(self.keys_found) * 100
-        treasure_reward = len(self.treasures_opened) * 500
-        exploration_reward = len(self.behavior) * 1
-
-        return key_reward + treasure_reward + exploration_reward
-
     def crossover(self, parent1, parent2):
-        """Performs single-point crossover on two parent genotypes."""
-        point = random.randint(1, len(parent1.genotype) - 1)
-        child1_geno = parent1.genotype[:point] + parent2.genotype[point:]
-        child2_geno = parent2.genotype[:point] + parent1.genotype[point:]
-        return Agente(child1_geno), Agente(child2_geno) #nao deixa fazer import a Finder por q cria um loop
+        pass
 
     def mutate(self, mutation_rate):
         """Randomly changes some actions in the genotype."""
@@ -47,11 +35,12 @@ class Agente(ABC):
             if random.random() < mutation_rate:
                 self.genotype[i] = random.choice(self.actions)
 
-    def select_parent(self, population, tournament_size):
+    def select_parent(population, tournament_size):
         """Selects a parent using tournament selection based on *combined_fitness*."""
+        # must select the same number of different agents in population
         tournament = random.sample(population, tournament_size)
         tournament.sort(key=lambda x: x.combined_fitness, reverse=True)
-        return tournament[0]
+        return tournament[0], tournament[1]
 
     # --- Q Learning ---
     def setMundo(self, m):

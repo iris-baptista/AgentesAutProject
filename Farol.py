@@ -11,6 +11,7 @@ class Farol: #foraging
         self.obstaculos = []
         self.agentes = []
         self.ogPosAgentes = []
+        self.genPolitic = []
         takenPos = [] #nao e uma atribute, so para facilitar esta parte das definicoes
 
         file= open("config_farol.txt", "r") #comecar leitura de configuracoes
@@ -116,6 +117,9 @@ class Farol: #foraging
 
         file.close()
 
+    def setGenPolitic(self, politic):
+        self.genPolitic = politic
+
     def createsBlock(self, posObstaculos, x, y):
         # print("Obstaculos ", posObstaculos)
         surroundingActions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, 1), (1, -1), (-1, 1)]  # 8 espacos a volta
@@ -180,6 +184,7 @@ class Farol: #foraging
         for i in range(0, len(self.getAgentes())):
             a= self.getAgentes()[i]
             a.atualizarPosicao(self.ogPosAgentes[i])
+            a.setGenPolitic(self.genPolitic)
             a.found= False
 
     def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
