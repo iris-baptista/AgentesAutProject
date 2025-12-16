@@ -14,10 +14,10 @@ class Finder(Agente):
         self.x= posInitial[0]
         self.y= posInitial[1]
         self.found= False
-        # self.fitness= 0
-        # self.novelty
+        self.followed_hints = 0
         self.path= []
-        self.steps= 50
+        self.total_steps = 0
+        self.steps= 200
         self.collisions = 0
         self.behavior = set()
         self.genPolitic = []
@@ -30,11 +30,19 @@ class Finder(Agente):
     def getGenotype(self):
         return self.genotype
 
+    def getGenPolitic(self):
+        return self.genPolitic
+
+    def setGenPolitic(self, politic):
+        self.genPolitic = politic
+
     def acao(self, action):
         newPos = (action[0] + self.x, action[1] + self.y)
 
         # so muda de posicao se for uma posicao valida/der para sobrepor!
+        print(self.mundoPertence)
         tamanho = self.mundoPertence.sizeMap
+
         if (newPos[0] < tamanho and newPos[0] >= 0 and newPos[1] < tamanho and newPos[1] >= 0):  # dentro do mapa
             obj = self.mundoPertence.getObject(newPos[0], newPos[1])
             match obj:  # pode sobrepor espacos vazios

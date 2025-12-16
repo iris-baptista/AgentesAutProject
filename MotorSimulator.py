@@ -1,3 +1,4 @@
+import matplotlib
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -92,8 +93,7 @@ class MotorSimulator:
                 if choice2 == "1": #genetico
                     population = input("Selecione o tamanho da população: ")
                     gen = input("Selecione o número de gerações: ")
-                    # self.genetic(population, gen)
-                    print("a aprender com algoritmo genetico!")
+                    self.genetic(population, gen)
                 elif choice2 == "2": #q learning
                     print("A aprender com algoritmo Q-learning!")
                     learningRate = 0.7  # demais? a menos? #% de info nova
@@ -133,7 +133,9 @@ class MotorSimulator:
                 print("a executar em modo de teste!")
 
                 if(type(self.mundo) == Farol):
-                    self.testFarol()
+                    for a in self.mundo.getAgentes():
+                        a.setMundo(self.mundo)
+                    self.testGenetic()
                 else:
                     self.testForaging()
             elif choice1 == "3": #modo burro
@@ -367,6 +369,7 @@ class MotorSimulator:
 
             population = new_population
 
+        self.mundo.setGenPolitic(population[0].genPolitic)
         print("Evolution complete.")
 
     def qLearningFarol(self, learningRate, desconto, probExplorar):
@@ -555,10 +558,56 @@ class MotorSimulator:
         fig.subplots_adjust(wspace=0.5) #para graficos nao estarem colados
         plt.show()
 
-    def testFarol(self):
-        #com genetic
-        #com q learning
-        pass
+    def testGenetic(self):
+        steps = [0 for _ in self.mundo.getAgentes()]
+        done_agents = [False for _ in self.mundo.getAgentes()]
+        coordinator = Coordenator((self.mundo.farol.x, self.mundo.farol.y))
+
+        while not all(done_agents):
+            for i, agent in enumerate(self.mundo.getAgentes()):
+                if isinstance(agent, Finder) and not done_agents[i]:
+                    # Seleciona ação: genótipo, hint ou aleatória
+                    best_genotype = agent.genPolitic[0]  # melhor genótipo
+                    if steps[i] < len(best_genotype):
+                        action_choice = np.random.rand()
+                        if action_choice < 0.7:  # 70% chance de seguir genótipo
+                            action = best_genotype[steps[i]]
+                        elif action_choice < 0.85:  # 15% chance de seguir hint
+                            action = coordinator.toFarol(agent.x, agent.y)
+                        else:  # 15% chance de ação aleatória
+                            action = random.choice(agent.actions)
+                    else:
+                        done_agents[i] = True
+                        continue
+
+                    # Atualiza contadores
+                    hint = coordinator.toFarol(agent.x, agent.y)
+                    if action == hint:
+                        agent.followed_hints += 1
+                    agent.total_steps += 1
+
+                    # Executa ação
+                    moved = agent.acao(action)
+                    steps[i] += 1
+
+                    # Atualiza comportamento
+                    agent.behavior.add((agent.x, agent.y))
+                    agent.path.append((agent.x, agent.y))
+
+                    # Verifica se encontrou farol
+                    if agent.found:
+                        done_agents[i] = True
+                        print(f"Agente {i} encontrou o farol!")
+
+            self.displayMundo()
+            time.sleep(0.2)
+
+            # Estatísticas finais
+            for i, agent in enumerate(self.mundo.getAgentes()):
+                if isinstance(agent, Finder):
+                    print(
+                        f"Agente {i}: Steps={len(agent.path)}, Collisions={agent.collisions}, Found={agent.found}, FollowedHints={agent.followed_hints}")
+                    print(f"Caminho: {agent.path}")
 
     def testForaging(self):
         pass
