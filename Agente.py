@@ -58,6 +58,10 @@ class Agente(ABC):
         self.mundoPertence= m
 
     @abstractmethod
+    def acaoQLearning(self):
+        pass
+
+    @abstractmethod
     def nextState(self, estado, acao):
         pass
 

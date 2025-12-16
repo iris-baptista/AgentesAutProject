@@ -50,6 +50,9 @@ class Forager(Agente): #extends abstract Agente
         pass
 
     #fns q learning
+    def acaoQLearning(self):
+        pass
+
     def nextState(self):  # estado vai ser o mundo? ou o index
         obs = self.mundoPertence.observacaoPara((self.x, self.y))  # observacao para novo index
         if (self.containsType(obs, Obstaculo)):

@@ -24,5 +24,8 @@ class Coordenator(Agente):
         pass
 
     # Fns Q-Leaning (coordenador is not trained!)
+    def acaoQLearning(self):
+        pass
+
     def nextState(self):
         pass
