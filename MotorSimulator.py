@@ -147,7 +147,7 @@ class MotorSimulator:
 
                     # com q learning
                     metricQLearning = self.testQLearningForaging()
-
+                    print(metricQLearning)
 
                 self.showTables(metricBurro, metricGenetic, metricQLearning)
             elif choice1 == "3": #modo burro
@@ -545,21 +545,24 @@ class MotorSimulator:
                     index += 1
 
                 print("Comecar episodio:", episodio + 1)
-                learningRate -= 0.001
+                if(learningRate > 0.1):
+                    learningRate -= 0.0001
 
             #por os rescursos de volta
             self.mundo.resetMundo()
 
             # escolhe uma posicao aleatoria para comecar
-            self.mundo.resetStart()
+            #self.mundo.resetStart()
             currentStates = []
+            visited= []
             for a in self.mundo.getAgentes():  # for each agent
                 currentStates.append(a.nextState())  # get state for stating pos
+                visited.append(set())
 
-                if(type(a) == Forager):
-                    a.recursosCollected= [] #comecar cada episodio sem recursos
-                else: #se for um dropper
-                    a.pontosDepositados= 0 #comecar cada episodio sem pontos
+                # if(type(a) == Forager):
+                #     a.recursosCollected= [] #comecar cada episodio sem recursos
+                # else: #se for um dropper
+                #     a.pontosDepositados= 0 #comecar cada episodio sem pontos
 
             initialTime = currentTime = time.time()
             while ((currentTime - initialTime) <= self.mundo.tempo):
@@ -577,13 +580,16 @@ class MotorSimulator:
                     else:
                         action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
 
-                    moved = a.acao(Agente.actions[action])
+                    moved, newPos = a.acao(Agente.actions[action])
 
                     nextState = a.nextState()
                     if (nextState in goals):
-                        reward = 1
+                        reward = 5
                     elif (moved == False):
                         reward = -1
+                    elif (type(a) == Forager and (newPos in visited)): #penalizar repetir posicoes
+                        pass
+                        reward= -2
                     else:
                         reward = 0
 
@@ -593,11 +599,13 @@ class MotorSimulator:
                             (learningRate * (reward + (desconto * np.max(a.qTable[nextState])))))
 
                     currentStates[index] = nextState
+                    visited[index].add(newPos)
                     index += 1
 
                 currentTime = time.time()
 
-            probExplorar -= 0.0001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
+            if(probExplorar > 0.01):
+                probExplorar -= 0.00001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
 
     def showGraphs(self):
         agents= self.mundo.getAgentes()
@@ -695,28 +703,47 @@ class MotorSimulator:
         self.mundo.resetMundo()  # para comecar no mesmo lugar q os burros
 
         currentStates = []
+        steps= []
         for a in self.mundo.getAgentes():  # for each agent
             currentStates.append(a.nextState())  # get state for stating pos
+            steps.append(0)
             # todos agentes ficam com o inventario vazio no reset mundo
 
         initialTime = currentTime = time.time()
+        last= (-1, -1)
         while ((currentTime - initialTime) <= self.mundo.tempo):
             index = 0
             for a in self.mundo.getAgentes():
-                action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
+                if(steps[index] % 10 == 0):
+                    action= np.random.randint(0, len(Agente.actions))
+                else:
+                    action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
+
+                    potentialAction= Agente.actions[action]
+                    potentialPosition= a.x+ potentialAction[0], a.y+ potentialAction[1]
+
+                    if(potentialPosition == last):
+                        action= np.random.randint(0, len(Agente.actions))
+
                 a.acao(Agente.actions[action])
+                last= (a.x, a.y)
 
                 nextState = a.nextState()
                 currentStates[index] = nextState
+                steps[index] += 1
                 index += 1
 
             currentTime = time.time()
 
         totalPoints = 0
+        foragerRemainder= 0
         for a in self.mundo.getAgentes():
             if (type(a) == Dropper):
                 totalPoints += a.pontosDepositados
+            else:
+                foragerRemainder += a.recursosCollected
 
+        print("Left over", foragerRemainder)
         return totalPoints
 
     def showTables(self, metricBurro, metricGenetic, metricQLearning):

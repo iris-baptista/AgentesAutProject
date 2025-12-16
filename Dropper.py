@@ -51,12 +51,12 @@ class Dropper(Agente):
                             self.depositRecursos()
                 case _:  #nao pode sobrepor agentes ou obstaculos ou cestos ou recursos
                     # print("Obstaculo encontrado!")
-                    return False
+                    return False, (self.x, self.y)
 
-            return True
+            return True, newPos
         else:
             # print("Out of Bounds!")
-            return False
+            return False, (self.x, self.y)
 
     #fns genetic
     def run_simulation(self):
