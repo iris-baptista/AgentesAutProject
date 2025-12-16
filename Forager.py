@@ -41,12 +41,12 @@ class Forager(Agente): #extends abstract Agente
                     self.mundoPertence.removeRecurso(obj)
                 case _:  # nao pode sobrepor agentes ou obstaculos ou cestos
                     # print("Obstaculo encontrado!")
-                    return False
+                    return False, (self.x, self.y)
 
-            return True
+            return True, newPos
         else:
             # print("Out of Bounds!")
-            return False
+            return False, (self.x, self.y)
 
     #fns genetic
     def calculate_objective_fitness(self):
@@ -64,6 +64,9 @@ class Forager(Agente): #extends abstract Agente
         pass
 
     #fns q learning
+    def acaoQLearning(self):
+        pass
+
     def nextState(self):  # estado vai ser o mundo? ou o index
         obs = self.mundoPertence.observacaoPara((self.x, self.y))  # observacao para novo index
         if (self.containsType(obs, Obstaculo)):

@@ -51,18 +51,21 @@ class Dropper(Agente):
                             self.depositRecursos()
                 case _:  #nao pode sobrepor agentes ou obstaculos ou cestos ou recursos
                     # print("Obstaculo encontrado!")
-                    return False
+                    return False, (self.x, self.y)
 
-            return True
+            return True, newPos
         else:
             # print("Out of Bounds!")
-            return False
+            return False, (self.x, self.y)
 
     #fns genetic
     def run_simulation(self):
         pass
 
     # fns q learning
+    def acaoQLearning(self):
+        pass
+
     def nextState(self):  # estado vai ser o mundo? ou o index
         obs = self.mundoPertence.observacaoPara((self.x, self.y))  # observacao para novo index
         if (self.containsType(obs, Obstaculo)):

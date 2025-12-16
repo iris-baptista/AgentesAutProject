@@ -54,12 +54,12 @@ class Finder(Agente):
                     # print("Encontrou o farol!")
                 case _: # nao pode sobrepor agentes ou obstaculos
                     # print("Obstaculo encontrado!")
-                    return False
+                    return False, (self.x, self.y)
 
-            return True
+            return True, newPos
         else:
             # print("Out of Bounds!")
-            return False
+            return False, (self.x, self.y)
 
     #Fns genetic
     def calculate_objective_fitness(self):
@@ -162,6 +162,9 @@ class Finder(Agente):
         return
 
     #Fns Q-Leaning
+    def acaoQLearning(self):
+        pass
+
     def nextState(self): # estados representados por o index!
         obs= self.mundoPertence.observacaoPara((self.x, self.y)) #observacao para novo index
         if(self.containsType(obs, Obstaculo)):

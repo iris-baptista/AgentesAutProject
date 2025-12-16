@@ -9,7 +9,7 @@ class Coordenator():
     def toFarol(self, agent_x, agent_y): #devia passar agente no parametro?
         dx = self.fx - agent_x
         dy = self.fy - agent_y
-
+        
         # escolher eixo dominante
         if abs(dx) > abs(dy):
             return (1, 0) if dx > 0 else (-1, 0)
