@@ -106,7 +106,7 @@ class MotorSimulator:
                                 a.setMundo(self.mundo)
 
                                 if (a.qTable is None): #se e a primeira vez a correr o algoritmo
-                                    a.qTable = np.zeros((8, len(Agente.actions))) #8 estados
+                                    a.qTable = np.zeros((141, len(Agente.actions))) #141 estados
 
                         self.qLearningFarol(learningRate, desconto, probExplorar)
                     else:
@@ -115,7 +115,7 @@ class MotorSimulator:
                                 a.setMundo(self.mundo)
 
                                 if (a.qTable is None): #se e a primeira vez a correr o algoritmo
-                                    a.qTable = np.zeros((15, len(Agente.actions))) #15 variacoes possiveis para os sensores
+                                    a.qTable = np.zeros((369, len(Agente.actions))) #369 variacoes possiveis para os sensores
 
                         self.qLearningForaging(learningRate, desconto, probExplorar)
 
@@ -136,12 +136,13 @@ class MotorSimulator:
                     metricBurro = self.farolBurro()
 
                     # com genetic
-                    for a in self.mundo.getAgentes():
-                        a.setMundo(self.mundo)
-                    metricGenetic = self.testGenetic()
+                    # for a in self.mundo.getAgentes():
+                    #     a.setMundo(self.mundo)
+                    # metricGenetic = self.testGenetic()
+                    metricGenetic= None #APAGAR MAIS TARDE!!!!!
 
-                    # com q learning (TBD)
-                    metricQLearning = None #self.testQLearningFarol()
+                    # com q learning
+                    metricQLearning =  self.testQLearningFarol()
                 else:
                     # com burro
                     metricBurro = self.foragingBurro()
@@ -150,7 +151,6 @@ class MotorSimulator:
 
                     # com q learning
                     metricQLearning = self.testQLearningForaging()
-                    print(metricQLearning)
 
                 self.showTables(metricBurro, metricGenetic, metricQLearning)
             elif choice1 == "3": #modo burro
@@ -235,7 +235,7 @@ class MotorSimulator:
 
         index= 0
         for a in self.mundo.getAgentes():
-            print(f"Agente {index} precisou de {steps[index]} passos para encontrar o farol!")
+            print(f"Agente {index+1} precisou de {steps[index]} passos para encontrar o farol!")
             index+= 1
 
         return steps
@@ -388,7 +388,7 @@ class MotorSimulator:
         print("Evolution complete.")
 
     def qLearningFarol(self, learningRate, desconto, probExplorar):
-        goals = [2, 4, 6, 7]  # index de estado ao lado do farol
+        # goals = [2, 4, 6, 7]  # index de estados ao lado do farol
 
         print("Comecar episodio: 1")
         index = 0
@@ -396,7 +396,7 @@ class MotorSimulator:
             print("QTable initial do Agente", (index + 1), "\n", a.qTable)
             index += 1
 
-        numEpisodios = 2000  # aumentar
+        numEpisodios = 15000  # aumentar
         for episodio in range(numEpisodios):
             if ((episodio + 1) % 100 == 0):
                 index = 0
@@ -405,13 +405,17 @@ class MotorSimulator:
                     index += 1
 
                 print("Comecar episodio:", episodio + 1)
-                learningRate -= 0.001
+                if (learningRate > 0.1):
+                    learningRate -= 0.0001
+                # learningRate -= 0.001
 
             # escolhe uma posicao aleatoria para comecar
             self.mundo.resetStart()
             currentStates = []
+            visitedPos= []
             for a in self.mundo.getAgentes():  # for each agent
                 currentStates.append(a.nextState())  # get state for stating pos
+                visitedPos.append(set())
                 a.found = False  # comecar cada episodio com found= false
 
             while (True):
@@ -427,13 +431,15 @@ class MotorSimulator:
                         else:
                             action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
 
-                        moved = a.acao(Agente.actions[action])
+                        moved, newPos = a.acao(Agente.actions[action])
 
                         nextState = a.nextState()
-                        if (nextState in goals):
-                            reward = 1
+                        if (a.inGoal(nextState)): #indexes de estados ao lado do farol
+                            reward = 5
                         elif (moved == False):
                             reward = -1
+                        elif (newPos in visitedPos[index]): #penalizar repetir posicoes
+                            reward = -2
                         else:
                             reward = 0
 
@@ -442,11 +448,12 @@ class MotorSimulator:
                                 ((1 - learningRate) * a.qTable[currentStates[index], action]) +
                                 (learningRate * (reward + (desconto * np.max(a.qTable[nextState])))))
 
-                        if (nextState in goals):  # para quando encontra farol
+                        if (a.inGoal(nextState)):  # para quando encontra farol
                             a.found = True  # agente conclui
                             break
 
                         currentStates[index] = nextState
+                        visitedPos[index].add(newPos)
                         index += 1
                     else:
                         a.atualizarPosicao((-1, -1))  # para remover do mapa
@@ -454,7 +461,8 @@ class MotorSimulator:
                 if (done == True):
                     break
 
-            probExplorar -= 0.0001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
+            if (probExplorar > 0.01):
+                probExplorar -= 0.00001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
 
     def qLearningFarolAlterado(self, learningRate, desconto, probExplorar):
         goals = [2, 4, 6, 7]  # index de estado ao lado do farol
@@ -606,11 +614,10 @@ class MotorSimulator:
 
                     nextState = a.nextState()
                     if (nextState in goals):
-                        reward = 5
+                        reward = 3
                     elif (moved == False):
                         reward = -1
                     elif (type(a) == Forager and (newPos in visited)): #penalizar repetir posicoes
-                        pass
                         reward= -2
                     else:
                         reward = 0
@@ -632,7 +639,7 @@ class MotorSimulator:
     def showGraphs(self):
         agents= self.mundo.getAgentes()
 
-        fig, graphs = plt.subplots(1, len(agents), figsize=(8, 8))
+        fig, graphs = plt.subplots(1, len(agents), figsize=(10, 10))
         fig.suptitle('Learned Q-values For Each Agent')
 
         if(len(agents) == 1):
@@ -728,17 +735,16 @@ class MotorSimulator:
                     print(f"Caminho: {agent.path}")
 
     def testQLearningFarol(self):
-        steps = []
-        for a in self.mundo.getAgentes():
-            steps.append(0)
-
         self.mundo.resetMundo() #para comecar no mesmo lugar q os burros
 
         currentStates = []
+        steps = []
         for a in self.mundo.getAgentes():  # for each agent
             currentStates.append(a.nextState())  # get state for stating pos
+            steps.append(0)
             #todos agentes set to false no resetMundo
 
+        last= (-1,-1)
         while (True):
             self.displayMundo()
             print("")
@@ -749,20 +755,34 @@ class MotorSimulator:
                 if (a.found == False):  # so fazemos move os q ainda nao encontraram
                     done = False
 
-                    # escolher INDEX da proxima acao
-                    action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
+                    if(steps[index] % 10 == 0): #cada 10 pacos fica com uma posicao aleatoria para evitar loops
+                        action= np.random.randint(0, len(Agente.actions))
+                    else:
+                        # escolher INDEX da proxima acao
+                        action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
+
+                        potentialAction= Agente.actions[action]
+                        potentialPosition= (a.x + potentialAction[0], a.y + potentialAction[1])
+
+                        if(potentialPosition == last): #para evitar loops
+                            action= np.random.randint(0, len(Agente.actions))
+
                     a.acao(Agente.actions[action])
+                    last= (a.x, a.y)
                     steps[index] += 1
 
                     nextState = a.nextState()
-                    if (nextState in {2, 4, 6, 7}):  # para quando encontra farol
+                    if (a.inGoal(nextState)):  # para quando encontra farol
                         a.found = True  # agente conclui
-                        break
+                        # break
 
                     currentStates[index] = nextState
                     index += 1
                 else:
                     a.atualizarPosicao((-1, -1))  # para remover do mapa
+
+            if(steps[0] == 400):
+                return [-1]
 
             if (done == True):
                 break
@@ -806,14 +826,18 @@ class MotorSimulator:
             currentTime = time.time()
 
         totalPoints = 0
-        foragerRemainder= 0
+        #foragerRemainder= 0
         for a in self.mundo.getAgentes():
             if (type(a) == Dropper):
                 totalPoints += a.pontosDepositados
-            else:
-                foragerRemainder += a.recursosCollected
-
-        print("Left over", foragerRemainder)
+        #     else:
+        #         totalRemain= 0
+        #         for r in a.recursosCollected:
+        #             totalRemain+= r.quantidade
+        #
+        #         foragerRemainder += totalRemain
+        #
+        # print("Left over", foragerRemainder)
         return totalPoints
 
     def showTables(self, metricBurro, metricGenetic, metricQLearning):
