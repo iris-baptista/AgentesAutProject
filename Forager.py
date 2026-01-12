@@ -130,6 +130,8 @@ class Forager(Agente): #extends abstract Agente
                             return 295
                         case [EspacoVazio(), Recurso(), Obstaculo(), Cesto()]:
                             return 296
+                        case _:
+                            return 369
                 elif (agentCount >= 1): #se agente e recurso e obstaculo
                     match obs:
                         case [Obstaculo(), Agente(), Recurso(), EspacoVazio()]:
@@ -180,6 +182,8 @@ class Forager(Agente): #extends abstract Agente
                             return 319
                         case [EspacoVazio(), Recurso(), Obstaculo(), Agente()]:
                             return 320
+                        case _:
+                            return 369
                 else: #recursos e obstaculos
                     if(obstaculoCount == 1):
                         if(recursoCount == 1): #1 obstaculo 1 recurso
@@ -208,6 +212,8 @@ class Forager(Agente): #extends abstract Agente
                                     return 67
                                 case [EspacoVazio(), Recurso(), Obstaculo(), EspacoVazio()]:
                                     return 68
+                                case _:
+                                    return 369
                         else: #2 recursos 1 obstaculo
                             match obs:
                                 case [Recurso(), EspacoVazio(), Obstaculo(), Recurso()]:
@@ -234,6 +240,8 @@ class Forager(Agente): #extends abstract Agente
                                     return 91
                                 case [Recurso(), Recurso(), EspacoVazio(), Obstaculo()]:
                                     return 92
+                                case _:
+                                    return 369
                     else: #2 obstaculos 1 recurso
                         match obs:
                             case [Obstaculo(), EspacoVazio(), Recurso(), Obstaculo()]:
@@ -260,6 +268,8 @@ class Forager(Agente): #extends abstract Agente
                                 return 79
                             case [Obstaculo(), Obstaculo(), EspacoVazio(), Recurso()]:
                                 return 80
+                            case _:
+                                return 369
             elif (agentCount >= 1): #agentes, e obstaculos
                 if(obstaculoCount == 1):
                     if(agentCount == 1): #1 obstaculo e 1 agente
@@ -288,6 +298,8 @@ class Forager(Agente): #extends abstract Agente
                                 return 103
                             case [EspacoVazio(), Agente(), Obstaculo(), EspacoVazio()]:
                                 return 104
+                            case _:
+                                return 369
                     else: #2 agentes 1 obstaculo
                         match obs:
                             case [Agente(), EspacoVazio(), Obstaculo(), Agente()]:
@@ -314,6 +326,8 @@ class Forager(Agente): #extends abstract Agente
                                 return 127
                             case [EspacoVazio(), Obstaculo(), Agente(), Agente()]:
                                 return 128
+                            case _:
+                                return 369
                 else: #2 obstaculos 1 agente
                     match obs:
                         case [Obstaculo(), EspacoVazio(), Obstaculo(), Agente()]:
@@ -340,6 +354,8 @@ class Forager(Agente): #extends abstract Agente
                             return 115
                         case [EspacoVazio(), Agente(), Obstaculo(), Obstaculo()]:
                             return 116
+                        case _:
+                            return 369
             elif (cestoCount >= 1):
                 if (agentCount >= 1): #obstaculos, cestos, e agentes
                     match obs:
@@ -391,6 +407,8 @@ class Forager(Agente): #extends abstract Agente
                             return 367
                         case [EspacoVazio(), Cesto(), Obstaculo(), Agente()]:
                             return 368
+                        case _:
+                            return 369
                 else: #cestos e obstaculos
                     if(obstaculoCount == 1):
                         if(cestoCount == 1): #1 cesto e 1 obstaculo
@@ -419,6 +437,8 @@ class Forager(Agente): #extends abstract Agente
                                     return 139
                                 case [EspacoVazio(), Cesto(), Obstaculo(), EspacoVazio()]:
                                     return 140
+                                case _:
+                                    return 369
                         else: #2 cestos 1 obstaculo
                             match obs:
                                 case [Cesto(), Obstaculo(), EspacoVazio(), Cesto()]:
@@ -445,6 +465,8 @@ class Forager(Agente): #extends abstract Agente
                                     return 163
                                 case [Cesto(), Cesto(), EspacoVazio(), Obstaculo()]:
                                     return 164
+                                case _:
+                                    return 369
                     else: #2 obstaculos 1 cesto
                         match obs:
                             case [Obstaculo(), EspacoVazio(), Cesto(), Obstaculo()]:
@@ -471,6 +493,8 @@ class Forager(Agente): #extends abstract Agente
                                 return 151
                             case [EspacoVazio(), Cesto(), Obstaculo(), Obstaculo()]:
                                 return 152
+                            case _:
+                                return 369
             else: #so tem obstaculos
                 if(obstaculoCount == 1):
                     match obs:
@@ -482,6 +506,8 @@ class Forager(Agente): #extends abstract Agente
                             return 3
                         case [EspacoVazio(), EspacoVazio(), Obstaculo(), EspacoVazio()]:
                             return 4
+                        case _:
+                            return 369
                 elif(obstaculoCount == 2):
                     match obs:
                         case [Obstaculo(), EspacoVazio(), EspacoVazio(), Obstaculo()]:
@@ -496,6 +522,8 @@ class Forager(Agente): #extends abstract Agente
                             return 9
                         case [EspacoVazio(), EspacoVazio(), Obstaculo(), Obstaculo()]:
                             return 10
+                        case _:
+                            return 369
                 else: #se forem 3 obstaculos
                     match obs:
                         case [Obstaculo(), Obstaculo(), EspacoVazio(), Obstaculo()]:
@@ -506,6 +534,8 @@ class Forager(Agente): #extends abstract Agente
                             return 13
                         case [Obstaculo(), EspacoVazio(), Obstaculo(), Obstaculo()]:
                             return 14
+                        case _:
+                            return 369
         elif (recursoCount >= 1):
             if (cestoCount >= 1):
                 if(agentCount >= 1): #recursos e cestos e agentes
@@ -558,6 +588,8 @@ class Forager(Agente): #extends abstract Agente
                             return 343
                         case [EspacoVazio(), Cesto(), Recurso(), Agente()]:
                             return 344
+                        case _:
+                            return 369
                 else: #so recursos e cestos
                     if(cestoCount == 1):
                         if(recursoCount == 1): #1 cesto e 1 recurso
@@ -586,6 +618,8 @@ class Forager(Agente): #extends abstract Agente
                                     return 175
                                 case [EspacoVazio(), Recurso(), Cesto(), EspacoVazio()]:
                                     return 176
+                                case _:
+                                    return 369
                         else: #2 recursos e 1 cesto
                             match obs:
                                 case [Recurso(), EspacoVazio(), Cesto(), Recurso()]:
@@ -612,6 +646,8 @@ class Forager(Agente): #extends abstract Agente
                                     return 199
                                 case [EspacoVazio(), Cesto(), Recurso(), Recurso()]:
                                     return 200
+                                case _:
+                                    return 369
                     else: #2 cesto e 1 recursos
                         match obs:
                             case [Cesto(), EspacoVazio(), Recurso(), Cesto()]:
@@ -638,6 +674,8 @@ class Forager(Agente): #extends abstract Agente
                                 return 187
                             case [EspacoVazio(), Recurso(), Cesto(), Cesto()]:
                                 return 188
+                            case _:
+                                return 369
             elif (agentCount >= 1): #agentes e recursos
                 if(recursoCount == 1):
                     if(agentCount == 1): #1 agente e 1 recurso
@@ -666,6 +704,8 @@ class Forager(Agente): #extends abstract Agente
                                 return 211
                             case [EspacoVazio(), Recurso(), Agente(), EspacoVazio()]:
                                 return 212
+                            case _:
+                                return 369
                     else: #se 2 agentes e 1 recurso
                         match obs:
                             case [Agente(), EspacoVazio(), Recurso(), Agente()]:
@@ -692,6 +732,8 @@ class Forager(Agente): #extends abstract Agente
                                 return 223
                             case [Agente(), Agente(), EspacoVazio(), Recurso()]:
                                 return 224
+                            case _:
+                                return 369
                 else: #se 2 recursos e 1 agente
                     match obs:
                         case [Recurso(), EspacoVazio(), Agente(), Recurso()]:
@@ -718,6 +760,8 @@ class Forager(Agente): #extends abstract Agente
                             return 235
                         case [EspacoVazio(), Agente(), Recurso(), Recurso()]:
                             return 236
+                        case _:
+                            return 369
             else: #se for so recursos
                 if(recursoCount == 1):
                     match obs:
@@ -729,6 +773,8 @@ class Forager(Agente): #extends abstract Agente
                             return 18
                         case [EspacoVazio(), EspacoVazio(), EspacoVazio(), Recurso()]:
                             return 16
+                        case _:
+                            return 369
                 elif(recursoCount == 2):
                     match obs:
                         case [Recurso(), EspacoVazio(), EspacoVazio(), Recurso()]:
@@ -743,6 +789,8 @@ class Forager(Agente): #extends abstract Agente
                             return 23
                         case [EspacoVazio(), EspacoVazio(), Recurso(), Recurso()]:
                             return 24
+                        case _:
+                            return 369
                 else: #se 3 recursos
                     match obs:
                         case [Recurso(), EspacoVazio(), Recurso(), Recurso()]:
@@ -753,6 +801,8 @@ class Forager(Agente): #extends abstract Agente
                             return 27
                         case [Recurso(), Recurso(), Recurso(), EspacoVazio()]:
                             return 28
+                        case _:
+                            return 369
         elif (agentCount >= 1):
             if (cestoCount >= 1): #agentes e cestos
                 if(agentCount == 1):
@@ -782,6 +832,8 @@ class Forager(Agente): #extends abstract Agente
                                 return 247
                             case [EspacoVazio(), Cesto(), Agente(), EspacoVazio()]:
                                 return 248
+                            case _:
+                                return 369
                     else: #2 cestos e 1 agente
                         match obs:
                             case [Agente(), Cesto(), Cesto(), EspacoVazio()]:
@@ -808,6 +860,8 @@ class Forager(Agente): #extends abstract Agente
                                 return 271
                             case [EspacoVazio(), Agente(), Cesto(), Cesto()]:
                                 return 272
+                            case _:
+                                return 369
                 else: #2 agentes e 1 cesto
                     match obs:
                         case [Agente(), EspacoVazio(), Cesto(), Agente()]:
@@ -834,6 +888,8 @@ class Forager(Agente): #extends abstract Agente
                             return 259
                         case [Cesto(), EspacoVazio(), Agente(), Agente()]:
                             return 260
+                        case _:
+                            return 369
             else: #so agentes
                 if(agentCount == 1):
                     match obs:
@@ -845,6 +901,8 @@ class Forager(Agente): #extends abstract Agente
                             return 32
                         case [EspacoVazio(), EspacoVazio(), EspacoVazio(), Agente()]:
                             return 30
+                        case _:
+                            return 369
                 elif(agentCount == 2):
                     match obs:
                         case [Agente(), EspacoVazio(), EspacoVazio(), Agente()]:
@@ -859,6 +917,8 @@ class Forager(Agente): #extends abstract Agente
                             return 37
                         case [EspacoVazio(), EspacoVazio(), Agente(), Agente()]:
                             return 38
+                        case _:
+                            return 369
                 else: #se forem 3 agentes
                     match obs:
                         case [Agente(), EspacoVazio(), Agente(), Agente()]:
@@ -869,6 +929,8 @@ class Forager(Agente): #extends abstract Agente
                             return 40
                         case [Agente(), Agente(), Agente(), EspacoVazio()]:
                             return 42
+                        case _:
+                            return 369
         elif (cestoCount >= 1):
             if(cestoCount == 1):
                 match obs:
@@ -880,6 +942,8 @@ class Forager(Agente): #extends abstract Agente
                         return 46
                     case [EspacoVazio(), EspacoVazio(), EspacoVazio(), Cesto()]:
                         return 44
+                    case _:
+                        return 369
             elif (cestoCount == 2):
                 match obs:
                     case [Cesto(), EspacoVazio(), EspacoVazio(), Cesto()]:
@@ -894,6 +958,8 @@ class Forager(Agente): #extends abstract Agente
                         return 52
                     case [EspacoVazio(), EspacoVazio(), Cesto(), Cesto()]:
                         return 51
+                    case _:
+                        return 369
             else: #se forem 3 cestos
                 match obs:
                     case [EspacoVazio(), Cesto(), Cesto(), Cesto()]:
@@ -904,5 +970,7 @@ class Forager(Agente): #extends abstract Agente
                         return 55
                     case [Cesto(), EspacoVazio(), Cesto(), Cesto()]:
                         return 56
+                    case _:
+                        return 369
         else:  # so espacos vazios
             return 0

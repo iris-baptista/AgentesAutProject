@@ -115,7 +115,7 @@ class MotorSimulator:
                                 a.setMundo(self.mundo)
 
                                 if (a.qTable is None): #se e a primeira vez a correr o algoritmo
-                                    a.qTable = np.zeros((369, len(Agente.actions))) #369 variacoes possiveis para os sensores
+                                    a.qTable = np.zeros((370, len(Agente.actions))) #369 variacoes possiveis para os sensores
 
                         self.qLearningForaging(learningRate, desconto, probExplorar)
 
@@ -608,7 +608,12 @@ class MotorSimulator:
                     if (np.random.rand() <= probExplorar):  # escolher se vamos explorar ou aproveitar
                         action = np.random.randint(0, len(Agente.actions))  # usar uma action nova/aleatoria
                     else:
+                        # print("-------")
+                        # print(currentStates[index])
+                        # print("WHYYYYY")
+                        # print(a.qTable[currentStates[index]])
                         action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
+                        # print(action)
 
                     moved, newPos = a.acao(Agente.actions[action])
 
@@ -826,18 +831,18 @@ class MotorSimulator:
             currentTime = time.time()
 
         totalPoints = 0
-        #foragerRemainder= 0
+        foragerRemainder= 0
         for a in self.mundo.getAgentes():
             if (type(a) == Dropper):
                 totalPoints += a.pontosDepositados
-        #     else:
-        #         totalRemain= 0
-        #         for r in a.recursosCollected:
-        #             totalRemain+= r.quantidade
-        #
-        #         foragerRemainder += totalRemain
-        #
-        # print("Left over", foragerRemainder)
+            else:
+                totalRemain= 0
+                for r in a.recursosCollected:
+                    totalRemain+= r.pontos
+
+                foragerRemainder += totalRemain
+
+        print("Left over", foragerRemainder)
         return totalPoints
 
     def showTables(self, metricBurro, metricGenetic, metricQLearning):

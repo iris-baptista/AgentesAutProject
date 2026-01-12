@@ -72,8 +72,8 @@ class Dropper(Agente):
     def nextState(self):  # estado vai ser o mundo? ou o index
         obs = self.mundoPertence.observacaoPara((self.x, self.y))  # observacao para novo index
 
-        emptyCount = self.containsType(obs, EspacoVazio)
-        if (emptyCount == 0):  # agent boxed in
+        emptyCount= self.containsType(obs, EspacoVazio)
+        if(emptyCount == 0): #agent boxed in
             return 369
 
         obstaculoCount = self.containsType(obs, Obstaculo)
@@ -82,7 +82,7 @@ class Dropper(Agente):
         cestoCount = self.containsType(obs, Cesto)
         if (obstaculoCount >= 1):
             if (recursoCount >= 1):
-                if (cestoCount >= 1):  # se for cesto, recurso, e obstaculo
+                if (cestoCount >= 1): #se for cesto, recurso, e obstaculo
                     match obs:
                         case [Obstaculo(), Cesto(), Recurso(), EspacoVazio()]:
                             return 273
@@ -132,7 +132,9 @@ class Dropper(Agente):
                             return 295
                         case [EspacoVazio(), Recurso(), Obstaculo(), Cesto()]:
                             return 296
-                elif (agentCount >= 1):  # se agente e recurso e obstaculo
+                        case _:
+                            return 369
+                elif (agentCount >= 1): #se agente e recurso e obstaculo
                     match obs:
                         case [Obstaculo(), Agente(), Recurso(), EspacoVazio()]:
                             return 297
@@ -182,9 +184,11 @@ class Dropper(Agente):
                             return 319
                         case [EspacoVazio(), Recurso(), Obstaculo(), Agente()]:
                             return 320
-                else:  # recursos e obstaculos
-                    if (obstaculoCount == 1):
-                        if (recursoCount == 1):  # 1 obstaculo 1 recurso
+                        case _:
+                            return 369
+                else: #recursos e obstaculos
+                    if(obstaculoCount == 1):
+                        if(recursoCount == 1): #1 obstaculo 1 recurso
                             match obs:
                                 case [Obstaculo(), EspacoVazio(), EspacoVazio(), Recurso()]:
                                     return 57
@@ -210,7 +214,9 @@ class Dropper(Agente):
                                     return 67
                                 case [EspacoVazio(), Recurso(), Obstaculo(), EspacoVazio()]:
                                     return 68
-                        else:  # 2 recursos 1 obstaculo
+                                case _:
+                                    return 369
+                        else: #2 recursos 1 obstaculo
                             match obs:
                                 case [Recurso(), EspacoVazio(), Obstaculo(), Recurso()]:
                                     return 81
@@ -236,7 +242,9 @@ class Dropper(Agente):
                                     return 91
                                 case [Recurso(), Recurso(), EspacoVazio(), Obstaculo()]:
                                     return 92
-                    else:  # 2 obstaculos 1 recurso
+                                case _:
+                                    return 369
+                    else: #2 obstaculos 1 recurso
                         match obs:
                             case [Obstaculo(), EspacoVazio(), Recurso(), Obstaculo()]:
                                 return 69
@@ -262,9 +270,11 @@ class Dropper(Agente):
                                 return 79
                             case [Obstaculo(), Obstaculo(), EspacoVazio(), Recurso()]:
                                 return 80
-            elif (agentCount >= 1):  # agentes, e obstaculos
-                if (obstaculoCount == 1):
-                    if (agentCount == 1):  # 1 obstaculo e 1 agente
+                            case _:
+                                return 369
+            elif (agentCount >= 1): #agentes, e obstaculos
+                if(obstaculoCount == 1):
+                    if(agentCount == 1): #1 obstaculo e 1 agente
                         match obs:
                             case [Obstaculo(), EspacoVazio(), EspacoVazio(), Agente()]:
                                 return 93
@@ -290,7 +300,9 @@ class Dropper(Agente):
                                 return 103
                             case [EspacoVazio(), Agente(), Obstaculo(), EspacoVazio()]:
                                 return 104
-                    else:  # 2 agentes 1 obstaculo
+                            case _:
+                                return 369
+                    else: #2 agentes 1 obstaculo
                         match obs:
                             case [Agente(), EspacoVazio(), Obstaculo(), Agente()]:
                                 return 117
@@ -316,7 +328,9 @@ class Dropper(Agente):
                                 return 127
                             case [EspacoVazio(), Obstaculo(), Agente(), Agente()]:
                                 return 128
-                else:  # 2 obstaculos 1 agente
+                            case _:
+                                return 369
+                else: #2 obstaculos 1 agente
                     match obs:
                         case [Obstaculo(), EspacoVazio(), Obstaculo(), Agente()]:
                             return 105
@@ -342,8 +356,10 @@ class Dropper(Agente):
                             return 115
                         case [EspacoVazio(), Agente(), Obstaculo(), Obstaculo()]:
                             return 116
+                        case _:
+                            return 369
             elif (cestoCount >= 1):
-                if (agentCount >= 1):  # obstaculos, cestos, e agentes
+                if (agentCount >= 1): #obstaculos, cestos, e agentes
                     match obs:
                         case [Obstaculo(), Agente(), Cesto(), EspacoVazio()]:
                             return 345
@@ -393,9 +409,11 @@ class Dropper(Agente):
                             return 367
                         case [EspacoVazio(), Cesto(), Obstaculo(), Agente()]:
                             return 368
-                else:  # cestos e obstaculos
-                    if (obstaculoCount == 1):
-                        if (cestoCount == 1):  # 1 cesto e 1 obstaculo
+                        case _:
+                            return 369
+                else: #cestos e obstaculos
+                    if(obstaculoCount == 1):
+                        if(cestoCount == 1): #1 cesto e 1 obstaculo
                             match obs:
                                 case [Obstaculo(), EspacoVazio(), Cesto(), EspacoVazio()]:
                                     return 129
@@ -421,7 +439,9 @@ class Dropper(Agente):
                                     return 139
                                 case [EspacoVazio(), Cesto(), Obstaculo(), EspacoVazio()]:
                                     return 140
-                        else:  # 2 cestos 1 obstaculo
+                                case _:
+                                    return 369
+                        else: #2 cestos 1 obstaculo
                             match obs:
                                 case [Cesto(), Obstaculo(), EspacoVazio(), Cesto()]:
                                     return 153
@@ -447,7 +467,9 @@ class Dropper(Agente):
                                     return 163
                                 case [Cesto(), Cesto(), EspacoVazio(), Obstaculo()]:
                                     return 164
-                    else:  # 2 obstaculos 1 cesto
+                                case _:
+                                    return 369
+                    else: #2 obstaculos 1 cesto
                         match obs:
                             case [Obstaculo(), EspacoVazio(), Cesto(), Obstaculo()]:
                                 return 141
@@ -473,8 +495,10 @@ class Dropper(Agente):
                                 return 151
                             case [EspacoVazio(), Cesto(), Obstaculo(), Obstaculo()]:
                                 return 152
-            else:  # so tem obstaculos
-                if (obstaculoCount == 1):
+                            case _:
+                                return 369
+            else: #so tem obstaculos
+                if(obstaculoCount == 1):
                     match obs:
                         case [Obstaculo(), EspacoVazio(), EspacoVazio(), EspacoVazio()]:
                             return 1
@@ -484,7 +508,9 @@ class Dropper(Agente):
                             return 3
                         case [EspacoVazio(), EspacoVazio(), Obstaculo(), EspacoVazio()]:
                             return 4
-                elif (obstaculoCount == 2):
+                        case _:
+                            return 369
+                elif(obstaculoCount == 2):
                     match obs:
                         case [Obstaculo(), EspacoVazio(), EspacoVazio(), Obstaculo()]:
                             return 5
@@ -498,7 +524,9 @@ class Dropper(Agente):
                             return 9
                         case [EspacoVazio(), EspacoVazio(), Obstaculo(), Obstaculo()]:
                             return 10
-                else:  # se forem 3 obstaculos
+                        case _:
+                            return 369
+                else: #se forem 3 obstaculos
                     match obs:
                         case [Obstaculo(), Obstaculo(), EspacoVazio(), Obstaculo()]:
                             return 11
@@ -508,9 +536,11 @@ class Dropper(Agente):
                             return 13
                         case [Obstaculo(), EspacoVazio(), Obstaculo(), Obstaculo()]:
                             return 14
+                        case _:
+                            return 369
         elif (recursoCount >= 1):
             if (cestoCount >= 1):
-                if (agentCount >= 1):  # recursos e cestos e agentes
+                if(agentCount >= 1): #recursos e cestos e agentes
                     match obs:
                         case [Recurso(), Agente(), Cesto(), EspacoVazio()]:
                             return 321
@@ -560,9 +590,11 @@ class Dropper(Agente):
                             return 343
                         case [EspacoVazio(), Cesto(), Recurso(), Agente()]:
                             return 344
-                else:  # so recursos e cestos
-                    if (cestoCount == 1):
-                        if (recursoCount == 1):  # 1 cesto e 1 recurso
+                        case _:
+                            return 369
+                else: #so recursos e cestos
+                    if(cestoCount == 1):
+                        if(recursoCount == 1): #1 cesto e 1 recurso
                             match obs:
                                 case [Cesto(), EspacoVazio(), Recurso(), EspacoVazio()]:
                                     return 165
@@ -588,7 +620,9 @@ class Dropper(Agente):
                                     return 175
                                 case [EspacoVazio(), Recurso(), Cesto(), EspacoVazio()]:
                                     return 176
-                        else:  # 2 recursos e 1 cesto
+                                case _:
+                                    return 369
+                        else: #2 recursos e 1 cesto
                             match obs:
                                 case [Recurso(), EspacoVazio(), Cesto(), Recurso()]:
                                     return 189
@@ -614,7 +648,9 @@ class Dropper(Agente):
                                     return 199
                                 case [EspacoVazio(), Cesto(), Recurso(), Recurso()]:
                                     return 200
-                    else:  # 2 cesto e 1 recursos
+                                case _:
+                                    return 369
+                    else: #2 cesto e 1 recursos
                         match obs:
                             case [Cesto(), EspacoVazio(), Recurso(), Cesto()]:
                                 return 177
@@ -640,9 +676,11 @@ class Dropper(Agente):
                                 return 187
                             case [EspacoVazio(), Recurso(), Cesto(), Cesto()]:
                                 return 188
-            elif (agentCount >= 1):  # agentes e recursos
-                if (recursoCount == 1):
-                    if (agentCount == 1):  # 1 agente e 1 recurso
+                            case _:
+                                return 369
+            elif (agentCount >= 1): #agentes e recursos
+                if(recursoCount == 1):
+                    if(agentCount == 1): #1 agente e 1 recurso
                         match obs:
                             case [Agente(), EspacoVazio(), Recurso(), EspacoVazio()]:
                                 return 201
@@ -668,7 +706,9 @@ class Dropper(Agente):
                                 return 211
                             case [EspacoVazio(), Recurso(), Agente(), EspacoVazio()]:
                                 return 212
-                    else:  # se 2 agentes e 1 recurso
+                            case _:
+                                return 369
+                    else: #se 2 agentes e 1 recurso
                         match obs:
                             case [Agente(), EspacoVazio(), Recurso(), Agente()]:
                                 return 213
@@ -694,7 +734,9 @@ class Dropper(Agente):
                                 return 223
                             case [Agente(), Agente(), EspacoVazio(), Recurso()]:
                                 return 224
-                else:  # se 2 recursos e 1 agente
+                            case _:
+                                return 369
+                else: #se 2 recursos e 1 agente
                     match obs:
                         case [Recurso(), EspacoVazio(), Agente(), Recurso()]:
                             return 225
@@ -720,8 +762,10 @@ class Dropper(Agente):
                             return 235
                         case [EspacoVazio(), Agente(), Recurso(), Recurso()]:
                             return 236
-            else:  # se for so recursos
-                if (recursoCount == 1):
+                        case _:
+                            return 369
+            else: #se for so recursos
+                if(recursoCount == 1):
                     match obs:
                         case [Recurso(), EspacoVazio(), EspacoVazio(), EspacoVazio()]:
                             return 15
@@ -731,7 +775,9 @@ class Dropper(Agente):
                             return 18
                         case [EspacoVazio(), EspacoVazio(), EspacoVazio(), Recurso()]:
                             return 16
-                elif (recursoCount == 2):
+                        case _:
+                            return 369
+                elif(recursoCount == 2):
                     match obs:
                         case [Recurso(), EspacoVazio(), EspacoVazio(), Recurso()]:
                             return 19
@@ -745,7 +791,9 @@ class Dropper(Agente):
                             return 23
                         case [EspacoVazio(), EspacoVazio(), Recurso(), Recurso()]:
                             return 24
-                else:  # se 3 recursos
+                        case _:
+                            return 369
+                else: #se 3 recursos
                     match obs:
                         case [Recurso(), EspacoVazio(), Recurso(), Recurso()]:
                             return 25
@@ -755,10 +803,12 @@ class Dropper(Agente):
                             return 27
                         case [Recurso(), Recurso(), Recurso(), EspacoVazio()]:
                             return 28
+                        case _:
+                            return 369
         elif (agentCount >= 1):
-            if (cestoCount >= 1):  # agentes e cestos
-                if (agentCount == 1):
-                    if (cestoCount == 1):  # 1 agente e 1 cesto
+            if (cestoCount >= 1): #agentes e cestos
+                if(agentCount == 1):
+                    if(cestoCount == 1): #1 agente e 1 cesto
                         match obs:
                             case [Agente(), EspacoVazio(), Cesto(), EspacoVazio()]:
                                 return 237
@@ -784,7 +834,9 @@ class Dropper(Agente):
                                 return 247
                             case [EspacoVazio(), Cesto(), Agente(), EspacoVazio()]:
                                 return 248
-                    else:  # 2 cestos e 1 agente
+                            case _:
+                                return 369
+                    else: #2 cestos e 1 agente
                         match obs:
                             case [Agente(), Cesto(), Cesto(), EspacoVazio()]:
                                 return 261
@@ -810,7 +862,9 @@ class Dropper(Agente):
                                 return 271
                             case [EspacoVazio(), Agente(), Cesto(), Cesto()]:
                                 return 272
-                else:  # 2 agentes e 1 cesto
+                            case _:
+                                return 369
+                else: #2 agentes e 1 cesto
                     match obs:
                         case [Agente(), EspacoVazio(), Cesto(), Agente()]:
                             return 249
@@ -836,8 +890,10 @@ class Dropper(Agente):
                             return 259
                         case [Cesto(), EspacoVazio(), Agente(), Agente()]:
                             return 260
-            else:  # so agentes
-                if (agentCount == 1):
+                        case _:
+                            return 369
+            else: #so agentes
+                if(agentCount == 1):
                     match obs:
                         case [Agente(), EspacoVazio(), EspacoVazio(), EspacoVazio()]:
                             return 29
@@ -847,7 +903,9 @@ class Dropper(Agente):
                             return 32
                         case [EspacoVazio(), EspacoVazio(), EspacoVazio(), Agente()]:
                             return 30
-                elif (agentCount == 2):
+                        case _:
+                            return 369
+                elif(agentCount == 2):
                     match obs:
                         case [Agente(), EspacoVazio(), EspacoVazio(), Agente()]:
                             return 33
@@ -861,7 +919,9 @@ class Dropper(Agente):
                             return 37
                         case [EspacoVazio(), EspacoVazio(), Agente(), Agente()]:
                             return 38
-                else:  # se forem 3 agentes
+                        case _:
+                            return 369
+                else: #se forem 3 agentes
                     match obs:
                         case [Agente(), EspacoVazio(), Agente(), Agente()]:
                             return 39
@@ -871,8 +931,10 @@ class Dropper(Agente):
                             return 40
                         case [Agente(), Agente(), Agente(), EspacoVazio()]:
                             return 42
+                        case _:
+                            return 369
         elif (cestoCount >= 1):
-            if (cestoCount == 1):
+            if(cestoCount == 1):
                 match obs:
                     case [Cesto(), EspacoVazio(), EspacoVazio(), EspacoVazio()]:
                         return 43
@@ -882,6 +944,8 @@ class Dropper(Agente):
                         return 46
                     case [EspacoVazio(), EspacoVazio(), EspacoVazio(), Cesto()]:
                         return 44
+                    case _:
+                        return 369
             elif (cestoCount == 2):
                 match obs:
                     case [Cesto(), EspacoVazio(), EspacoVazio(), Cesto()]:
@@ -896,7 +960,9 @@ class Dropper(Agente):
                         return 52
                     case [EspacoVazio(), EspacoVazio(), Cesto(), Cesto()]:
                         return 51
-            else:  # se forem 3 cestos
+                    case _:
+                        return 369
+            else: #se forem 3 cestos
                 match obs:
                     case [EspacoVazio(), Cesto(), Cesto(), Cesto()]:
                         return 53
@@ -906,5 +972,7 @@ class Dropper(Agente):
                         return 55
                     case [Cesto(), EspacoVazio(), Cesto(), Cesto()]:
                         return 56
+                    case _:
+                        return 369
         else:  # so espacos vazios
             return 0
