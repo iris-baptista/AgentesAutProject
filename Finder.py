@@ -168,6 +168,10 @@ class Finder(Agente):
     def nextState(self): # estados representados por o index!
         obs= self.mundoPertence.observacaoPara((self.x, self.y)) #observacao para novo index
 
+        emptyCount= self.containsType(obs, EspacoVazio)
+        if(emptyCount == 0):
+            return 141
+
         obstaculoCount= self.containsType(obs, Obstaculo)
         farolCount= self.containsType(obs, LightHouse)
         agentCount= self.containsType(obs, Agente)
@@ -223,6 +227,8 @@ class Finder(Agente):
                             return 139
                         case [EspacoVazio(), Obstaculo(), LightHouse(), Agente()]:
                             return 140
+                        case _:
+                            return 141
                 else: #so farol, obstaculo, e espaco vazio
                     if(obstaculoCount == 1):
                         match obs:
@@ -250,6 +256,8 @@ class Finder(Agente):
                                 return 52
                             case [EspacoVazio(), Obstaculo(), LightHouse(), EspacoVazio()]:
                                 return 53
+                            case _:
+                                return 141
                     else: #se for 2
                         match obs:
                             case [LightHouse(), Obstaculo(), Obstaculo(), EspacoVazio()]:
@@ -276,6 +284,8 @@ class Finder(Agente):
                                 return 55
                             case [Obstaculo(), Obstaculo(), LightHouse(), EspacoVazio()]:
                                 return 56
+                            case _:
+                                return 141
             elif(agentCount >= 1):
                 if(obstaculoCount == 1):
                     if(agentCount == 1):
@@ -304,6 +314,8 @@ class Finder(Agente):
                                 return 67
                             case [EspacoVazio(), Obstaculo(), Agente(), EspacoVazio()]:
                                 return 68
+                            case _:
+                                return 141
                     else: #se for 2 agentes e 1 obstaculo
                         match obs:
                             case [Obstaculo(), Agente(), Agente(), EspacoVazio()]:
@@ -330,6 +342,8 @@ class Finder(Agente):
                                 return 91
                             case [Agente(), Agente(), Obstaculo(), EspacoVazio()]:
                                 return 92
+                            case _:
+                                return 141
                 else: #se for 2 obstaculos so pode ser 1 agente
                     match obs:
                         case [Agente(), Obstaculo(), EspacoVazio(), Obstaculo()]:
@@ -356,6 +370,8 @@ class Finder(Agente):
                             return 79
                         case [Obstaculo(), Obstaculo(), Agente(), EspacoVazio()]:
                             return 80
+                        case _:
+                            return 141
             else: #so obstaculos e espacos vazios
                 if(obstaculoCount == 1):
                     match obs:
@@ -367,6 +383,8 @@ class Finder(Agente):
                             return 4
                         case [EspacoVazio(), EspacoVazio(), EspacoVazio(), Obstaculo()]:
                             return 2
+                        case _:
+                            return 141
                 elif(obstaculoCount == 2):
                     match obs:
                         case [Obstaculo(), EspacoVazio(), EspacoVazio(), Obstaculo()]:
@@ -381,6 +399,8 @@ class Finder(Agente):
                             return 9
                         case [EspacoVazio(), EspacoVazio(), Obstaculo(), Obstaculo()]:
                             return 10
+                        case _:
+                            return 141
                 else: #caso seja 3
                     match obs:
                         case [Obstaculo(), Obstaculo(), EspacoVazio(), Obstaculo()]:
@@ -391,6 +411,8 @@ class Finder(Agente):
                             return 13
                         case [Obstaculo(), EspacoVazio(), Obstaculo(), Obstaculo()]:
                             return 14
+                        case _:
+                            return 141
         elif(farolCount == 1):
             if(agentCount >= 1):
                 if(agentCount == 1):
@@ -419,6 +441,8 @@ class Finder(Agente):
                             return 103
                         case [EspacoVazio(), Agente(), LightHouse(), EspacoVazio()]:
                             return 104
+                        case _:
+                            return 141
                 else: #se for 2s agentes
                     match obs:
                         case [LightHouse(), Agente(), Agente(), EspacoVazio()]:
@@ -445,6 +469,8 @@ class Finder(Agente):
                             return 115
                         case [Agente(), Agente(), LightHouse(), EspacoVazio()]:
                             return 116
+                        case _:
+                            return 141
             else: #so farol e espaco vazio
                 match obs:
                     case [EspacoVazio(), EspacoVazio(), EspacoVazio(), LightHouse()]:
@@ -455,6 +481,8 @@ class Finder(Agente):
                         return 17
                     case [LightHouse(), EspacoVazio(), EspacoVazio(), EspacoVazio()]:
                         return 18
+                    case _:
+                        return 141
         elif(agentCount >= 1):
             if(agentCount == 1):
                 match obs:
@@ -466,6 +494,8 @@ class Finder(Agente):
                         return 21
                     case [Agente(), EspacoVazio(), EspacoVazio(), EspacoVazio()]:
                         return 22
+                    case _:
+                        return 141
             elif(agentCount == 2):
                 match obs:
                     case [EspacoVazio(), Agente(), EspacoVazio(), Agente()]:
@@ -480,6 +510,8 @@ class Finder(Agente):
                         return 27
                     case [Agente(), Agente(), EspacoVazio(), EspacoVazio()]:
                         return 28
+                    case _:
+                        return 141
             else: #se for 3
                 match obs:
                     case [EspacoVazio(), Agente(), Agente(), Agente()]:
@@ -490,6 +522,8 @@ class Finder(Agente):
                         return 31
                     case [Agente(), Agente(), EspacoVazio(), Agente()]:
                         return 32
+                    case _:
+                        return 141
         else: #so espacos vazios
             return 0
 
@@ -498,7 +532,7 @@ class Finder(Agente):
             return True
         elif (nextState >= 33 and nextState <= 56):
             return True
-        elif (nextState >= 93):
+        elif (nextState >= 93 and nextState <= 140):
             return True
         else:
             return False

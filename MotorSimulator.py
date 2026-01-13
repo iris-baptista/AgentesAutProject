@@ -136,23 +136,24 @@ class MotorSimulator:
                     metricBurro = self.farolBurro()
 
                     # com genetic
-                    # for a in self.mundo.getAgentes():
-                    #     a.setMundo(self.mundo)
-                    # metricGenetic = self.testGenetic()
-                    metricGenetic= None #APAGAR MAIS TARDE!!!!!
+                    for a in self.mundo.getAgentes():
+                        a.setMundo(self.mundo)
+                    metricGenetic = self.testGenetic()
 
-                    # com q learning
-                    metricQLearning =  self.testQLearningFarol()
-                else:
-                    # com burro
-                    metricBurro = self.foragingBurro()
+                    points= []
+                    for valor in range(len(metricBurro)):
+                        points.append([metricBurro[valor], metricGenetic[valor]])
 
-                    metricGenetic= None
+                    self.showTableFarol(points)
+                else: #foraging tests
+                    points= []
+                    for test in range(5):
+                        burro = self.foragingBurro() # com burro
+                        qLearning = self.testQLearningForaging() # com q learning
 
-                    # com q learning
-                    metricQLearning = self.testQLearningForaging()
+                        points.append([burro, qLearning])
 
-                self.showTables(metricBurro, metricGenetic, metricQLearning)
+                    self.showTableForaging(points)
             elif choice1 == "3": #modo burro
                 if(type(self.mundo) == Farol):
                     self.farolBurro()
@@ -387,6 +388,7 @@ class MotorSimulator:
         self.mundo.setGenPolitic(population[0].genPolitic)
         print("Evolution complete.")
 
+    #Not fully functional
     def qLearningFarol(self, learningRate, desconto, probExplorar):
         # goals = [2, 4, 6, 7]  # index de estados ao lado do farol
 
@@ -464,101 +466,6 @@ class MotorSimulator:
             if (probExplorar > 0.01):
                 probExplorar -= 0.00001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
 
-    def qLearningFarolAlterado(self, learningRate, desconto, probExplorar):
-        goals = [2, 4, 6, 7]  # index de estado ao lado do farol
-
-        print("Comecar episodio: 1")
-        index = 0
-        for a in self.mundo.getAgentes():  # for each agent
-            print("QTable initial do Agente", (index + 1), "\n", a.qTable)
-            index += 1
-
-        numEpisodios = 50000  # aumentar
-        for episodio in range(numEpisodios):
-            if((episodio+1) % 100 == 0):
-                index= 0
-                for a in self.mundo.getAgentes():  # for each agent
-                    print("QTable atual do Agente", (index+1) ,"\n", a.qTable)
-                    index+= 1
-
-                print("Comecar episodio:", episodio+1)
-                if(learningRate > 0.1):
-                    learningRate-= 0.0001
-
-            # escolhe uma posicao aleatoria para comecar
-            self.mundo.resetStart()
-            currentStates= []
-            visited= []
-            steps= []
-            positionsVisited= []
-            for a in self.mundo.getAgentes(): #for each agent
-                currentStates.append(a.nextState())  # get state for stating pos
-                a.found= False #comecar cada episodio com found= false
-                visited.append(set()) #set para nao ter valores repetidos
-                steps.append(1)
-                positionsVisited.append(set())
-
-            while (True):
-                done = True
-                index= 0
-                for a in self.mundo.getAgentes():
-                    if(a.found == False): #so fazemos move os q ainda nao encontraram
-                        done= False
-
-                        # escolher INDEX da proxima acao
-                        if (np.random.rand() <= probExplorar):  # escolher se vamos explorar ou aproveitar
-                            action = np.random.randint(0, len(Agente.actions))  # usar uma action nova/aleatoria
-                        else:
-                            if(np.random.rand() < 0.05): #para parar loops, explorando
-                                action = np.random.randint(0, len(Agente.actions))  # usar uma action nova/aleatoria
-                            else:
-                                action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
-
-                        moved, newPos= a.acao(Agente.actions[action])
-
-                        nextState = a.nextState()
-                        if (nextState in goals):
-                            reward = 15
-                        elif (newPos in positionsVisited[index]): #para nao ter loops fisicos
-                            reward= -20
-                        elif (moved == False):
-                            reward = -2
-                        elif ((currentStates[index], action) in visited[index]):
-                            reward= -3
-                            # reward= -3
-                        else: #se mexer penaliza para procurar caminhos mais curtos
-                            reward = -1 - 0.5 * steps[index]
-
-                        #atualizar visited
-                        visited[index].add((currentStates[index], action))
-                        positionsVisited[index].add(newPos)
-
-                        # atualizar matriz
-                        a.qTable[currentStates[index], action] = (
-                                ((1 - learningRate) * a.qTable[currentStates[index], action]) +
-                                (learningRate * (reward + (desconto * np.max(a.qTable[nextState])))))
-
-                        if (nextState in goals):  # para quando encontra farol
-                            a.found= True #agente conclui
-                            # break nao faz break para os outros poderem continuar!
-
-                        currentStates[index] = nextState
-                        steps[index] += 1
-
-                        emptySpaces= (a.mundoPertence.sizeMap*a.mundoPertence.sizeMap) - len(a.mundoPertence.obstaculos)
-                        if(steps[index] > emptySpaces*1.2): #para nao encontrar loops
-                            a.found= True
-
-                        index+= 1
-                    else:
-                        a.atualizarPosicao((-1, -1)) #para remover do mapa
-
-                if (done == True):
-                    break
-
-            if(probExplorar > 0.01): #para nao parar de explorar
-                probExplorar -= 0.00001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
-
     def qLearningForaging(self, learningRate, desconto, probExplorar):
         print("Comecar episodio: 1")
         index = 0
@@ -625,6 +532,7 @@ class MotorSimulator:
             if(probExplorar > 0.01):
                 probExplorar -= 0.00001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
 
+    #To be altered so that all the states fit
     def showGraphs(self):
         agents= self.mundo.getAgentes()
 
@@ -723,6 +631,7 @@ class MotorSimulator:
                         f"Agente {i}: Steps={len(agent.path)}, Collisions={agent.collisions}, Found={agent.found}, FollowedHints={agent.followed_hints}")
                     print(f"Caminho: {agent.path}")
 
+    #To be fixed
     def testQLearningFarol(self):
         self.mundo.resetMundo() #para comecar no mesmo lugar q os burros
 
@@ -829,17 +738,24 @@ class MotorSimulator:
         print("Left over", foragerRemainder)
         return totalPoints
 
-    def showTables(self, metricBurro, metricGenetic, metricQLearning):
+    def showTableFarol(self, points):
         colors = plt.cm.BuGn(np.full(2, 0.4))
-        if(metricGenetic == None):
-            points= [metricBurro, metricQLearning]
-            tableForaging = plt.table(cellText=[points], colLabels=['Burro', 'Q-Learning'], colColours=colors, loc='center', cellLoc='center')
-        else:
-            finders=[]
-            for i in range(0, len(self.mundo.getAgentes())):
-                finders.append("Finder " + str(i + 1))
+        finders = []
+        for i in range(0, len(self.mundo.getAgentes())):
+            finders.append("Finder " + str(i + 1))
 
-            tableFarol= plt.table(cellText=[metricBurro, metricGenetic], rowLabels= finders, colLabels=['Burro', 'Genetic'], colColours= colors, loc= 'center', cellLoc='center')
+        plt.table(cellText=points, rowLabels=finders, colLabels=['Burro', 'Genetic'], rowColours= colors, colColours=colors, loc='center', cellLoc='center')
+
+        plt.gca().get_yaxis().set_visible(False)
+        plt.gca().get_xaxis().set_visible(False)
+        plt.box(False)
+
+        plt.show()
+
+    def showTableForaging(self, points):
+        colors = plt.cm.BuGn(np.full(2, 0.4))
+
+        plt.table(cellText=points, colLabels=['Burro', 'Q-Learning'], colColours=colors, loc='center', cellLoc='center')
 
         plt.gca().get_yaxis().set_visible(False)
         plt.gca().get_xaxis().set_visible(False)
