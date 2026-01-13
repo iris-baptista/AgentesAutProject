@@ -974,3 +974,15 @@ class Forager(Agente): #extends abstract Agente
                         return 369
         else:  # so espacos vazios
             return 0
+
+    def inGoal(self, nextState):
+        if (nextState >= 15 and nextState <= 28):
+            return True
+        elif (nextState >= 57 and nextState <= 92):
+            return True
+        elif (nextState >= 165 and nextState <= 236):
+            return True
+        elif (nextState >= 273 and nextState <= 344):
+            return True
+        else:
+            return False

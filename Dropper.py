@@ -976,3 +976,15 @@ class Dropper(Agente):
                         return 369
         else:  # so espacos vazios
             return 0
+
+    def inGoal(self, nextState):
+        if (nextState >= 43 and nextState <= 56):
+            return True
+        elif (nextState >= 129 and nextState <= 200):
+            return True
+        elif (nextState >= 237 and nextState <= 296):
+            return True
+        elif (nextState >= 345 and nextState <= 368):
+            return True
+        else:
+            return False

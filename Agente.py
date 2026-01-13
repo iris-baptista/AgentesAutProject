@@ -54,9 +54,9 @@ class Agente(ABC):
     def nextState(self, estado, acao):
         pass
 
-    # @abstractmethod
-    # def inGoal(self, nextState):
-    #     pass
+    @abstractmethod
+    def inGoal(self, nextState):
+        pass
 
     def containsType(self, list, type):
         itemCount= 0

@@ -589,36 +589,20 @@ class MotorSimulator:
                 currentStates.append(a.nextState())  # get state for stating pos
                 visited.append(set())
 
-                # if(type(a) == Forager):
-                #     a.recursosCollected= [] #comecar cada episodio sem recursos
-                # else: #se for um dropper
-                #     a.pontosDepositados= 0 #comecar cada episodio sem pontos
-
             initialTime = currentTime = time.time()
             while ((currentTime - initialTime) <= self.mundo.tempo):
                 index = 0
                 for a in self.mundo.getAgentes():
-                    match a:
-                        case Forager():
-                            goals= [2, 5, 8, 9, 11, 12, 13]  # index de estado next to recurso
-                        case Dropper():
-                            goals= [4, 7, 8, 10, 11, 13, 14]  # index de estado next to cesto
-
                     # escolher INDEX da proxima acao
                     if (np.random.rand() <= probExplorar):  # escolher se vamos explorar ou aproveitar
                         action = np.random.randint(0, len(Agente.actions))  # usar uma action nova/aleatoria
                     else:
-                        # print("-------")
-                        # print(currentStates[index])
-                        # print("WHYYYYY")
-                        # print(a.qTable[currentStates[index]])
                         action = np.argmax(a.qTable[currentStates[index]])  # usar um maximo conhecido
-                        # print(action)
 
                     moved, newPos = a.acao(Agente.actions[action])
 
                     nextState = a.nextState()
-                    if (nextState in goals):
+                    if (a.inGoal(nextState)):
                         reward = 3
                     elif (moved == False):
                         reward = -1
