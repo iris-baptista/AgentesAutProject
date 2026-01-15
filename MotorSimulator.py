@@ -31,7 +31,6 @@ def compute_novelty(current_behavior, archive, k=5):
 
 class MotorSimulator:
     mundo= None #instancia inicial
-    modoExecucao= '' #a= aprendizagem, t= teste
 
     def __init__(self, worldSize):
         self.worldSize= worldSize
@@ -74,7 +73,6 @@ class MotorSimulator:
 
             choice1 = input("Selecione a opção: ")
             if choice1 == "1": #learning mode
-                self.modoExecucao = 'a'
                 print("\n==== Política do Agente ====")
                 print("  1. Algoritmo Genético")
                 print("  2. Algoritmo Q-Learning")
@@ -82,9 +80,13 @@ class MotorSimulator:
                 choice2 = input("Selecione a opção: ")
 
                 if choice2 == "1": #genetico
-                    population = input("Selecione o tamanho da população: ")
-                    gen = input("Selecione o número de gerações: ")
-                    self.genetic(population, gen)
+                    match self.mundo:
+                        case Farol():
+                            population = input("Selecione o tamanho da população: ")
+                            gen = input("Selecione o número de gerações: ")
+                            self.genetic(population, gen)
+                        case Foraging():
+                            print("Under development!")
                 elif choice2 == "2": #q learning
                     print("A aprender com algoritmo Q-learning!")
                     learningRate = 0.7  # demais? a menos? #% de info nova
@@ -92,6 +94,7 @@ class MotorSimulator:
                     probExplorar = 0.6  # demais?
 
                     if(type(self.mundo) == Farol):
+                        print("Under development!")
                         for a in self.mundo.getAgentes():
                             if (type(a) != Coordenator):  # coordenador nao treina
                                 a.setMundo(self.mundo)
@@ -99,7 +102,7 @@ class MotorSimulator:
                                 if (a.qTable is None): #se e a primeira vez a correr o algoritmo
                                     a.qTable = np.zeros((142, len(Agente.actions))) #141 estados
 
-                        self.qLearningFarol(learningRate, desconto, probExplorar)
+                        #self.qLearningFarol(learningRate, desconto, probExplorar)
                     else:
                         for a in self.mundo.getAgentes():
                             if (type(a) != Coordenator):  # coordenador nao treina
@@ -119,7 +122,6 @@ class MotorSimulator:
                 else:
                     print("Opção inválida, por favor tente novamente")
             elif choice1 == "2": #modo teste
-                self.modoExecucao = 't'
                 print("a executar em modo de teste!")
 
                 if(type(self.mundo) == Farol):
@@ -382,7 +384,6 @@ class MotorSimulator:
         self.mundo.setGenPolitic(population[0].genPolitic)
         print("Evolution complete.")
 
-    #Not fully functional
     def qLearningFarol(self, learningRate, desconto, probExplorar):
         # goals = [2, 4, 6, 7]  # index de estados ao lado do farol
 
@@ -461,13 +462,14 @@ class MotorSimulator:
                 probExplorar -= 0.00001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
 
     def qLearningForaging(self, learningRate, desconto, probExplorar):
-        print("Comecar episodio: 1")
         index = 0
         for a in self.mundo.getAgentes():  # for each agent
             print("QTable initial do Agente", (index + 1), "\n", a.qTable)
             index += 1
 
-        numEpisodios = 5000  # aumentar
+        print("Comecar episodio: 1")
+
+        numEpisodios = 15000  # aumentar
         for episodio in range(numEpisodios):  # deviamos comecar sempre no mesmo estado?
             if ((episodio + 1) % 100 == 0):
                 index = 0
@@ -482,8 +484,7 @@ class MotorSimulator:
             #por os rescursos de volta
             self.mundo.resetMundo()
 
-            # escolhe uma posicao aleatoria para comecar
-            #self.mundo.resetStart()
+            # self.mundo.resetStart() #escolhe uma posicao aleatoria para comecar
             currentStates = []
             visited= []
             for a in self.mundo.getAgentes():  # for each agent
@@ -671,7 +672,6 @@ class MotorSimulator:
 
         return steps
 
-    #To be fixed
     def testQLearningFarol(self):
         self.mundo.resetMundo() #para comecar no mesmo lugar q os burros
 
@@ -732,13 +732,14 @@ class MotorSimulator:
 
         currentStates = []
         steps= []
+        last= []
         for a in self.mundo.getAgentes():  # for each agent
             currentStates.append(a.nextState())  # get state for stating pos
             steps.append(0)
+            last.append((-1, -1))
             # todos agentes ficam com o inventario vazio no reset mundo
 
         initialTime = currentTime = time.time()
-        last= (-1, -1)
         while ((currentTime - initialTime) <= self.mundo.tempo):
             index = 0
             for a in self.mundo.getAgentes():
@@ -750,11 +751,11 @@ class MotorSimulator:
                     potentialAction= Agente.actions[action]
                     potentialPosition= a.x+ potentialAction[0], a.y+ potentialAction[1]
 
-                    if(potentialPosition == last):
+                    if(potentialPosition == last[index]):
                         action= np.random.randint(0, len(Agente.actions))
 
                 a.acao(Agente.actions[action])
-                last= (a.x, a.y)
+                last[index]= (a.x, a.y)
 
                 nextState = a.nextState()
                 currentStates[index] = nextState
@@ -764,18 +765,18 @@ class MotorSimulator:
             currentTime = time.time()
 
         totalPoints = 0
-        foragerRemainder= 0
+        # foragerRemainder= 0
         for a in self.mundo.getAgentes():
             if (type(a) == Dropper):
                 totalPoints += a.pontosDepositados
-            else:
-                totalRemain= 0
-                for r in a.recursosCollected:
-                    totalRemain+= r.pontos
-
-                foragerRemainder += totalRemain
-
-        print("Left over", foragerRemainder)
+        #     else:
+        #         totalRemain= 0
+        #         for r in a.recursosCollected:
+        #             totalRemain+= r.pontos
+        #
+        #         foragerRemainder += totalRemain
+        #
+        # print("Left over", foragerRemainder)
         return totalPoints
 
     def showTableFarol(self, points):

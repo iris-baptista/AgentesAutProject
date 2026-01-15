@@ -1,6 +1,5 @@
 from Ambiente import Obstaculo, EspacoVazio, LightHouse
 from Finder import Finder
-from Coordenator import Coordenator
 import random
 
 class Farol: #foraging
@@ -8,7 +7,7 @@ class Farol: #foraging
 
     def __init__(self, sizeMundo): #nao passei o nome do ficheiro ja q e sempre o mesmo para o farol
         self.sizeMap = sizeMundo
-        self.farol= (-1, -1)
+        self.farol= None
         self.obstaculos = []
         self.agentes = []
         self.ogPosAgentes = []
