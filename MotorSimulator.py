@@ -80,9 +80,13 @@ class MotorSimulator:
                 choice2 = input("Selecione a opção: ")
 
                 if choice2 == "1": #genetico
-                    population = input("Selecione o tamanho da população: ")
-                    gen = input("Selecione o número de gerações: ")
-                    self.genetic(population, gen)
+                    match self.mundo:
+                        case Farol():
+                            population = input("Selecione o tamanho da população: ")
+                            gen = input("Selecione o número de gerações: ")
+                            self.genetic(population, gen)
+                        case Foraging():
+                            print("Under development!")
                 elif choice2 == "2": #q learning
                     print("A aprender com algoritmo Q-learning!")
                     learningRate = 0.7  # demais? a menos? #% de info nova
@@ -90,6 +94,7 @@ class MotorSimulator:
                     probExplorar = 0.6  # demais?
 
                     if(type(self.mundo) == Farol):
+                        print("Under development!")
                         for a in self.mundo.getAgentes():
                             if (type(a) != Coordenator):  # coordenador nao treina
                                 a.setMundo(self.mundo)
@@ -97,7 +102,7 @@ class MotorSimulator:
                                 if (a.qTable is None): #se e a primeira vez a correr o algoritmo
                                     a.qTable = np.zeros((142, len(Agente.actions))) #141 estados
 
-                        self.qLearningFarol(learningRate, desconto, probExplorar)
+                        #self.qLearningFarol(learningRate, desconto, probExplorar)
                     else:
                         for a in self.mundo.getAgentes():
                             if (type(a) != Coordenator):  # coordenador nao treina
