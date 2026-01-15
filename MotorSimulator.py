@@ -55,15 +55,9 @@ class MotorSimulator:
                 self.displayMundo()
                 self.subMenu()
             elif choice == "2": #problema Foraging
-                while (True): #manter escolha para testing
-                    self.mundo= Foraging(self.worldSize)
-                    print("Mundo Foraging: ")
-                    self.displayMundo()
-
-                    again = input("Quer gerar outro mundo?(y/n) ")
-                    if (again == "n"):
-                        break
-
+                self.mundo = Foraging(self.worldSize)
+                print("Mundo Foraging: ")
+                self.displayMundo()
                 self.subMenu()
             elif choice == "0": #fechar programa
                 print("A terminar...")
@@ -106,7 +100,7 @@ class MotorSimulator:
                                 a.setMundo(self.mundo)
 
                                 if (a.qTable is None): #se e a primeira vez a correr o algoritmo
-                                    a.qTable = np.zeros((141, len(Agente.actions))) #141 estados
+                                    a.qTable = np.zeros((142, len(Agente.actions))) #141 estados
 
                         self.qLearningFarol(learningRate, desconto, probExplorar)
                     else:
