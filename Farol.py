@@ -15,7 +15,7 @@ class Farol: #foraging
         self.genPolitic = []
         takenPos = [] #nao e uma atribute, so para facilitar esta parte das definicoes
 
-        file= open("config_farol2.txt", "r") #comecar leitura de configuracoes
+        file= open("config_farol1.txt", "r") #comecar leitura de configuracoes
 
         dificuldade= float((file.readline()).split("=")[1])
         posFarol = ((file.readline()).split("=")[1]).split("\n")[0]  # "(0,0)" or "None"
@@ -164,6 +164,11 @@ class Farol: #foraging
             a.atualizarPosicao(self.ogPosAgentes[i])
             a.setGenPolitic(self.genPolitic)
             a.found= False
+            a.followed_hints = 0
+            a.path= []
+            a.total_steps = 0
+            a.steps= 200
+            a.collisions = 0
 
     def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
         for a in self.getAgentes():

@@ -129,6 +129,7 @@ class MotorSimulator:
                     # com genetic
                     for a in self.mundo.getAgentes():
                         a.setMundo(self.mundo)
+                    self.mundo.resetMundo()
                     metricGenetic = self.testGenetic()
 
                     points= []
@@ -331,7 +332,7 @@ class MotorSimulator:
 
             # Get the top agent's individual scores for logging
             best_nov = compute_novelty(population[0].behavior, archive)
-            best_obj = population[0].calculate_objective_fitness()
+            best_obj = round(population[0].calculate_objective_fitness(), 2)
 
             print(
                 f"Gen {gen + 1}/{NUM_GENERATIONS} | Avg Combined: {avg_fitness:.2f} | Best Combined: {population[0].combined_fitness:.2f} (Nov: {best_nov:.2f}, Obj: {best_obj})")
@@ -626,9 +627,9 @@ class MotorSimulator:
                     best_genotype = agent.genPolitic[0]  # melhor genótipo
                     if steps[i] < len(best_genotype):
                         action_choice = np.random.rand()
-                        if action_choice < 0.7:  # 70% chance de seguir genótipo
+                        if action_choice < 0.6:  # 60% chance de seguir genótipo
                             action = best_genotype[steps[i]]
-                        elif action_choice < 0.85:  # 15% chance de seguir hint
+                        elif action_choice < 0.85:  # 25% chance de seguir hint
                             action = coordinator.toFarol(agent.x, agent.y)
                         else:  # 15% chance de ação aleatória
                             action = random.choice(agent.actions)
@@ -640,7 +641,6 @@ class MotorSimulator:
                     hint = coordinator.toFarol(agent.x, agent.y)
                     if action == hint:
                         agent.followed_hints += 1
-                    agent.total_steps += 1
 
                     # Executa ação
                     moved = agent.acao(action)
@@ -650,7 +650,12 @@ class MotorSimulator:
                     agent.behavior.add((agent.x, agent.y))
                     agent.path.append((agent.x, agent.y))
 
-                    # Verifica se encontrou farol
+                    # Verifica se farol está à sua volta
+                    surrounding = self.mundo.observacaoPara(action)
+                    for s in surrounding:
+                        if (type(s) == LightHouse):
+                            agent.found = True
+
                     if agent.found:
                         done_agents[i] = True
                         print(f"Agente {i} encontrou o farol!")
@@ -661,9 +666,10 @@ class MotorSimulator:
             # Estatísticas finais
             for i, agent in enumerate(self.mundo.getAgentes()):
                 if isinstance(agent, Finder):
-                    print(
-                        f"Agente {i}: Steps={len(agent.path)}, Collisions={agent.collisions}, Found={agent.found}, FollowedHints={agent.followed_hints}")
+                    print(f"Agente {i}: Steps={len(agent.path)}, Collisions={agent.collisions}, Found={agent.found}, FollowedHints={agent.followed_hints}")
                     print(f"Caminho: {agent.path}")
+
+        return steps
 
     #To be fixed
     def testQLearningFarol(self):
