@@ -1,7 +1,7 @@
 dificuldade=0.3
 posFarol=None
 posObstaculos=None
-numFinders=1
+numFinders=2
 posFinders=None
 numCoords=0
 posCoords=None

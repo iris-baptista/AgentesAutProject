@@ -18,7 +18,6 @@ class Finder(Agente):
         self.found= False
         self.followed_hints = 0
         self.path= []
-        self.total_steps = 0
         self.steps= 200
         self.collisions = 0
         self.behavior = set()
@@ -71,25 +70,36 @@ class Finder(Agente):
             fitness += 1000
 
         # Explorar novas posições: cada posição única visitada dá pontos
-        fitness += 50 * len(self.behavior)
+        fitness += 60 * len(self.behavior)
 
         # Penalização menor por passos e colisões (para não reduzir demais)
         fitness -= 1 * len(self.path)
-        fitness -= 10 * self.collisions
+        fitness -= 30 * self.collisions
 
         # Seguir dicas do Coordenator
-        if self.total_steps > 0:
-            fitness += 50 * (self.followed_hints / self.total_steps)
+        if len(self.path) > 0:
+            fitness += 50 * (self.followed_hints / len(self.path))
 
         # Nunca deixar negativo
         return max(fitness, 0)
 
     def crossover(self, parent1, parent2):
-        """Performs single-point crossover on two parent genotypes."""
-        point = random.randint(1, len(parent1.genotype) - 1)
-        child1_geno = parent1.genotype[:point] + parent2.genotype[point:]
-        child2_geno = parent2.genotype[:point] + parent1.genotype[point:]
-        return Finder((parent1.x, parent1.y), child1_geno), Finder((parent2.x, parent2.y), child2_geno) # !!incorrect!!!
+        size = len(parent1.genotype)
+        p1, p2 = sorted(random.sample(range(size), 2))
+
+        child1 = (
+                parent1.genotype[:p1] +
+                parent2.genotype[p1:p2] +
+                parent1.genotype[p2:]
+        )
+
+        child2 = (
+                parent2.genotype[:p1] +
+                parent1.genotype[p1:p2] +
+                parent2.genotype[p2:]
+        )
+
+        return Finder((0, 0), child1), Finder((0, 0), child2)
 
     def addPolitic(self, topGenotype, worldSize):
         self.genPolitic.append(topGenotype)
@@ -120,7 +130,6 @@ class Finder(Agente):
         self.path = []
         self.behavior = set()
         self.followed_hints = 0
-        self.total_steps = 0
 
         # Add starting position
         self.behavior.add((self.x, self.y))
@@ -131,7 +140,6 @@ class Finder(Agente):
 
             if action == hint:
                 self.followed_hints += 1
-            self.total_steps += 1
 
             # 1. Get new proposed position
             newx = self.x + action[0]

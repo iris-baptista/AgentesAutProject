@@ -30,10 +30,15 @@ class Agente(ABC):
         pass
 
     def mutate(self, mutation_rate):
-        """Randomly changes some actions in the genotype."""
-        for i in range(len(self.genotype)):
-            if random.random() < mutation_rate:
-                self.genotype[i] = random.choice(self.actions)
+        if random.random() < mutation_rate:
+            start = random.randint(0, len(self.genotype) - 1)
+            length = random.randint(2, 6)
+
+            for i in range(start, min(start + length, len(self.genotype))):
+                current = self.genotype[i]
+                self.genotype[i] = random.choice(
+                    [a for a in self.actions if a != current]
+                )
 
     def select_parent(population, tournament_size):
         """Selects a parent using tournament selection based on *combined_fitness*."""

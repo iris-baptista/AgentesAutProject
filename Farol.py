@@ -186,6 +186,11 @@ class Farol: #foraging
             a.atualizarPosicao(self.ogPosAgentes[i])
             a.setGenPolitic(self.genPolitic)
             a.found= False
+            a.followed_hints = 0
+            a.path= []
+            a.total_steps = 0
+            a.steps= 200
+            a.collisions = 0
 
     def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
         for a in self.getAgentes():
