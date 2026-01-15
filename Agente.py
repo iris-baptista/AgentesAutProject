@@ -14,19 +14,17 @@ class Agente(ABC):
     def acao(self, action):
         pass
 
-    @abstractmethod
-    def run_simulation(self, world_size):
-        pass
-
     def atualizarPosicao(self, pos):
         self.x= pos[0]
         self.y= pos[1]
 
+    # --- Algoritmo Genetico ---
     @abstractmethod
-    def calculate_objective_fitness(self):
+    def run_simulation(self, world_size):
         pass
 
-    def crossover(self, parent1, parent2):
+    @abstractmethod
+    def calculate_objective_fitness(self):
         pass
 
     def mutate(self, mutation_rate):
@@ -51,12 +49,12 @@ class Agente(ABC):
     def setMundo(self, m):
         self.mundoPertence= m
 
-    @abstractmethod
-    def acaoQLearning(self):
-        pass
+    # @abstractmethod
+    # def acaoQLearning(self):
+    #     pass
 
     @abstractmethod
-    def nextState(self, estado, acao):
+    def nextState(self):
         pass
 
     @abstractmethod

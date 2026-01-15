@@ -1,12 +1,9 @@
-from pyparsing import opAssoc
-
 from Agente import Agente
 import random
 from Ambiente import Obstaculo, LightHouse, EspacoVazio
 from Ambiente import EspacoVazio
 import Farol
 from Coordenator import Coordenator
-
 
 class Finder(Agente):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
@@ -177,8 +174,8 @@ class Finder(Agente):
         return
 
     #Fns Q-Leaning
-    def acaoQLearning(self):
-        pass
+    # def acaoQLearning(self):
+    #     pass
 
     def nextState(self): # estados representados por o index!
         obs= self.mundoPertence.observacaoPara((self.x, self.y)) #observacao para novo index
