@@ -113,12 +113,19 @@ class MotorSimulator:
 
                         self.qLearningForaging(learningRate, desconto, probExplorar)
 
-                    index = 0
-                    for a in self.mundo.getAgentes():
-                        print("QTable final do Agente", (index + 1), ":", type(a).__name__, "\n", a.qTable)
-                        index += 1
+                        index = 0
+                        for a in self.mundo.getAgentes():
+                            print("QTable final do Agente", (index + 1), ":", type(a).__name__, "\n", a.qTable)
+                            index += 1
 
-                    self.showGraphs()
+                        self.showGraphs()
+
+                    # index = 0
+                    # for a in self.mundo.getAgentes():
+                    #     print("QTable final do Agente", (index + 1), ":", type(a).__name__, "\n", a.qTable)
+                    #     index += 1
+                    #
+                    # self.showGraphs()
                 else:
                     print("Opção inválida, por favor tente novamente")
             elif choice1 == "2": #modo teste
