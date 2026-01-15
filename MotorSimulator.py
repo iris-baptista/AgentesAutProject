@@ -149,7 +149,9 @@ class MotorSimulator:
                     points= []
                     for test in range(5):
                         burro = self.foragingBurro() # com burro
+                        print("Burro",burro)
                         qLearning = self.testQLearningForaging() # com q learning
+                        print("Q",qLearning)
 
                         points.append([burro, qLearning])
 
