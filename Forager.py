@@ -9,7 +9,7 @@ class Forager(Agente): #extends abstract Agente
     def __init__(self, posInitial):
         self.x= posInitial[0]
         self.y= posInitial[1]
-        self.points= 0 #initializar pontos (somente para o modelo burro)
+        #self.points= 0 #initializar pontos (somente para o modelo burro)
         self.recursosCollected= [] #comeca sem nada
         self.behavior = set()
 
