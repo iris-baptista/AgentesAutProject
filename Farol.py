@@ -15,22 +15,20 @@ class Farol: #foraging
         self.genPolitic = []
         takenPos = [] #nao e uma atribute, so para facilitar esta parte das definicoes
 
-        file= open("config_farol.txt", "r") #comecar leitura de configuracoes
+        file= open("config_farol2.txt", "r") #comecar leitura de configuracoes
 
         dificuldade= float((file.readline()).split("=")[1])
         posFarol = ((file.readline()).split("=")[1]).split("\n")[0]  # "(0,0)" or "None"
-        posObstaculos = ((file.readline()).split("=")[1]).split("\n")[0]  # adicionar obstaculos
+        inObstaculos = ((file.readline()).split("=")[1]).split("\n")[0]  # adicionar obstaculos
         numFinders = int(((file.readline()).split("=")[1]).split("\n")[0])
         posFinders = ((file.readline()).split("=")[1]).split("\n")[0]
-        numCoords = int(((file.readline()).split("=")[1]).split("\n")[0])
-        posCoords = ((file.readline()).split("=")[1]).split("\n")[0]
 
         file.close()
 
         #criar obstaculos
-        if (posObstaculos == "None"):  # se nao for dado, posicao aleatoria escolhida
+        posObstaculos= []
+        if (inObstaculos == "None"):  # se nao for dado, posicao aleatoria escolhida
             numToGenerate = (int)((sizeMundo * sizeMundo) * dificuldade)  # fazer baseado numa percentagem
-            posObstaculos = []
 
             for i in range(0, numToGenerate):
                 while (True):
@@ -45,9 +43,7 @@ class Farol: #foraging
                 posObstaculos.append((x, y))
 
         else: #formato [(num,num),(num,num)...]
-            posObstaculos = []
-
-            toConvert= posObstaculos[2:-2].split("),(")
+            toConvert= inObstaculos[2:-2].split("),(")
             for toC in toConvert:
                 numbers= toC.split(",")
                 x= int(numbers[0])
@@ -100,29 +96,6 @@ class Farol: #foraging
                     takenPos.append(finderPos)
                     self.ogPosAgentes.append(finderPos)
                     self.agentes.append(Finder(finderPos))
-
-        #criar coordenadores
-        for j in range(0, numCoords):
-            if(posCoords == "None"):
-                while (True):  # check position not taken
-                    coordPos = (random.randint(0, sizeMundo - 1), random.randint(0, sizeMundo - 1))
-
-                    if (coordPos not in takenPos):
-                        break
-
-                takenPos.append(coordPos)
-                self.ogPosAgentes.append(coordPos)
-                self.agentes.append(Coordenator(coordPos))
-
-            else: #no formato [(num,num),(num,num)...]
-                toConvert = posCoords[2:-2].split("),(")
-                for toC in toConvert:
-                    numbers = toC.split(",")
-                    coordPos= (int(numbers[0]), int(numbers[1]))
-
-                    takenPos.append(coordPos)
-                    self.ogPosAgentes.append(coordPos)
-                    self.agentes.append(Coordenator(coordPos))
 
     def setGenPolitic(self, politic):
         self.genPolitic = politic

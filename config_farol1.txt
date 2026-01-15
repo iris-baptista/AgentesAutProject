@@ -3,7 +3,5 @@ posFarol=None
 posObstaculos=None
 numFinders=1
 posFinders=None
-numCoords=0
-posCoords=None
 
 !NAO TER ESPACOS!
