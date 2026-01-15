@@ -303,6 +303,7 @@ class MotorSimulator:
             population.append(Finder((0, 0)))
         avg_fitness_per_gen = []
         best_paths_per_gen = []
+        fitness_plot = []
 
         print("Starting evolution...")
 
@@ -334,11 +335,11 @@ class MotorSimulator:
 
             # Get the top agent's individual scores for logging
             best_nov = compute_novelty(population[0].behavior, archive)
-            best_obj = round(population[0].calculate_objective_fitness(), 2)
+            best_obj = population[0].calculate_objective_fitness()
 
             print(
-                f"Gen {gen + 1}/{NUM_GENERATIONS} | Avg Combined: {avg_fitness:.2f} | Best Combined: {population[0].combined_fitness:.2f} (Nov: {best_nov:.2f}, Obj: {best_obj})")
-
+                f"Gen {gen + 1}/{NUM_GENERATIONS} | Avg Combined: {avg_fitness:.2f} | Best Combined: {population[0].combined_fitness:.2f} (Nov: {best_nov:.2f}, Obj: {best_obj:.2f})")
+            fitness_plot.append(round(population[0].combined_fitness, 2))
             # 4. Update archive with the most novel behaviors (from this gen)
             #    We still update the archive based on *pure novelty*
 
@@ -380,6 +381,12 @@ class MotorSimulator:
                     new_population.append(child2)
 
             population = new_population
+
+        generation = range(1, NUM_GENERATIONS +1)
+        plt.plot(generation, fitness_plot, 'ro')
+        plt.ylabel("fitness")
+        plt.xlabel("generation")
+        plt.show()
 
         self.mundo.setGenPolitic(population[0].genPolitic)
         print("Evolution complete.")

@@ -45,9 +45,16 @@ class Finder(Agente):
             match obj:  # pode sobrepor espacos vazios
                 case EspacoVazio():
                     self.atualizarPosicao(newPos)
+                    surrounding = self.mundoPertence.observacaoPara(newPos)
+                    for s in surrounding:
+                        if (type(s) == LightHouse):
+                            self.found = True
+                            self.atualizarPosicao((-1,-1))
+                            # print("Encontrou o farol!")
                     # print("Movido para", newPos)
                 case LightHouse():
                     self.found = True
+                    self.atualizarPosicao((-1,-1))
                     # print("Encontrou o farol!")
                 case _: # nao pode sobrepor agentes ou obstaculos
                     # print("Obstaculo encontrado!")
