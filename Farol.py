@@ -8,6 +8,7 @@ class Farol: #foraging
 
     def __init__(self, sizeMundo): #nao passei o nome do ficheiro ja q e sempre o mesmo para o farol
         self.sizeMap = sizeMundo
+        self.farol= (-1, -1)
         self.obstaculos = []
         self.agentes = []
         self.ogPosAgentes = []
@@ -15,27 +16,18 @@ class Farol: #foraging
         takenPos = [] #nao e uma atribute, so para facilitar esta parte das definicoes
 
         file= open("config_farol.txt", "r") #comecar leitura de configuracoes
+
         dificuldade= float((file.readline()).split("=")[1])
+        posFarol = ((file.readline()).split("=")[1]).split("\n")[0]  # "(0,0)" or "None"
+        posObstaculos = ((file.readline()).split("=")[1]).split("\n")[0]  # adicionar obstaculos
+        numFinders = int(((file.readline()).split("=")[1]).split("\n")[0])
+        posFinders = ((file.readline()).split("=")[1]).split("\n")[0]
+        numCoords = int(((file.readline()).split("=")[1]).split("\n")[0])
+        posCoords = ((file.readline()).split("=")[1]).split("\n")[0]
 
-        posFarol= ((file.readline()).split("=")[1]).split("\n")[0] #"(0,0)" or "None"
-        if (posFarol == "None"): #se nao for dado, posicao aleatoria escolhida
-            done= False
-            while (done == False):
-                x = random.randint(0, sizeMundo - 1)
-                y = random.randint(0, sizeMundo - 1)
+        file.close()
 
-                if ((x, y) not in takenPos):
-                    done= True
-
-            posFarol = (x, y)
-        else: #se no formato (num,num)
-            converting= posFarol[1:-1].split(",")
-            posFarol= (int(converting[0]),int(converting[1]))
-
-        takenPos.append(posFarol)  # mind you not checking if the posGiven is available
-        self.farol = LightHouse("F", posFarol[0], posFarol[1])
-
-        posObstaculos = ((file.readline()).split("=")[1]).split("\n")[0] #adicionar obstaculos
+        #criar obstaculos
         if (posObstaculos == "None"):  # se nao for dado, posicao aleatoria escolhida
             numToGenerate = (int)((sizeMundo * sizeMundo) * dificuldade)  # fazer baseado numa percentagem
             posObstaculos = []
@@ -67,8 +59,26 @@ class Farol: #foraging
         for o in posObstaculos:
             self.obstaculos.append(Obstaculo(o[0], o[1]))
 
-        numFinders= int(((file.readline()).split("=")[1]).split("\n")[0])
-        posFinders= ((file.readline()).split("=")[1]).split("\n")[0]
+        #criar farol
+        if (posFarol == "None"):  # se nao for dado, posicao aleatoria escolhida
+            done = False
+            while (done == False):
+                x = random.randint(0, sizeMundo - 1)
+                y = random.randint(0, sizeMundo - 1)
+
+                if ((x, y) not in takenPos):
+                    if(self.createsBlock(posObstaculos, x, y) == False):
+                        done = True
+
+            posFarol = (x, y)
+        else:  # se no formato (num,num)
+            converting = posFarol[1:-1].split(",")
+            posFarol = (int(converting[0]), int(converting[1]))
+
+        takenPos.append(posFarol)  # mind you not checking if the posGiven is available
+        self.farol = LightHouse("F", posFarol[0], posFarol[1])
+
+        #criar finders
         for i in range(0, numFinders):
             if(posFinders == "None"):
                 while (True):  # check position not taken
@@ -91,8 +101,7 @@ class Farol: #foraging
                     self.ogPosAgentes.append(finderPos)
                     self.agentes.append(Finder(finderPos))
 
-        numCoords= int(((file.readline()).split("=")[1]).split("\n")[0])
-        posCoords= ((file.readline()).split("=")[1]).split("\n")[0]
+        #criar coordenadores
         for j in range(0, numCoords):
             if(posCoords == "None"):
                 while (True):  # check position not taken
@@ -115,13 +124,10 @@ class Farol: #foraging
                     self.ogPosAgentes.append(coordPos)
                     self.agentes.append(Coordenator(coordPos))
 
-        file.close()
-
     def setGenPolitic(self, politic):
         self.genPolitic = politic
 
     def createsBlock(self, posObstaculos, x, y):
-        # print("Obstaculos ", posObstaculos)
         surroundingActions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, 1), (1, -1), (-1, 1)]  # 8 espacos a volta
         connectedActions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
@@ -130,7 +136,7 @@ class Farol: #foraging
             coord = (s[0] + x, s[1] + y)
 
             if (coord[0] >= 0 and coord[0] < self.sizeMap and coord[1] < self.sizeMap and coord[1] >= 0):  # para so ser validos!
-                if ((coord not in posObstaculos) and (type(self.getObject(coord[0], coord[1])) != LightHouse)): #encontrar espacos vazios ao lado da posicao nova
+                if ((coord not in posObstaculos)): #encontrar espacos vazios ao lado da posicao nova
                     possibleGrupos.append(coord)
 
         gruposFound = []
@@ -141,9 +147,8 @@ class Farol: #foraging
                     coord = (s[0] + member[0], s[1] + member[1])
 
                     if (coord[0] < self.sizeMap and coord[0] >= 0 and coord[1] < self.sizeMap and coord[1] >= 0): #coordenada valida
-                        if (type(self.getObject(coord[0], coord[1])) != LightHouse): #nao e o farol
-                            if ((coord not in posObstaculos) and (coord not in grupo) and (coord != (x, y))): #novo espaco vazio
-                                grupo.append(coord)
+                        if ((coord not in posObstaculos) and (coord not in grupo) and (coord != (x, y))): #novo espaco vazio
+                            grupo.append(coord)
 
             gruposFound.append(grupo)
             if (len(grupo) != len(gruposFound[0])):  # se o atual for diferente do primeiro grupo esta
