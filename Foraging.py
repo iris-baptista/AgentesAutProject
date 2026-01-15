@@ -221,7 +221,7 @@ class Foraging: #ambiente
             if x == a.x and y == a.y:
                 return a
 
-        return EspacoVazio(x, y) #se nao encontrou um obstaculo ou um farol segue (ignora q pode ser outro agente...)
+        return EspacoVazio(x, y)
 
     def getAgentes(self):
         return self.agentes
@@ -232,7 +232,7 @@ class Foraging: #ambiente
     def removeRecurso(self, r):
         self.recursos.remove(r)
 
-    # observacao para mandar a posicao dada (valores dos sensores da posicao dada)
+    # observacao para a posicao dada (valores dos sensores da posicao dada)
     def observacaoPara(self, pos):  # devolve array com objetos a volta do agente
         above = self.getObject(pos[0], pos[1] + 1)
         bellow = self.getObject(pos[0], pos[1] - 1)
@@ -256,10 +256,10 @@ class Foraging: #ambiente
 
     def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
         for a in self.getAgentes():
-            while (True):  # check position not taken
+            while (True):
                 newPos = (random.randint(0, self.sizeMap - 1), random.randint(0, self.sizeMap - 1))
 
-                if (type(self.getObject(newPos[0], newPos[1])) == EspacoVazio):
+                if (type(self.getObject(newPos[0], newPos[1])) == EspacoVazio): # check position not taken
                     break
 
             a.atualizarPosicao(newPos)

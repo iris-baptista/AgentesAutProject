@@ -4,7 +4,7 @@ import random
 class Agente(ABC):
     actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
     mundoPertence= None
-    qTable = None #sera por isto?
+    qTable = None
 
     def acaoBurro(self):
         choice = random.choice(self.actions)
@@ -48,10 +48,6 @@ class Agente(ABC):
     # --- Q Learning ---
     def setMundo(self, m):
         self.mundoPertence= m
-
-    # @abstractmethod
-    # def acaoQLearning(self):
-    #     pass
 
     @abstractmethod
     def nextState(self):

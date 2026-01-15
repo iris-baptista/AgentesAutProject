@@ -2,10 +2,10 @@ from Ambiente import Obstaculo, EspacoVazio, LightHouse
 from Finder import Finder
 import random
 
-class Farol: #foraging
+class Farol:
     # tem atributes sizeMap, obstaculos, farol, agentes, e a posicao initial dos agentes!
 
-    def __init__(self, sizeMundo): #nao passei o nome do ficheiro ja q e sempre o mesmo para o farol
+    def __init__(self, sizeMundo):
         self.sizeMap = sizeMundo
         self.farol= None
         self.obstaculos = []
@@ -66,11 +66,11 @@ class Farol: #foraging
                         done = True
 
             posFarol = (x, y)
-        else:  # se no formato (num,num)
+        else:  #no formato (num,num)
             converting = posFarol[1:-1].split(",")
             posFarol = (int(converting[0]), int(converting[1]))
 
-        takenPos.append(posFarol)  # mind you not checking if the posGiven is available
+        takenPos.append(posFarol)
         self.farol = LightHouse("F", posFarol[0], posFarol[1])
 
         #criar finders
@@ -123,10 +123,10 @@ class Farol: #foraging
                             grupo.append(coord)
 
             gruposFound.append(grupo)
-            if (len(grupo) != len(gruposFound[0])):  # se o atual for diferente do primeiro grupo esta
+            if (len(grupo) != len(gruposFound[0])):  # se o atual for diferente do primeiro grupo criou uma area bloqueada
                 return True
 
-        return False  # se nada esta surrounded
+        return False  # se nao criou uma area bloqueada
 
     def getObject(self, x, y):  #devolve objeto na posicao dada
         if x == self.farol.x and y == self.farol.y:
@@ -140,7 +140,7 @@ class Farol: #foraging
             if x == a.x and y == a.y:
                 return a
 
-        return EspacoVazio(x, y) #se nao encontrou um obstaculo ou um farol segue
+        return EspacoVazio(x, y)
 
     def getAgentes(self):
         return self.agentes
@@ -148,7 +148,7 @@ class Farol: #foraging
     def getOGPosAgentes(self):
         return self.ogPosAgentes
 
-    #observacao para mandar a posicao dada
+    #observacao para a posicao dada
     def observacaoPara(self, pos): #devolve array com objetos a volta do agente
         above= self.getObject(pos[0], pos[1]+1)
         bellow= self.getObject(pos[0], pos[1]-1)
@@ -171,10 +171,10 @@ class Farol: #foraging
 
     def resetStart(self): #vai por os agentes em posicoes aleatorias para comecar
         for a in self.getAgentes():
-            while (True):  # check position not taken
+            while (True):
                 newFinderPos = (random.randint(0, self.sizeMap - 1), random.randint(0, self.sizeMap - 1))
 
-                if (type(self.getObject(newFinderPos[0], newFinderPos[1])) == EspacoVazio):
+                if (type(self.getObject(newFinderPos[0], newFinderPos[1])) == EspacoVazio): # check position not taken
                     break
 
             a.atualizarPosicao(newFinderPos)

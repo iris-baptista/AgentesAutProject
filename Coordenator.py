@@ -6,7 +6,7 @@ class Coordenator():
         self.fy= farolPos[1]
 
     #devolve proxima coord na direcao do farol para o agente
-    def toFarol(self, agent_x, agent_y): #devia passar agente no parametro?
+    def toFarol(self, agent_x, agent_y):
         dx = self.fx - agent_x
         dy = self.fy - agent_y
         

@@ -3,7 +3,7 @@ from Ambiente import EspacoVazio, Recurso, Obstaculo, Cesto
 import random
 
 class Forager(Agente): #extends abstract Agente
-    actions = [(0, 1), (1, 0), (0, -1), (-1, 0)] #pode ir para o agente abstrato
+    actions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
     #construtor
     def __init__(self, posInitial):
@@ -26,7 +26,6 @@ class Forager(Agente): #extends abstract Agente
     def acao(self, action):
         newPos = (action[0] + self.x, action[1] + self.y)
 
-        # so muda de posicao se for uma posicao valida/der para sobrepor!
         tamanho = self.mundoPertence.sizeMap
         if (newPos[0] < tamanho and newPos[0] >= 0 and newPos[1] < tamanho and newPos[1] >= 0):  # dentro do mapa
             obj = self.mundoPertence.getObject(newPos[0], newPos[1])
@@ -62,11 +61,7 @@ class Forager(Agente): #extends abstract Agente
     def run_simulation(self):
         pass
 
-    #fns q learning
-    # def acaoQLearning(self):
-    #     pass
-
-    def nextState(self):  # estado vai ser o mundo? ou o index
+    def nextState(self):
         obs = self.mundoPertence.observacaoPara((self.x, self.y))  # observacao para novo index
 
         emptyCount= self.containsType(obs, EspacoVazio)

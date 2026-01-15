@@ -89,9 +89,9 @@ class MotorSimulator:
                             print("Under development!")
                 elif choice2 == "2": #q learning
                     print("A aprender com algoritmo Q-learning!")
-                    learningRate = 0.7  # demais? a menos? #% de info nova
+                    learningRate = 0.7  #% de info nova
                     desconto = 0.99  # quanto mais alto maior a quantidade de info q passa para tras
-                    probExplorar = 0.6  # demais?
+                    probExplorar = 0.6
 
                     if(type(self.mundo) == Farol):
                         print("Under development!")
@@ -392,15 +392,14 @@ class MotorSimulator:
         print("Evolution complete.")
 
     def qLearningFarol(self, learningRate, desconto, probExplorar):
-        # goals = [2, 4, 6, 7]  # index de estados ao lado do farol
-
-        print("Comecar episodio: 1")
         index = 0
         for a in self.mundo.getAgentes():  # for each agent
             print("QTable initial do Agente", (index + 1), "\n", a.qTable)
             index += 1
 
-        numEpisodios = 15000  # aumentar
+        print("Comecar episodio: 1")
+
+        numEpisodios = 15000
         for episodio in range(numEpisodios):
             if ((episodio + 1) % 100 == 0):
                 index = 0
@@ -411,7 +410,6 @@ class MotorSimulator:
                 print("Comecar episodio:", episodio + 1)
                 if (learningRate > 0.1):
                     learningRate -= 0.0001
-                # learningRate -= 0.001
 
             # escolhe uma posicao aleatoria para comecar
             self.mundo.resetStart()
@@ -466,7 +464,7 @@ class MotorSimulator:
                     break
 
             if (probExplorar > 0.01):
-                probExplorar -= 0.00001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
+                probExplorar -= 0.00001 #diminuir probabilidade de explorar no fim do episodio
 
     def qLearningForaging(self, learningRate, desconto, probExplorar):
         index = 0
@@ -476,8 +474,8 @@ class MotorSimulator:
 
         print("Comecar episodio: 1")
 
-        numEpisodios = 15000  # aumentar
-        for episodio in range(numEpisodios):  # deviamos comecar sempre no mesmo estado?
+        numEpisodios = 15000
+        for episodio in range(numEpisodios):
             if ((episodio + 1) % 100 == 0):
                 index = 0
                 for a in self.mundo.getAgentes():  # for each agent
@@ -532,7 +530,7 @@ class MotorSimulator:
                 currentTime = time.time()
 
             if(probExplorar > 0.01):
-                probExplorar -= 0.00001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
+                probExplorar -= 0.00001  #diminuir probabilidade de explorar no fim do episodio
 
     def showGraphs(self):
         agents= self.mundo.getAgentes()

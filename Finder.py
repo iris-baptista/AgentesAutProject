@@ -1,6 +1,6 @@
 from Agente import Agente
 import random
-from Ambiente import Obstaculo, LightHouse, EspacoVazio
+from Ambiente import Obstaculo, LightHouse
 from Ambiente import EspacoVazio
 import Farol
 from Coordenator import Coordenator
@@ -37,7 +37,6 @@ class Finder(Agente):
     def acao(self, action):
         newPos = (action[0] + self.x, action[1] + self.y)
 
-        # so muda de posicao se for uma posicao valida/der para sobrepor!
         tamanho = self.mundoPertence.sizeMap
 
         if (newPos[0] < tamanho and newPos[0] >= 0 and newPos[1] < tamanho and newPos[1] >= 0):  # dentro do mapa
