@@ -16,7 +16,7 @@ class Foraging: #ambiente
         self.ogPosAgentes = []
         takenPos = []
 
-        file= open("config_foraging.txt", "r")
+        file= open("config_foraging1.txt", "r")
         dificuldade = float((file.readline()).split("=")[1])
 
         posObstaculos = ((file.readline()).split("=")[1]).split("\n")[0]  # adicionar obstaculos
