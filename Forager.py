@@ -9,7 +9,6 @@ class Forager(Agente): #extends abstract Agente
     def __init__(self, posInitial):
         self.x= posInitial[0]
         self.y= posInitial[1]
-        self.points= 0 #initializar pontos (somente para o modelo burro)
         self.recursosCollected= [] #comeca sem nada
         self.behavior = set()
 
@@ -64,8 +63,8 @@ class Forager(Agente): #extends abstract Agente
         pass
 
     #fns q learning
-    def acaoQLearning(self):
-        pass
+    # def acaoQLearning(self):
+    #     pass
 
     def nextState(self):  # estado vai ser o mundo? ou o index
         obs = self.mundoPertence.observacaoPara((self.x, self.y))  # observacao para novo index
