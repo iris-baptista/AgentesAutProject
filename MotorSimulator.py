@@ -1,7 +1,3 @@
-import matplotlib
-from matplotlib import pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-
 from Ambiente import LightHouse, Obstaculo, EspacoVazio, Cesto, Recurso
 from Coordenator import Coordenator
 from Farol import Farol
@@ -12,8 +8,9 @@ from Finder import Finder
 from Dropper import Dropper
 import time
 import random
-import copy
 import numpy as np
+from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def jaccard_distance(set1, set2):
     intersection = len(set1 & set2)
@@ -55,15 +52,9 @@ class MotorSimulator:
                 self.displayMundo()
                 self.subMenu()
             elif choice == "2": #problema Foraging
-                while (True): #manter escolha para testing
-                    self.mundo= Foraging(self.worldSize)
-                    print("Mundo Foraging: ")
-                    self.displayMundo()
-
-                    again = input("Quer gerar outro mundo?(y/n) ")
-                    if (again == "n"):
-                        break
-
+                self.mundo = Foraging(self.worldSize)
+                print("Mundo Foraging: ")
+                self.displayMundo()
                 self.subMenu()
             elif choice == "0": #fechar programa
                 print("A terminar...")
@@ -106,7 +97,7 @@ class MotorSimulator:
                                 a.setMundo(self.mundo)
 
                                 if (a.qTable is None): #se e a primeira vez a correr o algoritmo
-                                    a.qTable = np.zeros((141, len(Agente.actions))) #141 estados
+                                    a.qTable = np.zeros((142, len(Agente.actions))) #141 estados
 
                         self.qLearningFarol(learningRate, desconto, probExplorar)
                     else:
@@ -535,7 +526,6 @@ class MotorSimulator:
             if(probExplorar > 0.01):
                 probExplorar -= 0.00001  # pouco/mais? #diminuir probabilidade de explorar no fim do episodio
 
-    #To be altered so that all the states fit
     def showGraphs(self):
         agents= self.mundo.getAgentes()
 
@@ -545,21 +535,25 @@ class MotorSimulator:
         if(len(agents) == 1):
             graphs = [graphs]
 
-        match self.mundo:
-            case Farol():
-                y = np.array(['0', '1', '2', '3', '4', '5', '6', '7'])
-                rangeY= 8
-            case Foraging():
-                y = np.array(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'])
-                rangeY= 15
-
         x = np.array(['Up', 'Right', 'Down', 'Left'])
         for i in range(0, len(agents)):
-            currentQTable= agents[i].qTable
+            match self.mundo:
+                case Farol():
+                    y = np.arange(0, 9)
+                    rangeY = 9
+
+                    # filtrar QTable para ter 1 linha por estado
+                    selected = self.getSelected(agents[i].qTable)
+                case Foraging():
+                    y = np.arange(0, 16)
+                    rangeY = 16
+
+                    # filtrar QTable para ter 1 linha por estado
+                    selected = self.getSelected(agents[i].qTable)
 
             #setting up graph
             graphs[i].set_title(f'Agente {i + 1}: {type(agents[i]).__name__}')
-            image = graphs[i].imshow(currentQTable, cmap='magma', interpolation='nearest')  # RdBu, PiYG
+            image = graphs[i].imshow(selected, cmap='magma', interpolation='nearest')
             graphs[i].set_xlabel('Action')
             graphs[i].set_ylabel('Estado')
             graphs[i].set_xticks(np.arange(4), x)
@@ -572,16 +566,54 @@ class MotorSimulator:
             plt.colorbar(image, cax=cax)
 
             #ajustar cores de numeros para dar para ler
-            for j in range(len(currentQTable)):
+            for j in range(len(selected)):
                 for k in range(4):
-                    value = currentQTable[j][k]
-                    if (value <= np.max(currentQTable) / 2):
-                        graphs[i].text(k, j, f'{value:.2f}', ha='center', va='center', color='white')
+                    value = selected[j][k]
+                    if (value <= np.max(selected) / 2):
+                        graphs[i].text(k, j, f'{value:.2f}', ha='center', va='center', color='white', fontsize= 8)
                     else:
-                        graphs[i].text(k, j, f'{value:.2f}', ha='center', va='center', color='black')
+                        graphs[i].text(k, j, f'{value:.2f}', ha='center', va='center', color='black', fontsize= 8)
 
         fig.subplots_adjust(wspace=0.5) #para graficos nao estarem colados
         plt.show()
+
+    def getSelected(self, QTable):
+        selected= []
+
+        match self.mundo:
+            case Farol():
+                ranges= [[0],[1, 14],[15, 18],[19, 32],[33, 56],[57, 92],[93, 116],[117, 140], [141]]
+            case Foraging():
+                ranges= [[0],[1, 14],[15, 28],[29, 42],[43, 56],[57, 92],[93, 128],[129, 164],[165, 200],[201, 236],[237, 272],[273, 296],[297, 320],[321, 344],[345, 368], [369]]
+
+        for r in range(len(ranges)):
+            rangeAtual= ranges[r]
+            if(len(rangeAtual) == 1):
+                rangeEstadoAtual= QTable[rangeAtual[0]]
+                selected.append(rangeEstadoAtual)
+            else:
+                rangeEstadoAtual= QTable[rangeAtual[0]:rangeAtual[-1]]
+
+                estado= [None]
+                if (self.onlyZeros(rangeEstadoAtual)):
+                    estado = [0.0, 0.0, 0.0, 0.0]
+
+                while(estado[0] == None):
+                    possibleEstado= random.choice(rangeEstadoAtual)
+
+                    if(possibleEstado[0] != 0.0 and possibleEstado[1] != 0.0 and possibleEstado[2] != 0.0 and possibleEstado[3] != 0.0):
+                        estado = possibleEstado
+
+                selected.append(estado)
+
+        return selected
+
+    def onlyZeros(self, estados):
+        for i in range(len(estados)):
+            if (estados[i][0] != 0.0 and estados[i][1] != 0.0 and estados[i][2] != 0.0 and estados[i][3] != 0.0):
+                return False
+
+        return True
 
     def testGenetic(self):
         steps = [0 for _ in self.mundo.getAgentes()]

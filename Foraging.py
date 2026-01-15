@@ -16,13 +16,24 @@ class Foraging: #ambiente
         self.ogPosAgentes = []
         takenPos = []
 
-        file= open("config_foraging1.txt", "r")
-        dificuldade = float((file.readline()).split("=")[1])
+        file= open("config_foraging2.txt", "r")
 
-        posObstaculos = ((file.readline()).split("=")[1]).split("\n")[0]  # adicionar obstaculos
-        if (posObstaculos == "None"):  # se nao for dado, posicao aleatoria escolhida
+        dificuldade = float((file.readline()).split("=")[1])
+        inObstaculos = ((file.readline()).split("=")[1]).split("\n")[0]  # adicionar obstaculos
+        inCestos = ((file.readline()).split("=")[1]).split("\n")[0]  # adicionar cestos
+        inRecursos = ((file.readline()).split("=")[1]).split("\n")[0]  # adicionar recursos
+        numForagers = int(((file.readline()).split("=")[1]).split("\n")[0])
+        posForagers = ((file.readline()).split("=")[1]).split("\n")[0]
+        numDroppers = int(((file.readline()).split("=")[1]).split("\n")[0])
+        posDroppers = ((file.readline()).split("=")[1]).split("\n")[0]
+        self.tempo = float(((file.readline()).split("=")[1]).split("\n")[0])
+
+        file.close()
+
+        #criar obstaculos
+        posObstaculos = []
+        if (inObstaculos == "None"):  # se nao for dado, posicao aleatoria escolhida
             numToGenerate = (int) ((sizeMundo * sizeMundo) * dificuldade)  # fazer baseado numa percentagem
-            posObstaculos = []
 
             for i in range(0, numToGenerate):
                 while(True):
@@ -35,11 +46,8 @@ class Foraging: #ambiente
 
                 takenPos.append((x, y))
                 posObstaculos.append((x, y))
-
         else:
-            posObstaculos = []
-
-            toConvert = posObstaculos[2:-2].split("),(")
+            toConvert = inObstaculos[2:-2].split("),(")
             for toC in toConvert:
                 numbers = toC.split(",")
                 x = int(numbers[0])
@@ -51,10 +59,10 @@ class Foraging: #ambiente
         for o in posObstaculos:
             self.obstaculos.append(Obstaculo(o[0], o[1]))
 
-        posCestos = ((file.readline()).split("=")[1]).split("\n")[0]  #adicionar cestos
-        if(posCestos == "None"): #se nao for dado, posicao aleatoria escolhida
+        #criar cestos
+        posCestos= []
+        if(inCestos == "None"): #se nao for dado, posicao aleatoria escolhida
             numToGenerate = (int) ((sizeMundo * sizeMundo) * 0.1)  # fazer baseado numa percentagem
-            posCestos = []
             for i in range(0, numToGenerate):
                 while(True):
                     x = random.randint(0, sizeMundo - 1)
@@ -68,9 +76,7 @@ class Foraging: #ambiente
                 posCestos.append((x, y))
 
         else:
-            posCestos = []
-
-            toConvert = posCestos[2:-2].split("),(")
+            toConvert = inCestos[2:-2].split("),(")
             for toC in toConvert:
                 numbers = toC.split(",")
                 x = int(numbers[0])
@@ -84,10 +90,10 @@ class Foraging: #ambiente
             self.cestos.append(Cesto(f"C{index}", c[0], c[1]))
             index+= 1
 
-        posRecursos = ((file.readline()).split("=")[1]).split("\n")[0] #adicionar recursos
-        if(posRecursos == "None"): #se nao for dado, posicao aleatoria escolhida
+        #criar recursos
+        posRecursos= []
+        if(inRecursos == "None"): #se nao for dado, posicao aleatoria escolhida
             numToGenerate = (int) ((sizeMundo * sizeMundo) * 0.2)  # fazer baseado numa percentagem
-            posRecursos = []
             for i in range(0, numToGenerate):
                 while(True):
                     x = random.randint(0, sizeMundo - 1)
@@ -100,9 +106,7 @@ class Foraging: #ambiente
                 posRecursos.append((x, y))
 
         else:
-            posRecursos = []
-
-            toConvert = posCestos[2:-2].split("),(")
+            toConvert = inRecursos[2:-2].split("),(")
             for toC in toConvert:
                 numbers = toC.split(",")
                 x = int(numbers[0])
@@ -110,7 +114,6 @@ class Foraging: #ambiente
 
                 takenPos.append((x, y))
                 posRecursos.append((x, y))
-
         index = 1
         for r in posRecursos:
             novoRecurso= Recurso(f"R{index}", r[0], r[1])
@@ -118,8 +121,7 @@ class Foraging: #ambiente
             self.ogRecursos.append(novoRecurso)
             index += 1
 
-        numForagers = int(((file.readline()).split("=")[1]).split("\n")[0])
-        posForagers = ((file.readline()).split("=")[1]).split("\n")[0]
+        #criar foragers
         foragers= []
         for i in range(0, numForagers):
             if(posForagers == "None"):
@@ -146,8 +148,7 @@ class Foraging: #ambiente
                     self.agentes.append(newForager)
                     foragers.append(newForager)
 
-        numDroppers = int(((file.readline()).split("=")[1]).split("\n")[0])
-        posDroppers = ((file.readline()).split("=")[1]).split("\n")[0]
+        #criar droppers
         for j in range(0, numDroppers):
             if(posDroppers == "None"):
                 while (True):  # check position not taken
@@ -169,11 +170,7 @@ class Foraging: #ambiente
                     self.ogPosAgentes.append(dropperPos)
                     self.agentes.append(Dropper(dropperPos, foragers))
 
-        self.tempo= float(((file.readline()).split("=")[1]).split("\n")[0])
-        file.close()
-
     def createsBlock(self, posObstaculos, posCestos, x, y):
-        # print("Obstaculos ", posObstaculos)
         surroundingActions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, 1), (1, -1), (-1, 1)]  # 8 espacos a volta
         connectedActions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
