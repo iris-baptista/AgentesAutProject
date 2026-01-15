@@ -8,7 +8,13 @@ class Foraging: #ambiente
 
     def __init__(self, sizeMundo):
         self.sizeMap= sizeMundo
-        takenPos= []
+        self.obstaculos = []
+        self.cestos = []
+        self.recursos = []
+        self.ogRecursos = []
+        self.agentes = []
+        self.ogPosAgentes = []
+        takenPos = []
 
         file= open("config_foraging.txt", "r")
         dificuldade = float((file.readline()).split("=")[1])
@@ -17,13 +23,15 @@ class Foraging: #ambiente
         if (posObstaculos == "None"):  # se nao for dado, posicao aleatoria escolhida
             numToGenerate = (int) ((sizeMundo * sizeMundo) * dificuldade)  # fazer baseado numa percentagem
             posObstaculos = []
+
             for i in range(0, numToGenerate):
                 while(True):
                     x = random.randint(0, sizeMundo - 1)
                     y = random.randint(0, sizeMundo - 1)
 
                     if((x, y) not in takenPos):
-                        break
+                        if(self.createsBlock(posObstaculos, [], x, y) == False):
+                            break
 
                 takenPos.append((x, y))
                 posObstaculos.append((x, y))
@@ -40,7 +48,6 @@ class Foraging: #ambiente
                 takenPos.append((x, y))
                 posObstaculos.append((x, y))
 
-        self.obstaculos = []
         for o in posObstaculos:
             self.obstaculos.append(Obstaculo(o[0], o[1]))
 
@@ -54,7 +61,8 @@ class Foraging: #ambiente
                     y = random.randint(0, sizeMundo - 1)
 
                     if((x, y) not in takenPos):
-                        break
+                        if(self.createsBlock(posObstaculos, posCestos, x, y) == False):
+                            break
 
                 takenPos.append((x, y))
                 posCestos.append((x, y))
@@ -71,7 +79,6 @@ class Foraging: #ambiente
                 takenPos.append((x, y))
                 posCestos.append((x, y))
 
-        self.cestos = []
         index= 1
         for c in posCestos:
             self.cestos.append(Cesto(f"C{index}", c[0], c[1]))
@@ -104,8 +111,6 @@ class Foraging: #ambiente
                 takenPos.append((x, y))
                 posRecursos.append((x, y))
 
-        self.recursos = []
-        self.ogRecursos = []
         index = 1
         for r in posRecursos:
             novoRecurso= Recurso(f"R{index}", r[0], r[1])
@@ -113,8 +118,6 @@ class Foraging: #ambiente
             self.ogRecursos.append(novoRecurso)
             index += 1
 
-        self.agentes = []
-        self.ogPosAgentes = []
         numForagers = int(((file.readline()).split("=")[1]).split("\n")[0])
         posForagers = ((file.readline()).split("=")[1]).split("\n")[0]
         foragers= []
@@ -169,11 +172,39 @@ class Foraging: #ambiente
         self.tempo= float(((file.readline()).split("=")[1]).split("\n")[0])
         file.close()
 
+    def createsBlock(self, posObstaculos, posCestos, x, y):
+        # print("Obstaculos ", posObstaculos)
+        surroundingActions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, 1), (1, -1), (-1, 1)]  # 8 espacos a volta
+        connectedActions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+        possibleGrupos = []
+        for s in surroundingActions:
+            coord = (s[0] + x, s[1] + y)
+
+            if (coord[0] >= 0 and coord[0] < self.sizeMap and coord[1] < self.sizeMap and coord[1] >= 0):  # para so ser validos!
+                if ((coord not in posObstaculos) and (coord not in posCestos) and (type(self.getObject(coord[0], coord[1])) == EspacoVazio)): #encontrar espacos vazios ao lado da posicao nova
+                    possibleGrupos.append(coord)
+
+        gruposFound = []
+        for g in possibleGrupos: #encontrar grupos de espacos vazios
+            grupo = [g]
+            for member in grupo:
+                for s in connectedActions:
+                    coord = (s[0] + member[0], s[1] + member[1])
+
+                    if (coord[0] < self.sizeMap and coord[0] >= 0 and coord[1] < self.sizeMap and coord[1] >= 0): #coordenada valida
+                        if (type(self.getObject(coord[0], coord[1])) == EspacoVazio):
+                            if ((coord not in posObstaculos) and (coord not in posCestos) and (coord not in grupo) and (coord != (x, y))): #novo espaco vazio
+                                grupo.append(coord)
+
+            gruposFound.append(grupo)
+            if (len(grupo) != len(gruposFound[0])):  # se o atual for diferente do primeiro grupo esta
+                return True
+
+        return False  # se nada esta surrounded
+
     #devolve objeto na posicao dada
     def getObject(self, x, y):
-        for a in self.agentes: #agente primeiro para sobrepor recursos (get rid of?)
-            if x == a.x and y == a.y:
-                return a
         for c in self.cestos:
             if x == c.x and y == c.y:
                 #print(f"Encontrou o cesto {c.name}")
@@ -188,6 +219,10 @@ class Foraging: #ambiente
             if x == o.x and y == o.y:
                 #print("Foi contra um obstaculo...")
                 return o
+
+        for a in self.agentes:
+            if x == a.x and y == a.y:
+                return a
 
         return EspacoVazio(x, y) #se nao encontrou um obstaculo ou um farol segue (ignora q pode ser outro agente...)
 

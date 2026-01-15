@@ -54,9 +54,14 @@ class Agente(ABC):
     def nextState(self, estado, acao):
         pass
 
+    @abstractmethod
+    def inGoal(self, nextState):
+        pass
+
     def containsType(self, list, type):
+        itemCount= 0
         for item in list:
             if isinstance(item, type):
-                return True
+                itemCount+= 1
 
-        return False
+        return itemCount
